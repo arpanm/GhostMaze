@@ -20,6 +20,7 @@ let lastStoneTime = 0;
 let lastGhostTime = 0;
 let stonesCollectedCount = 0;
 let stonesDetails = {};
+let ghostEscapeScore = 0;
 
 // Input State
 const input = {
@@ -198,6 +199,7 @@ function startGame() {
     lastGhostTime = Date.now();
     stonesCollectedCount = 0;
     stonesDetails = { diamond: 0, ruby: 0, emerald: 0, sapphire: 0 };
+    ghostEscapeScore = 0;
 
     // Gen Maze
     maze = new Maze(MAZE_COLS, MAZE_ROWS);
@@ -319,9 +321,21 @@ function update(dt) {
     let isChasing = false;
     for (let i = ghosts.length - 1; i >= 0; i--) {
         let g = ghosts[i];
+        let wasChasing = (g.state === 'CHASING');
         g.update(dt, player, cellSize, offsetX, offsetY);
 
         if (g.state === 'DEAD') {
+            if (wasChasing) {
+                // Ghost just vanished! Calculate bonus.
+                // Distance in grid cells
+                let dx = player.col - g.col;
+                let dy = player.row - g.row;
+                let dist = Math.sqrt(dx * dx + dy * dy);
+                let bonus = Math.floor(dist * 100);
+                score += bonus;
+                ghostEscapeScore += bonus;
+                // Optional: Show floating text? For now just score update.
+            }
             ghosts.splice(i, 1);
             continue;
         }
@@ -333,6 +347,8 @@ function update(dt) {
             endGame(false, "GHOST");
             return;
         }
+
+
     }
     updateAlarm(isChasing);
 }
@@ -473,6 +489,7 @@ function endGame(win, reason = "UNKNOWN") {
     document.getElementById('end-emerald').innerText = stonesDetails.emerald;
     document.getElementById('end-sapphire').innerText = stonesDetails.sapphire;
 
+    document.getElementById('breakdown-ghosts').innerText = ghostEscapeScore;
     document.getElementById('breakdown-health').innerText = healthBonus;
     updateHUD();
 }
@@ -496,7 +513,8 @@ function saveScore(points) {
         name: playerName,
         avatar: playerAvatar,
         score: points,
-        stones: score,
+        stones: score - ghostEscapeScore,
+        ghostBonus: ghostEscapeScore,
         healthBonus: bonus,
         date: new Date().toISOString()
     });
@@ -525,11 +543,13 @@ function showLeaderboard() {
             // Safe access for old data
             let stoneScore = entry.stones || 0;
             let hpBonus = entry.healthBonus || 0;
+            let ghostScore = entry.ghostBonus || 0;
 
             li.innerHTML = `
                 <span>#${idx + 1} ${entry.avatar} ${entry.name}</span>
                 <span class="leaderboard-stats">
                     <span title="Stones">💎${stoneScore}</span>
+                    <span title="Ghosts">👻${ghostScore}</span>
                     <span title="Health">❤️${hpBonus}</span>
                     <span class="total-score">🌟${entry.score}</span>
                 </span>`;
