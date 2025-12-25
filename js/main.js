@@ -362,7 +362,6 @@ function update(dt) {
                 difficulty.spawnDistance.max,
                 difficulty.chaseDuration
             ));
-            lastGhostTime = Date.now();
         }
     }
 
@@ -385,6 +384,8 @@ function update(dt) {
                 // Optional: Show floating text? For now just score update.
             }
             ghosts.splice(i, 1);
+            // Reset timer when ghost dies, not when it spawns
+            lastGhostTime = Date.now();
             continue;
         }
 
