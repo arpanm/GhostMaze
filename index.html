@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ahir's Ghost Maze</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="screen">
+        <h1>Ahir's Ghost Maze</h1>
+        <div class="form-group">
+            <label for="player-name">Date Name:</label>
+            <input type="text" id="player-name" placeholder="Enter your name" maxlength="12">
+        </div>
+        <div class="form-group">
+            <label>Choose Avatar:</label>
+            <div class="avatar-selection">
+                <div class="avatar-option selected" data-avatar="😎">😎</div>
+                <div class="avatar-option" data-avatar="🤠">🤠</div>
+                <div class="avatar-option" data-avatar="🤖">🤖</div>
+                <div class="avatar-option" data-avatar="👽">👽</div>
+                <div class="avatar-option" data-avatar="👻">👻</div>
+            </div>
+        </div>
+        <button id="start-btn">ENTER MAZE</button>
+        <button id="show-leaderboard-btn">LEADERBOARD</button>
+        <div class="footer-credit">Ahir Mukherjee, Class II, NPS Kalkere, Bangalore, 2025</div>
+    </div>
+
+    <!-- Leaderboard Screen -->
+    <div id="leaderboard-screen" class="screen hidden">
+        <h2>Hall of Fame</h2>
+        <ul id="leaderboard-list">
+            <!-- Populated by JS -->
+        </ul>
+        <button id="back-to-start-btn">BACK</button>
+    </div>
+
+    <!-- Game HUD -->
+    <div id="game-hud" class="hidden">
+        <div class="hud-top">
+            <div id="health-display">❤️ <span id="health-val">100</span></div>
+            <div id="score-display">💎 <span id="score-val">0</span></div>
+        </div>
+        <canvas id="game-canvas"></canvas>
+        <div id="alarm-overlay" class="hidden"></div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over-screen" class="screen hidden">
+        <h2 id="game-over-title">GAME OVER</h2>
+        <p id="game-over-reason">The ghosts got you!</p>
+        <p>Final Score: <span id="final-score">0</span></p>
+        <div id="score-breakdown">
+            <p>Collected Stones: <span id="breakdown-stones">0</span></p>
+            <p>Health Bonus: <span id="breakdown-health">0</span></p>
+        </div>
+        <button id="restart-btn">TRY AGAIN</button>
+        <button id="menu-btn">MAIN MENU</button>
+    </div>
+
+    <!-- Controls -->
+    <div id="controls-layer" class="hidden">
+        <div id="joystick-zone">
+            <div id="joystick-knob"></div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>

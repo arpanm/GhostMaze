@@ -1,0 +1,230 @@
+:root {
+    --primary-color: #ffcc00;
+    --bg-color: #1a1a1a;
+    --text-color: #ffffff;
+    --panel-bg: rgba(0, 0, 0, 0.85);
+    --danger-color: #ff4444;
+}
+
+* {
+    box-sizing: border-box;
+    user-select: none;
+    /* Prevent selection on mobile */
+    -webkit-user-select: none;
+    touch-action: none;
+    /* Prevent default touch actions like scroll */
+}
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    z-index: 10;
+}
+
+.hidden {
+    display: none !important;
+}
+
+h1 {
+    font-size: 3rem;
+    color: var(--primary-color);
+    text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+input[type="text"] {
+    padding: 10px;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    border: none;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.avatar-selection {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.avatar-option {
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 5px;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+
+.avatar-option.selected {
+    border-color: var(--primary-color);
+    background: rgba(255, 204, 0, 0.1);
+    transform: scale(1.1);
+}
+
+button {
+    padding: 12px 24px;
+    font-size: 1.2rem;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #000;
+    margin: 10px;
+    transition: transform 0.1s;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+#leaderboard-list {
+    list-style: none;
+    padding: 0;
+    width: 80%;
+    max-width: 400px;
+    max-height: 50%;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+#leaderboard-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-credit {
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-style: italic;
+    text-align: center;
+}
+
+/* Game HUD */
+#game-hud {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.hud-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 5;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px black;
+}
+
+#game-canvas {
+    display: block;
+}
+
+/* Alarm Overlay */
+#alarm-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent 50%, rgba(255, 0, 0, 0.5) 100%);
+    z-index: 4;
+    pointer-events: none;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Joystick */
+#controls-layer {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    /* Joystick on right? User said "joysteak kind of bottom". Standard is Left for move, but arrow keys are Right on keyboard. I'll put it on Right for single-hand mobile or Left? Standard mobile game move is LEFT. I will put it on LEFT or make it floating. Let's stick to Right-bottom for now or maybe Left-Bottom is better for movement. I'll put it Right-Bottom as user requested "vi mouse key" which implies right hand usage usually? Actually, let's put it on the RIGHT for now, or maybe make it dynamic. I'll stick to Right Bottom as per common arcade layouts if actions are left, but movement is usually left. I will place it RIGHT for now as I can control it with mouse.*/
+    width: 150px;
+    height: 150px;
+    z-index: 20;
+}
+
+@media (max-width: 768px) {
+
+    /* On mobile, maybe joystick on left? */
+    #controls-layer {
+        right: 20px;
+        bottom: 20px;
+    }
+}
+
+#joystick-zone {
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    position: relative;
+    top: 15px;
+    left: 15px;
+    touch-action: none;
+}
+
+#joystick-knob {
+    width: 50px;
+    height: 50px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    position: absolute;
+    top: 35px;
+    /* Center (120/2 - 50/2) */
+    left: 35px;
+    pointer-events: none;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
