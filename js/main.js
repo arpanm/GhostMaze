@@ -48,6 +48,35 @@ let alarmOscillator = null;
 // User Data
 let playerName = "Player";
 let playerAvatar = "😎";
+let selectedDifficulty = "easy";
+
+// Difficulty Settings
+const DIFFICULTY_SETTINGS = {
+    easy: {
+        name: 'Easy',
+        icon: '🟢',
+        spawnDistance: { min: 8, max: 12 },
+        chaseDuration: 3000,
+        spawnInterval: 5000,
+        scoreMultiplier: 10
+    },
+    medium: {
+        name: 'Medium',
+        icon: '🟡',
+        spawnDistance: { min: 4, max: 7 },
+        chaseDuration: 4000,
+        spawnInterval: 4000,
+        scoreMultiplier: 100
+    },
+    hard: {
+        name: 'Hard',
+        icon: '🔴',
+        spawnDistance: { min: 1, max: 3 },
+        chaseDuration: 5000,
+        spawnInterval: 3000,
+        scoreMultiplier: 1000
+    }
+};
 
 // --- Initialization ---
 window.onload = () => {
@@ -62,6 +91,7 @@ window.onload = () => {
     document.getElementById('start-btn').addEventListener('click', startGame);
     document.getElementById('show-leaderboard-btn').addEventListener('click', showLeaderboard);
     document.getElementById('back-to-start-btn').addEventListener('click', showStartScreen);
+    document.getElementById('clear-leaderboard-btn').addEventListener('click', clearLeaderboard);
     document.getElementById('restart-btn').addEventListener('click', startGame);
     document.getElementById('menu-btn').addEventListener('click', showStartScreen);
 
@@ -71,6 +101,15 @@ window.onload = () => {
             document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('selected'));
             e.target.classList.add('selected');
             playerAvatar = e.target.dataset.avatar;
+        });
+    });
+
+    // Difficulty Selection
+    document.querySelectorAll('.difficulty-option').forEach(el => {
+        el.addEventListener('click', (e) => {
+            document.querySelectorAll('.difficulty-option').forEach(opt => opt.classList.remove('selected'));
+            e.currentTarget.classList.add('selected');
+            selectedDifficulty = e.currentTarget.dataset.difficulty;
         });
     });
 
@@ -310,10 +349,19 @@ function update(dt) {
     }
 
     // Ghosts
-    // Spawn
-    if (Date.now() - lastGhostTime > 5000) {
+    // Spawn - only spawn if no active ghosts
+    const difficulty = DIFFICULTY_SETTINGS[selectedDifficulty];
+    if (ghosts.length === 0 && Date.now() - lastGhostTime > difficulty.spawnInterval) {
         if (Math.random() > 0.4) {
-            ghosts.push(new Ghost(player.col, player.row, MAZE_COLS, MAZE_ROWS));
+            ghosts.push(new Ghost(
+                player.col,
+                player.row,
+                MAZE_COLS,
+                MAZE_ROWS,
+                difficulty.spawnDistance.min,
+                difficulty.spawnDistance.max,
+                difficulty.chaseDuration
+            ));
             lastGhostTime = Date.now();
         }
     }
@@ -331,7 +379,7 @@ function update(dt) {
                 let dx = player.col - g.col;
                 let dy = player.row - g.row;
                 let dist = Math.sqrt(dx * dx + dy * dy);
-                let bonus = Math.floor(dist * 100);
+                let bonus = Math.floor(dist * difficulty.scoreMultiplier);
                 score += bonus;
                 ghostEscapeScore += bonus;
                 // Optional: Show floating text? For now just score update.
@@ -516,6 +564,7 @@ function saveScore(points) {
         stones: score - ghostEscapeScore,
         ghostBonus: ghostEscapeScore,
         healthBonus: bonus,
+        difficulty: selectedDifficulty,
         date: new Date().toISOString()
     });
 
@@ -538,22 +587,36 @@ function showLeaderboard() {
     if (data.length === 0) {
         list.innerHTML = '<li><span>No records yet</span></li>';
     } else {
+        // Header
+        let header = document.createElement('li');
+        header.className = 'leaderboard-header';
+        header.innerHTML = `
+            <span class="leaderboard-info">Player</span>
+            <span class="leaderboard-stats">
+                <span title="Stones">💎</span>
+                <span title="Ghosts">👻</span>
+                <span title="Health">❤️</span>
+                <span title="Total Score">🌟</span>
+            </span>`;
+        list.appendChild(header);
+
         data.forEach((entry, idx) => {
             let li = document.createElement('li');
             // Safe access for old data
             let stoneScore = entry.stones || 0;
             let hpBonus = entry.healthBonus || 0;
             let ghostScore = entry.ghostBonus || 0;
+            let diffIcon = entry.difficulty ? DIFFICULTY_SETTINGS[entry.difficulty].icon : '';
 
             li.innerHTML = `
-                <span>#${idx + 1} ${entry.avatar} ${entry.name}</span>
+                <span class="leaderboard-info">#${idx + 1} ${entry.avatar} ${entry.name} ${diffIcon}</span>
                 <span class="leaderboard-stats">
-                    <span title="Stones">💎${stoneScore}</span>
-                    <span title="Ghosts">👻${ghostScore}</span>
-                    <span title="Health">❤️${hpBonus}</span>
-                    <span class="total-score">🌟${entry.score}</span>
+                    <span title="Stones">${stoneScore}</span>
+                    <span title="Ghosts">${ghostScore}</span>
+                    <span title="Health">${hpBonus}</span>
+                    <span class="total-score">${entry.score}</span>
                 </span>`;
-            if (idx === 0) li.style.color = 'gold';
+            if (idx === 0) li.querySelector('.leaderboard-info').style.color = 'gold';
             list.appendChild(li);
         });
     }
@@ -562,4 +625,11 @@ function showLeaderboard() {
 function showStartScreen() {
     document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
     document.getElementById('start-screen').classList.remove('hidden');
+}
+
+function clearLeaderboard() {
+    if (confirm('Are you sure you want to clear all leaderboard data? This cannot be undone.')) {
+        localStorage.removeItem('ghost_maze_leaderboard');
+        showLeaderboard(); // Refresh the display
+    }
 }

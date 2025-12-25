@@ -29,6 +29,23 @@
                 <div class="avatar-option" data-avatar="👻">👻</div>
             </div>
         </div>
+        <div class="form-group">
+            <label>Choose Difficulty:</label>
+            <div class="difficulty-selection">
+                <div class="difficulty-option selected" data-difficulty="easy">
+                    <span class="difficulty-icon">🟢</span>
+                    <span class="difficulty-name">Easy</span>
+                </div>
+                <div class="difficulty-option" data-difficulty="medium">
+                    <span class="difficulty-icon">🟡</span>
+                    <span class="difficulty-name">Medium</span>
+                </div>
+                <div class="difficulty-option" data-difficulty="hard">
+                    <span class="difficulty-icon">🔴</span>
+                    <span class="difficulty-name">Hard</span>
+                </div>
+            </div>
+        </div>
         <button id="start-btn">ENTER MAZE</button>
         <button id="show-leaderboard-btn">LEADERBOARD</button>
         <div class="footer-credit">Ahir Mukherjee, Class II, NPS Kalkere, Bangalore, 2025</div>
@@ -40,6 +57,7 @@
         <ul id="leaderboard-list">
             <!-- Populated by JS -->
         </ul>
+        <button id="clear-leaderboard-btn" style="background-color: var(--danger-color);">CLEAR ALL</button>
         <button id="back-to-start-btn">BACK</button>
     </div>
 

@@ -88,6 +88,45 @@ input[type="text"] {
     transform: scale(1.1);
 }
 
+.difficulty-selection {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    justify-content: center;
+}
+
+.difficulty-option {
+    cursor: pointer;
+    padding: 10px 15px;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.difficulty-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.difficulty-option.selected {
+    border-color: var(--primary-color);
+    background: rgba(255, 204, 0, 0.1);
+    transform: scale(1.05);
+}
+
+.difficulty-icon {
+    font-size: 2rem;
+}
+
+.difficulty-name {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
 button {
     padding: 12px 24px;
     font-size: 1.2rem;
@@ -108,9 +147,9 @@ button:active {
 #leaderboard-list {
     list-style: none;
     padding: 0;
-    width: 80%;
-    max-width: 400px;
-    max-height: 50%;
+    width: 95%;
+    max-width: 600px;
+    max-height: 60%;
     overflow-y: auto;
     background: rgba(0, 0, 0, 0.3);
     border-radius: 10px;
@@ -121,6 +160,36 @@ button:active {
     justify-content: space-between;
     padding: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    align-items: center;
+}
+
+.leaderboard-header {
+    background: rgba(255, 255, 255, 0.1);
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.leaderboard-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.leaderboard-stats {
+    display: grid;
+    grid-template-columns: 60px 60px 60px 80px;
+    gap: 15px;
+    font-size: 0.9em;
+    text-align: right;
+    justify-items: end;
+}
+
+.total-score {
+    color: var(--primary-color);
+    font-weight: bold;
 }
 
 .footer-credit {
@@ -189,15 +258,12 @@ button:active {
     position: absolute;
     bottom: 20px;
     right: 20px;
-    /* Joystick on right? User said "joysteak kind of bottom". Standard is Left for move, but arrow keys are Right on keyboard. I'll put it on Right for single-hand mobile or Left? Standard mobile game move is LEFT. I will put it on LEFT or make it floating. Let's stick to Right-bottom for now or maybe Left-Bottom is better for movement. I'll put it Right-Bottom as user requested "vi mouse key" which implies right hand usage usually? Actually, let's put it on the RIGHT for now, or maybe make it dynamic. I'll stick to Right Bottom as per common arcade layouts if actions are left, but movement is usually left. I will place it RIGHT for now as I can control it with mouse.*/
     width: 150px;
     height: 150px;
     z-index: 20;
 }
 
 @media (max-width: 768px) {
-
-    /* On mobile, maybe joystick on left? */
     #controls-layer {
         right: 20px;
         bottom: 20px;
@@ -223,11 +289,12 @@ button:active {
     border-radius: 50%;
     position: absolute;
     top: 35px;
-    /* Center (120/2 - 50/2) */
     left: 35px;
     pointer-events: none;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}/* Score Card Styles */
+}
+
+/* Score Card Styles */
 #game-result-icon {
     font-size: 6rem;
     margin-bottom: 10px;
@@ -235,9 +302,22 @@ button:active {
 }
 
 @keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-    40% {transform: translateY(-20px);}
-    60% {transform: translateY(-10px);}
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-20px);
+    }
+
+    60% {
+        transform: translateY(-10px);
+    }
 }
 
 .score-card {
@@ -269,37 +349,15 @@ button:active {
     justify-content: space-between;
     font-size: 1.1rem;
     padding: 5px 10px;
-    background: rgba(0,0,0,0.3);
+    background: rgba(0, 0, 0, 0.3);
     border-radius: 5px;
-}
-
-/* Leaderboard Icon Styles */
-#leaderboard-list li {
-    font-size: 1.1rem;
-}
-
-#leaderboard-list span:first-child {
-    display: flex;
-    align-items: center;
-    gap: 10px;
 }
 
 /* HUD Stone Count */
 #stones-display {
-    color: #4facfe; /* Blueish for stones/diamonds */
-}
-.leaderboard-stats {
-    display: flex;
-    gap: 15px;
-    font-size: 0.9em;
+    color: #4facfe;
 }
 
-.total-score {
-    color: var(--primary-color);
-    font-weight: bold;
-    min-width: 60px;
-    text-align: right;
-}
 .stones-row {
     display: flex;
     gap: 15px;

@@ -1,9 +1,8 @@
 export class Ghost {
-    constructor(playerCol, playerRow, mazeCols, mazeRows) {
-        // Spawn nearby but not on top
-        // Random angle, distance 3-6 cells
+    constructor(playerCol, playerRow, mazeCols, mazeRows, minDist = 3, maxDist = 6, chaseDuration = 3000) {
+        // Spawn at specified distance range
         let angle = Math.random() * Math.PI * 2;
-        let dist = 3 + Math.random() * 3;
+        let dist = minDist + Math.random() * (maxDist - minDist);
 
         let c = playerCol + Math.cos(angle) * dist;
         let r = playerRow + Math.sin(angle) * dist;
@@ -20,7 +19,7 @@ export class Ghost {
 
         this.timer = 0;
         this.appearTime = 1000; // 1 second warning
-        this.chaseTime = 3000;  // 3 seconds chase
+        this.chaseTime = chaseDuration;  // Configurable chase duration
 
         this.speed = 0.035; // Slightly slower than player (0.05) or faster? 3 sec is short. Let's make it 0.04.
     }
