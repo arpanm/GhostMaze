@@ -58,7 +58,9 @@ const DIFFICULTY_SETTINGS = {
         spawnDistance: { min: 8, max: 12 },
         chaseDuration: 3000,
         spawnInterval: 5000,
-        scoreMultiplier: 10
+        scoreMultiplier: 10,
+        stoneSpawnInterval: 1000,  // Spawn stones every 1 second
+        maxStones: 15  // More stones on screen
     },
     medium: {
         name: 'Medium',
@@ -66,7 +68,9 @@ const DIFFICULTY_SETTINGS = {
         spawnDistance: { min: 4, max: 7 },
         chaseDuration: 4000,
         spawnInterval: 4000,
-        scoreMultiplier: 100
+        scoreMultiplier: 100,
+        stoneSpawnInterval: 1500,  // Spawn stones every 1.5 seconds
+        maxStones: 12  // Medium amount
     },
     hard: {
         name: 'Hard',
@@ -74,7 +78,9 @@ const DIFFICULTY_SETTINGS = {
         spawnDistance: { min: 1, max: 3 },
         chaseDuration: 5000,
         spawnInterval: 3000,
-        scoreMultiplier: 1000
+        scoreMultiplier: 1000,
+        stoneSpawnInterval: 2000,  // Spawn stones every 2 seconds
+        maxStones: 10  // Current amount
     }
 };
 
@@ -111,6 +117,11 @@ window.onload = () => {
             e.currentTarget.classList.add('selected');
             selectedDifficulty = e.currentTarget.dataset.difficulty;
         });
+    });
+
+    // Name Input - reset error on type
+    document.getElementById('player-name').addEventListener('input', () => {
+        document.getElementById('name-error').classList.add('hidden');
     });
 
     // Inputs
@@ -226,7 +237,18 @@ function setupControls() {
 
 function startGame() {
     const nameInput = document.getElementById('player-name').value;
-    if (nameInput.trim()) playerName = nameInput.trim();
+    const errorMsg = document.getElementById('name-error');
+
+    // Validate name is not empty
+    if (!nameInput.trim()) {
+        errorMsg.classList.remove('hidden');
+        document.getElementById('player-name').focus();
+        return;
+    }
+
+    // Hide error if shown
+    errorMsg.classList.add('hidden');
+    playerName = nameInput.trim();
 
     // Reset State
     gameActive = true;
@@ -300,6 +322,9 @@ function update(dt) {
     }
     updateHUD();
 
+    // Get difficulty settings once for this update cycle
+    const difficulty = DIFFICULTY_SETTINGS[selectedDifficulty];
+
     // Calculate Grid Metrics
     let cellSize = Math.min(canvas.width / MAZE_COLS, canvas.height / MAZE_ROWS);
     let offsetX = (canvas.width - MAZE_COLS * cellSize) / 2;
@@ -319,13 +344,11 @@ function update(dt) {
     }
 
     // Stones
-    // Spawn
-    if (Date.now() - lastStoneTime > 2000) {
-        if (stones.length < 10) {
+    // Spawn - use difficulty-based spawn rate
+    if (Date.now() - lastStoneTime > difficulty.stoneSpawnInterval) {
+        if (stones.length < difficulty.maxStones) {
             let r = Math.floor(Math.random() * MAZE_ROWS);
             let c = Math.floor(Math.random() * MAZE_COLS);
-            // Avoid spawning in walls? No, maze logic has walls between cells.
-            // Need to ensure it's not player pos
             stones.push(new Stone(c, r));
         }
         lastStoneTime = Date.now();
@@ -350,7 +373,6 @@ function update(dt) {
 
     // Ghosts
     // Spawn - only spawn if no active ghosts
-    const difficulty = DIFFICULTY_SETTINGS[selectedDifficulty];
     if (ghosts.length === 0 && Date.now() - lastGhostTime > difficulty.spawnInterval) {
         if (Math.random() > 0.4) {
             ghosts.push(new Ghost(

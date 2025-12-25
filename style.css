@@ -67,6 +67,14 @@ input[type="text"] {
     color: white;
 }
 
+.error-message {
+    display: block;
+    color: var(--danger-color);
+    font-size: 0.9rem;
+    margin-top: 5px;
+    text-align: center;
+}
+
 .avatar-selection {
     display: flex;
     gap: 10px;

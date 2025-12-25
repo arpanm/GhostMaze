@@ -16,8 +16,9 @@
     <div id="start-screen" class="screen">
         <h1>Ahir's Ghost Maze</h1>
         <div class="form-group">
-            <label for="player-name">Date Name:</label>
-            <input type="text" id="player-name" placeholder="Enter your name" maxlength="12">
+            <label for="player-name">Name:</label>
+            <input type="text" id="player-name" placeholder="Enter your name" maxlength="12" required>
+            <span id="name-error" class="error-message hidden">Please enter your name before starting!</span>
         </div>
         <div class="form-group">
             <label>Choose Avatar:</label>
