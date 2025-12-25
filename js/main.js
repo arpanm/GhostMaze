@@ -18,6 +18,8 @@ let score = 0;
 let health = 100;
 let lastStoneTime = 0;
 let lastGhostTime = 0;
+let stonesCollectedCount = 0;
+let stonesDetails = {};
 
 // Input State
 const input = {
@@ -194,13 +196,8 @@ function startGame() {
     ghosts = [];
     lastStoneTime = Date.now();
     lastGhostTime = Date.now();
-
-    // UI
-    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-    document.getElementById('game-hud').classList.remove('hidden');
-    document.getElementById('controls-layer').classList.remove('hidden');
-    document.getElementById('alarm-overlay').classList.add('hidden'); // Ensure off
-    updateHUD();
+    stonesCollectedCount = 0;
+    stonesDetails = { diamond: 0, ruby: 0, emerald: 0, sapphire: 0 };
 
     // Gen Maze
     maze = new Maze(MAZE_COLS, MAZE_ROWS);
@@ -211,7 +208,31 @@ function startGame() {
     // Init Audio
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    // UI
+    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+    document.getElementById('game-hud').classList.remove('hidden');
+    document.getElementById('controls-layer').classList.remove('hidden');
+    document.getElementById('alarm-overlay').classList.add('hidden'); // Ensure off
+    updateHUD();
 }
+
+function updateHUD() {
+    const sVal = document.getElementById('score-val');
+    const hVal = document.getElementById('health-val');
+
+    if (sVal) sVal.innerText = score;
+    if (hVal) hVal.innerText = Math.floor(health);
+
+    // Update individual stone counts
+    if (stonesDetails) {
+        if (document.getElementById('stone-c-diamond')) document.getElementById('stone-c-diamond').innerText = stonesDetails.diamond;
+        if (document.getElementById('stone-c-ruby')) document.getElementById('stone-c-ruby').innerText = stonesDetails.ruby;
+        if (document.getElementById('stone-c-emerald')) document.getElementById('stone-c-emerald').innerText = stonesDetails.emerald;
+        if (document.getElementById('stone-c-sapphire')) document.getElementById('stone-c-sapphire').innerText = stonesDetails.sapphire;
+    }
+}
+
 
 function gameLoop(timestamp) {
     let dt = timestamp - lastTime;
@@ -233,7 +254,7 @@ function update(dt) {
     health -= (dt / 1000) * 1.5;
     if (health <= 0) {
         health = 0;
-        endGame(false);
+        endGame(false, "HEALTH");
         return;
     }
     updateHUD();
@@ -278,6 +299,10 @@ function update(dt) {
         // Collision
         if (s.col === player.col && s.row === player.row) {
             score += s.points;
+            stonesCollectedCount++;
+            if (stonesDetails[s.data.type] !== undefined) {
+                stonesDetails[s.data.type]++;
+            }
             stones.splice(i, 1);
         }
     }
@@ -305,7 +330,7 @@ function update(dt) {
 
         // Touch Player
         if (g.checkCollision(player, cellSize)) {
-            endGame(false);
+            endGame(false, "GHOST");
             return;
         }
     }
@@ -390,7 +415,7 @@ function draw() {
     ghosts.forEach(g => g.draw(ctx, cellSize, offsetX, offsetY));
 }
 
-function endGame(win) {
+function endGame(win, reason = "UNKNOWN") {
     gameActive = false;
     stopAlarmSound();
     updateAlarm(false);
@@ -398,11 +423,15 @@ function endGame(win) {
     let finalScore = 0;
     let healthBonus = 0;
 
+    // Always count collected stones as base score
+    finalScore = score;
+
     if (win) {
         healthBonus = Math.floor(health * 1000);
-        finalScore = score + healthBonus;
+        finalScore += healthBonus;
     } else {
         health = 0;
+        healthBonus = 0;
     }
 
     saveScore(finalScore);
@@ -411,31 +440,64 @@ function endGame(win) {
     document.getElementById('controls-layer').classList.add('hidden');
     document.getElementById('game-over-screen').classList.remove('hidden');
 
-    document.getElementById('game-over-title').innerText = win ? "YOU ESCAPED!" : "GAME OVER";
-    document.getElementById('game-over-reason').innerText = win ? "Well done!" : "The ghosts got you.";
+    let title = "";
+    let msg = "";
+    let icon = "";
+
+    if (win) {
+        title = "YOU ESCAPED!";
+        msg = "Successfully Exited the Maze!";
+        icon = "🏆";
+    } else {
+        title = "GAME OVER";
+        if (reason === "GHOST") {
+            msg = "Ghost Attack! The spirits caught you.";
+            icon = "👻";
+        } else if (reason === "HEALTH") {
+            msg = "Life Over! You ran out of energy.";
+            icon = "⏳";
+        } else {
+            msg = "You succumbed to the maze.";
+            icon = "💀";
+        }
+    }
+
+    document.getElementById('game-result-icon').innerText = icon;
+    document.getElementById('game-over-title').innerText = title;
+    document.getElementById('game-over-reason').innerText = msg;
     document.getElementById('final-score').innerText = finalScore;
 
-    document.getElementById('breakdown-stones').innerText = score;
+
+    document.getElementById('end-diamond').innerText = stonesDetails.diamond;
+    document.getElementById('end-ruby').innerText = stonesDetails.ruby;
+    document.getElementById('end-emerald').innerText = stonesDetails.emerald;
+    document.getElementById('end-sapphire').innerText = stonesDetails.sapphire;
+
     document.getElementById('breakdown-health').innerText = healthBonus;
     updateHUD();
 }
 
-function updateHUD() {
-    const sVal = document.getElementById('score-val');
-    const hVal = document.getElementById('health-val');
-    if (sVal) sVal.innerText = score;
-    if (hVal) hVal.innerText = Math.floor(health);
-}
+
 
 // Storage
 function saveScore(points) {
     let raw = localStorage.getItem('ghost_maze_leaderboard');
     let data = raw ? JSON.parse(raw) : [];
 
+    // Recalculate healthBonus locally since it's not global
+    // Actually we need to pass these or use globals. Global `health` is available.
+    // stone points = score.
+    // health bonus = points - score.
+    // Wait, end game logic: finalScore = score + healthBonus.
+
+    let bonus = Math.max(0, points - score);
+
     data.push({
         name: playerName,
         avatar: playerAvatar,
         score: points,
+        stones: score,
+        healthBonus: bonus,
         date: new Date().toISOString()
     });
 
@@ -460,7 +522,17 @@ function showLeaderboard() {
     } else {
         data.forEach((entry, idx) => {
             let li = document.createElement('li');
-            li.innerHTML = `<span>#${idx + 1} ${entry.avatar} ${entry.name}</span> <span>${entry.score}</span>`;
+            // Safe access for old data
+            let stoneScore = entry.stones || 0;
+            let hpBonus = entry.healthBonus || 0;
+
+            li.innerHTML = `
+                <span>#${idx + 1} ${entry.avatar} ${entry.name}</span>
+                <span class="leaderboard-stats">
+                    <span title="Stones">💎${stoneScore}</span>
+                    <span title="Health">❤️${hpBonus}</span>
+                    <span class="total-score">🌟${entry.score}</span>
+                </span>`;
             if (idx === 0) li.style.color = 'gold';
             list.appendChild(li);
         });

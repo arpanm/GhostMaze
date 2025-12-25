@@ -227,4 +227,98 @@ button:active {
     left: 35px;
     pointer-events: none;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}/* Score Card Styles */
+#game-result-icon {
+    font-size: 6rem;
+    margin-bottom: 10px;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+    40% {transform: translateY(-20px);}
+    60% {transform: translateY(-10px);}
+}
+
+.score-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 400px;
+    margin: 20px 0;
+    text-align: center;
+    border: 1px solid rgba(255, 204, 0, 0.3);
+}
+
+.final-score-line {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin: 0 0 15px 0;
+    font-weight: bold;
+}
+
+#score-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    padding: 5px 10px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 5px;
+}
+
+/* Leaderboard Icon Styles */
+#leaderboard-list li {
+    font-size: 1.1rem;
+}
+
+#leaderboard-list span:first-child {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* HUD Stone Count */
+#stones-display {
+    color: #4facfe; /* Blueish for stones/diamonds */
+}
+.leaderboard-stats {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9em;
+}
+
+.total-score {
+    color: var(--primary-color);
+    font-weight: bold;
+    min-width: 60px;
+    text-align: right;
+}
+.stones-row {
+    display: flex;
+    gap: 15px;
+    font-size: 1.2rem;
+}
+
+.stone-breakdown-row {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.breakdown-item.no-bg {
+    background: none;
+    font-weight: bold;
+    color: #4facfe;
+    padding-left: 0;
 }

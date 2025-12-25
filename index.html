@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ahir's Ghost Maze</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -45,7 +47,13 @@
     <div id="game-hud" class="hidden">
         <div class="hud-top">
             <div id="health-display">❤️ <span id="health-val">100</span></div>
-            <div id="score-display">💎 <span id="score-val">0</span></div>
+            <div id="stones-display" class="stones-row">
+                <span>💎 <span id="stone-c-diamond">0</span></span>
+                <span>🔴 <span id="stone-c-ruby">0</span></span>
+                <span>🟢 <span id="stone-c-emerald">0</span></span>
+                <span>🔵 <span id="stone-c-sapphire">0</span></span>
+            </div>
+            <div id="score-display">🌟 <span id="score-val">0</span></div>
         </div>
         <canvas id="game-canvas"></canvas>
         <div id="alarm-overlay" class="hidden"></div>
@@ -53,13 +61,29 @@
 
     <!-- Game Over Screen -->
     <div id="game-over-screen" class="screen hidden">
+        <div id="game-result-icon">👻</div>
         <h2 id="game-over-title">GAME OVER</h2>
         <p id="game-over-reason">The ghosts got you!</p>
-        <p>Final Score: <span id="final-score">0</span></p>
-        <div id="score-breakdown">
-            <p>Collected Stones: <span id="breakdown-stones">0</span></p>
-            <p>Health Bonus: <span id="breakdown-health">0</span></p>
+
+        <div class="score-card">
+            <p class="final-score-line">Total Score: <span id="final-score">0</span></p>
+            <div id="score-breakdown">
+                <div class="breakdown-item no-bg">
+                    <span>Collected Stones:</span>
+                </div>
+                <div class="stone-breakdown-row">
+                    <span>💎 <span id="end-diamond">0</span></span>
+                    <span>🔴 <span id="end-ruby">0</span></span>
+                    <span>🟢 <span id="end-emerald">0</span></span>
+                    <span>🔵 <span id="end-sapphire">0</span></span>
+                </div>
+                <div class="breakdown-item">
+                    <span>❤️ Health Bonus:</span>
+                    <span id="breakdown-health">0</span>
+                </div>
+            </div>
         </div>
+
         <button id="restart-btn">TRY AGAIN</button>
         <button id="menu-btn">MAIN MENU</button>
     </div>
