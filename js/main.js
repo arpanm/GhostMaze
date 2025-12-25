@@ -96,7 +96,9 @@ window.onload = () => {
     // UI Bindings
     document.getElementById('start-btn').addEventListener('click', startGame);
     document.getElementById('show-leaderboard-btn').addEventListener('click', showLeaderboard);
+    document.getElementById('show-credits-btn').addEventListener('click', showCredits);
     document.getElementById('back-to-start-btn').addEventListener('click', showStartScreen);
+    document.getElementById('back-from-credits-btn').addEventListener('click', showStartScreen);
     document.getElementById('clear-leaderboard-btn').addEventListener('click', clearLeaderboard);
     document.getElementById('restart-btn').addEventListener('click', startGame);
     document.getElementById('menu-btn').addEventListener('click', showStartScreen);
@@ -655,4 +657,9 @@ function clearLeaderboard() {
         localStorage.removeItem('ghost_maze_leaderboard');
         showLeaderboard(); // Refresh the display
     }
+}
+
+function showCredits() {
+    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+    document.getElementById('credits-screen').classList.remove('hidden');
 }
