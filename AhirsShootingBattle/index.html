@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ahirs Shooting Battle</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="game-container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen">
+            <h1 class="glitch-text">AHIRS SHOOTING BATTLE</h1>
+
+            <div class="setup-grid">
+                <div class="setup-section">
+                    <h3>SOLDIER SETUP</h3>
+                    <div class="input-group">
+                        <label for="player-name">NAME</label>
+                        <input type="text" id="player-name" placeholder="Enter Soldier Name" maxlength="15">
+                        <p id="name-error" class="error hidden">Please enter a name</p>
+                    </div>
+
+                    <div class="input-group">
+                        <label>AVATAR</label>
+                        <div class="avatar-selection" id="avatar-list">
+                            <div class="avatar-option selected" data-avatar="🪖">🪖</div>
+                            <div class="avatar-option" data-avatar="👨‍🎤">👨‍🎤</div>
+                            <div class="avatar-option" data-avatar="🤖">🤖</div>
+                            <div class="avatar-option" data-avatar="👩‍🚀">👩‍🚀</div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>DRESS COLOR</label>
+                        <div class="color-selection">
+                            <div class="color-option selected" data-color="#2ecc71" style="background: #2ecc71;"></div>
+                            <div class="color-option" data-color="#3498db" style="background: #3498db;"></div>
+                            <div class="color-option" data-color="#e74c3c" style="background: #e74c3c;"></div>
+                            <div class="color-option" data-color="#f1c40f" style="background: #f1c40f;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setup-section">
+                    <h3>MISSION DIFFICULTY</h3>
+                    <div class="difficulty-selection">
+                        <div class="difficulty-option" data-difficulty="easy">
+                            <span class="diff-icon">🟢</span>
+                            <div class="diff-info">
+                                <strong>EASY</strong>
+                                <span>High Multiplier • Lots of Money</span>
+                            </div>
+                        </div>
+                        <div class="difficulty-option selected" data-difficulty="medium">
+                            <span class="diff-icon">🟡</span>
+                            <div class="diff-info">
+                                <strong>MEDIUM</strong>
+                                <span>Balanced Combat</span>
+                            </div>
+                        </div>
+                        <div class="difficulty-option" data-difficulty="hard">
+                            <span class="diff-icon">🔴</span>
+                            <div class="diff-info">
+                                <strong>HARD</strong>
+                                <span>Deadly AI • Scarce Resources</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-actions">
+                <button id="start-btn" class="primary-btn">INITIALIZE BATTLE</button>
+                <div class="secondary-btns">
+                    <button id="show-leaderboard-btn">HALL OF FAME</button>
+                    <button id="show-credits-btn">CREDITS</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game HUD -->
+        <div id="game-hud" class="screen hidden">
+            <div class="hud-top">
+                <!-- User Side -->
+                <div class="hud-side user-hud">
+                    <div class="hud-avatar-box">
+                        <span id="user-avatar-disp">🪖</span>
+                        <div class="hud-name" id="user-name-disp">PLAYER</div>
+                    </div>
+                    <div class="status-bars">
+                        <div class="health-container">
+                            <div class="health-bar" id="user-health-bar"></div>
+                            <span class="status-label">HP: <span id="user-health-val">100</span></span>
+                        </div>
+                        <div class="money-box">
+                            <span class="icon">💰</span>
+                            <span id="user-money-val">0</span>
+                        </div>
+                        <div class="weapon-box">
+                            <span class="icon">🔫</span>
+                            <span id="user-weapon-disp">Pistol</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hud-center">
+                    <div class="battle-timer">00:00</div>
+                    <button id="open-store-btn">STORE</button>
+                </div>
+
+                <!-- Enemy Side -->
+                <div class="hud-side enemy-hud">
+                    <div class="status-bars align-right">
+                        <div class="health-container">
+                            <div class="health-bar" id="enemy-health-bar"></div>
+                            <span class="status-label">HP: <span id="enemy-health-val">100</span></span>
+                        </div>
+                        <div class="money-box">
+                            <span id="enemy-money-val">0</span>
+                            <span class="icon">💰</span>
+                        </div>
+                        <div class="weapon-box">
+                            <span id="enemy-weapon-disp">Pistol</span>
+                            <span class="icon">🔫</span>
+                        </div>
+                    </div>
+                    <div class="hud-avatar-box">
+                        <span id="enemy-avatar-disp">🤖</span>
+                        <div class="hud-name">AI COMMANDER</div>
+                    </div>
+                </div>
+            </div>
+
+            <canvas id="game-canvas"></canvas>
+
+            <!-- Visual Feedback Layers -->
+            <div id="hit-flash" class="flash-layer red hidden"></div>
+            <div id="collect-flash" class="flash-layer green hidden"></div>
+
+            <!-- Mobile Controls -->
+            <div id="controls-layer" class="hidden">
+                <div id="joystick-zone">
+                    <div id="joystick-knob"></div>
+                </div>
+                <div id="action-buttons">
+                    <button id="fire-btn">🔥</button>
+                    <button id="decoy-btn">👥 <span id="decoy-count">0</span></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Store Overlay -->
+        <div id="store-overlay" class="screen hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>ARMORY STORE</h2>
+                    <button id="close-store-btn">BACK TO BATTLE</button>
+                </div>
+                <div class="currency-display">
+                    AVAILABLE FUNDS: 💰<span id="store-money-val">0</span>
+                </div>
+
+                <div class="store-grid">
+                    <!-- Weapons -->
+                    <div class="store-item" data-id="rifle" data-price="5000">
+                        <div class="item-icon">🔫</div>
+                        <div class="item-info">
+                            <h4>Assault Rifle</h4>
+                            <p>Fast fire • 15 DMG</p>
+                            <span class="price">5,000 rs</span>
+                        </div>
+                        <button class="buy-btn">BUY</button>
+                    </div>
+                    <div class="store-item" data-id="sniper" data-price="15000">
+                        <div class="item-icon">🎯</div>
+                        <div class="item-info">
+                            <h4>Sniper Rifle</h4>
+                            <p>Super DMG • 40 DMG</p>
+                            <span class="price">15,000 rs</span>
+                        </div>
+                        <button class="buy-btn">BUY</button>
+                    </div>
+                    <div class="store-item" data-id="smg" data-price="8000">
+                        <div class="item-icon">💨</div>
+                        <div class="item-info">
+                            <h4>SMG</h4>
+                            <p>Ultra Fast • 8 DMG</p>
+                            <span class="price">8,000 rs</span>
+                        </div>
+                        <button class="buy-btn">BUY</button>
+                    </div>
+                    <div class="store-item" data-id="knife" data-price="2000">
+                        <div class="item-icon">🔪</div>
+                        <div class="item-info">
+                            <h4>Combat Knife</h4>
+                            <p>Melee • 25 DMG</p>
+                            <span class="price">2,000 rs</span>
+                        </div>
+                        <button class="buy-btn">BUY</button>
+                    </div>
+                    <!-- Utility -->
+                    <div class="store-item" data-id="decoy" data-price="10000">
+                        <div class="item-icon">👥</div>
+                        <div class="item-info">
+                            <h4>Decoy Charge</h4>
+                            <p>3 Confusing clones</p>
+                            <span class="price">10,000 rs</span>
+                        </div>
+                        <button class="buy-btn">BUY</button>
+                    </div>
+                    <div class="store-item" data-id="heal" data-price="2000">
+                        <div class="item-icon">❤️</div>
+                        <div class="item-info">
+                            <h4>Heal Injury</h4>
+                            <p>Restore +10 HP</p>
+                            <span class="price">2,000 rs</span>
+                        </div>
+                        <button class="buy-btn">HEAL</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="game-over-screen" class="screen hidden">
+            <div id="result-badge">🏆</div>
+            <h1 id="game-over-title">MISSION COMPLETE</h1>
+            <p id="game-over-reason">You eliminated the enemy commander!</p>
+
+            <div class="score-breakdown">
+                <div class="score-row">
+                    <span>Survival Bonus (HP x 100)</span>
+                    <span id="breakdown-health">0</span>
+                </div>
+                <div class="score-row">
+                    <span>Victory Bonus</span>
+                    <span id="breakdown-win">0</span>
+                </div>
+                <div class="score-row">
+                    <span>Money Collected</span>
+                    <span id="breakdown-money">0</span>
+                </div>
+                <div class="score-row">
+                    <span>Weapon Value</span>
+                    <span id="breakdown-weapon">0</span>
+                </div>
+                <div class="score-row total">
+                    <span>TOTAL BATTLE CORE</span>
+                    <span id="total-score">0</span>
+                </div>
+            </div>
+
+            <div class="menu-actions">
+                <button id="restart-btn" class="primary-btn">RE-DEPLOY</button>
+                <button id="menu-btn">MAIN MENU</button>
+            </div>
+        </div>
+
+        <!-- Leaderboard Screen -->
+        <div id="leaderboard-screen" class="screen hidden">
+            <h2>BATTLE RECORDS</h2>
+            <div class="leaderboard-container">
+                <ul id="leaderboard-list">
+                    <!-- Entries injected by JS -->
+                </ul>
+            </div>
+            <div class="menu-actions">
+                <button id="back-to-start-btn">RETURN</button>
+                <button id="clear-leaderboard-btn" class="danger-btn">WIPE RECORDS</button>
+            </div>
+        </div>
+
+        <!-- Credits -->
+        <div id="credits-screen" class="screen hidden">
+            <h2>CREDITS</h2>
+            <div class="credits-body">
+                <p><strong>Ahir</strong>: Architect of Ideas</p>
+                <p><strong>Father</strong>: Pulse Enabler</p>
+                <hr>
+                <p>Built with Google Antigravity</p>
+            </div>
+            <button id="back-from-credits-btn">BACK</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>
