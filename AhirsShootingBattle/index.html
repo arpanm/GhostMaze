@@ -84,6 +84,19 @@
                     <button id="show-credits-btn">CREDITS</button>
                 </div>
             </div>
+
+            <!-- Cross-Game Carousel -->
+            <div class="game-carousel-container">
+                <h4>BATTLEFIELD ARCHIVES</h4>
+                <div class="game-carousel">
+                    <a href="../index.html" class="game-card">
+                        <span class="card-icon">👻</span>
+                        <h5>Ahir's Ghost Maze</h5>
+                        <p>Escape the haunted maze and collect precious gems!</p>
+                        <span class="play-btn-mini">MISSION START</span>
+                    </a>
+                </div>
+            </div>
         </div>
 
         <!-- Game HUD -->
@@ -262,18 +275,43 @@
                 <button id="restart-btn" class="primary-btn">RE-DEPLOY</button>
                 <button id="menu-btn">MAIN MENU</button>
             </div>
+
+            <!-- Cross-Game Carousel -->
+            <div class="game-carousel-container">
+                <h4>NEW ORDERS</h4>
+                <div class="game-carousel">
+                    <a href="../index.html" class="game-card">
+                        <span class="card-icon">👻</span>
+                        <h5>Ahir's Ghost Maze</h5>
+                        <p>Rest and recover in the gem-filled maze.</p>
+                        <span class="play-btn-mini">MISSION START</span>
+                    </a>
+                </div>
+            </div>
         </div>
 
         <!-- Leaderboard Screen -->
         <div id="leaderboard-screen" class="screen hidden">
-            <h2>BATTLE RECORDS</h2>
-            <div class="leaderboard-container">
-                <ul id="leaderboard-list">
-                    <!-- Entries injected by JS -->
-                </ul>
+            <h2 class="glitch-text">BATTLE RECORDS</h2>
+            <div class="leaderboard-container glass">
+                <table id="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>RANK</th>
+                            <th>SOLDIER</th>
+                            <th>HP BN</th>
+                            <th>WIN BN</th>
+                            <th>ECON</th>
+                            <th>TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body">
+                        <!-- Entries injected by JS -->
+                    </tbody>
+                </table>
             </div>
-            <div class="menu-actions">
-                <button id="back-to-start-btn">RETURN</button>
+            <div class="leaderboard-actions">
+                <button id="back-to-start-btn" class="secondary-btn">RETURN</button>
                 <button id="clear-leaderboard-btn" class="danger-btn">WIPE RECORDS</button>
             </div>
         </div>

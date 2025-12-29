@@ -437,3 +437,87 @@ button:active {
     color: #4facfe;
     padding-left: 0;
 }
+
+/* --- Cross-Game Carousel --- */
+.game-carousel-container {
+    width: 100%;
+    margin: 20px 0;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+}
+
+.game-carousel-container h4 {
+    margin-bottom: 15px;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+}
+
+.game-carousel {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 10px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    justify-content: center;
+}
+
+.game-carousel::-webkit-scrollbar {
+    height: 6px;
+}
+
+.game-carousel::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
+}
+
+.game-card {
+    flex: 0 0 200px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 204, 0, 0.2);
+    border-radius: 12px;
+    padding: 15px;
+    text-decoration: none;
+    color: white;
+    scroll-snap-align: center;
+    transition: transform 0.2s, border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+    background: rgba(255, 204, 0, 0.05);
+}
+
+.game-card .card-icon {
+    font-size: 2.5rem;
+}
+
+.game-card h5 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--primary-color);
+}
+
+.game-card p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+}
+
+.game-card .play-btn-mini {
+    margin-top: 5px;
+    background: var(--primary-color);
+    color: black;
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}

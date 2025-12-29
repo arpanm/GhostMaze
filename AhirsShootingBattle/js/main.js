@@ -200,7 +200,10 @@ function endGame(result) {
     saveScore(total, {
         hpBonus, winBonus, moneyCollected, weaponValue,
         difficulty: state.difficulty,
-        avatar: state.player.avatar
+        avatar: state.player.avatar,
+        color: state.player.color,
+        weapon: state.player.weapon.name,
+        name: state.player.name
     });
 }
 
@@ -209,9 +212,14 @@ function saveScore(total, details) {
     let data = raw ? JSON.parse(raw) : [];
 
     data.push({
-        name: state.player.name,
-        score: total,
-        ...details,
+        name: details.name || 'UNKNOWN SOLDIER',
+        score: total || 0,
+        hpBonus: details.hpBonus || 0,
+        winBonus: details.winBonus || 0,
+        moneyCollected: details.moneyCollected || 0,
+        weaponValue: details.weaponValue || 0,
+        difficulty: details.difficulty || 'medium',
+        avatar: details.avatar || '🪖',
         date: new Date().toISOString()
     });
 
@@ -222,26 +230,43 @@ function saveScore(total, details) {
 
 function showLeaderboard() {
     showScreen('leaderboard-screen');
-    const list = document.getElementById('leaderboard-list');
-    list.innerHTML = '';
+    const tableBody = document.getElementById('leaderboard-body');
+    tableBody.innerHTML = '';
 
     const raw = localStorage.getItem('ahirs_shooting_leaderboard');
     const data = raw ? JSON.parse(raw) : [];
 
     if (data.length === 0) {
-        list.innerHTML = '<li class="no-records">NO BATTLE RECORDS YET</li>';
+        tableBody.innerHTML = '<tr><td colspan="6" class="no-records">NO BATTLE RECORDS YET</td></tr>';
     } else {
         data.forEach((entry, idx) => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <div class="leader-rank">#${idx + 1}</div>
-                <div class="leader-info">
-                    <strong>${entry.avatar} ${entry.name}</strong>
-                    <span>Diff: ${entry.difficulty} • ${new Date(entry.date).toLocaleDateString()}</span>
-                </div>
-                <div class="leader-score">${entry.score.toLocaleString()}</div>
+            if (!entry) return;
+            const row = document.createElement('tr');
+
+            // Format bonuses for display with safe checks
+            const hpBN = (entry.hpBonus || 0).toLocaleString();
+            const winBN = (entry.winBonus || 0).toLocaleString();
+            const econ = ((entry.moneyCollected || 0) + (entry.weaponValue || 0)).toLocaleString();
+            const totalScore = (entry.score || 0).toLocaleString();
+            const soldierName = entry.name || 'SOLDIER';
+            const difficulty = entry.difficulty || 'Unknown';
+            const dateStr = entry.date ? new Date(entry.date).toLocaleDateString() : 'Unknown Date';
+
+            row.innerHTML = `
+                <td class="rank-cell">#${idx + 1}</td>
+                <td class="soldier-cell">
+                    <span>${entry.avatar || '🪖'}</span>
+                    <div>
+                        <strong>${soldierName}</strong>
+                        <div style="font-size: 0.6rem; color: var(--text-muted)">${difficulty} • ${dateStr}</div>
+                    </div>
+                </td>
+                <td class="bonus-cell">${hpBN}</td>
+                <td class="bonus-cell">${winBN}</td>
+                <td class="bonus-cell">${econ}</td>
+                <td class="total-cell">${totalScore}</td>
             `;
-            list.appendChild(li);
+            tableBody.appendChild(row);
         });
     }
 }
