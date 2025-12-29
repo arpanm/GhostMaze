@@ -819,3 +819,45 @@ button {
         gap: 1rem;
     }
 }
+
+/* --- Mission Briefing --- */
+.mission-briefing {
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+}
+
+.briefing-list {
+    list-style: none;
+    text-align: left;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding-top: 1rem;
+}
+
+.briefing-list li {
+    font-size: 0.9rem;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.briefing-list strong {
+    color: var(--primary);
+    font-family: var(--font-heading);
+}
+
+.tip {
+    color: var(--accent);
+    font-family: var(--font-heading);
+    box-sizing: inherit;
+}
+
+@media (max-width: 600px) {
+    .briefing-list {
+        grid-template-columns: 1fr;
+    }
+}
