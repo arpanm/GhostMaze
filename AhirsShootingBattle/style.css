@@ -119,7 +119,30 @@ h4 {
     display: block;
     font-size: 0.8rem;
     color: var(--text-muted);
+}
+
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 0.5rem;
+}
+
+.error-msg {
+    color: var(--danger);
+    font-size: 0.7rem;
+    font-family: var(--font-heading);
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.insufficient-funds-msg {
+    color: var(--danger);
+    font-size: 0.7rem;
+    font-family: var(--font-heading);
+    margin-top: 0.5rem;
+    text-align: center;
+    text-transform: uppercase;
 }
 
 input[type="text"] {
@@ -578,8 +601,9 @@ button {
     top: -5px;
     right: -5px;
     background: white;
-    color: var(--accent);
+    color: var(--bg-dark);
     font-size: 0.7rem;
+    font-weight: bold;
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -860,4 +884,60 @@ button {
     .briefing-list {
         grid-template-columns: 1fr;
     }
+}
+
+/* Weapon Inventory HUD */
+.hud-inventory {
+    position: absolute;
+    bottom: 0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.8rem;
+    padding: 0.6rem 1rem;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 3rem;
+    z-index: 40;
+    pointer-events: auto;
+}
+
+.inventory-item {
+    width: 45px;
+    height: 45px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.inventory-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.inventory-item.active {
+    border-color: var(--primary);
+    background: rgba(46, 204, 113, 0.1);
+    box-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+}
+
+/* Store Specific States */
+.buy-btn.equip {
+    background: var(--primary) !important;
+    color: var(--bg-dark) !important;
+    opacity: 1 !important;
+}
+
+.buy-btn.equipped {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-muted) !important;
+    cursor: default !important;
+    opacity: 0.8 !important;
 }

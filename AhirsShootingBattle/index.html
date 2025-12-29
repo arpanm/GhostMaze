@@ -23,9 +23,11 @@
                 <div class="setup-section">
                     <h3>SOLDIER SETUP</h3>
                     <div class="input-group">
-                        <label for="player-name">NAME</label>
+                        <div class="label-row">
+                            <label for="player-name">NAME</label>
+                            <p id="name-error" class="error-msg hidden">REQUIRED</p>
+                        </div>
                         <input type="text" id="player-name" placeholder="Enter Soldier Name" maxlength="15">
-                        <p id="name-error" class="error hidden">Please enter a name</p>
                     </div>
 
                     <div class="input-group">
@@ -95,6 +97,9 @@
                     <button id="show-credits-btn">CREDITS</button>
                 </div>
             </div>
+
+            <!-- Weapon Inventory Bottom Bar -->
+            <div id="weapon-inventory-hud" class="hud-inventory"></div>
 
             <!-- Cross-Game Carousel -->
             <div class="game-carousel-container">
@@ -194,6 +199,15 @@
 
                 <div class="store-grid">
                     <!-- Weapons -->
+                    <div class="store-item" data-id="pistol" data-price="0">
+                        <div class="item-icon">🔫</div>
+                        <div class="item-info">
+                            <h4>Service Pistol</h4>
+                            <p>Standard Issue • 10 DMG</p>
+                            <span class="price">FREE</span>
+                        </div>
+                        <button class="buy-btn">EQUIP</button>
+                    </div>
                     <div class="store-item" data-id="rifle" data-price="5000">
                         <div class="item-icon">🔫</div>
                         <div class="item-info">

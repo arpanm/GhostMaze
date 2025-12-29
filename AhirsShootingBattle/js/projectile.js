@@ -1,4 +1,5 @@
 import { state } from './shared.js';
+import { playMoneySound } from './audio.js';
 
 export class Projectile {
     constructor(config) {
@@ -10,7 +11,10 @@ export class Projectile {
         this.owner = config.owner; // 'player' or 'enemy'
         this.color = config.color || 'yellow';
         this.dead = false;
-        this.radius = 4;
+        this.radius = config.radius || 4;
+        this.isMelee = config.isMelee || false;
+        this.lifetime = config.lifetime || 5000;
+        this.aliveTime = 0;
     }
 
     update(dt, targets, map) {
@@ -26,7 +30,15 @@ export class Projectile {
         }
 
         // --- Obstacle Check ---
-        if (map.checkWallCollision(this.x, this.y, this.radius)) {
+        // --- Obstacle Check (Skip for melee sweeps to avoid instant-kill by walls) ---
+        if (!this.isMelee && map.checkWallCollision(this.x, this.y, this.radius)) {
+            this.dead = true;
+            return;
+        }
+
+        // --- Lifetime Check ---
+        this.aliveTime += dt;
+        if (this.aliveTime > this.lifetime) {
             this.dead = true;
             return;
         }
@@ -55,12 +67,31 @@ export class Projectile {
         this.dead = true;
         target.takeDamage(this.dmg);
 
-        // Trigger visual effect (handled in main.js or here?)
+        // Award money if player hits enemy
+        if (this.owner === 'player' && target.isEnemy) {
+            state.player.money += 100;
+            try { playMoneySound(); } catch (e) { }
+            this.triggerCollectEffect();
+        }
+
+        // Trigger visual effect
         this.triggerHitEffect();
     }
 
     triggerHitEffect() {
         const flash = document.getElementById('hit-flash');
+        if (!flash) return;
+        flash.classList.remove('hidden');
+        flash.classList.add('flash-active');
+        setTimeout(() => {
+            flash.classList.remove('flash-active');
+            setTimeout(() => flash.classList.add('hidden'), 100);
+        }, 100);
+    }
+
+    triggerCollectEffect() {
+        const flash = document.getElementById('collect-flash');
+        if (!flash) return;
         flash.classList.remove('hidden');
         flash.classList.add('flash-active');
         setTimeout(() => {
@@ -74,7 +105,15 @@ export class Projectile {
 
         ctx.save();
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        if (this.isMelee) {
+            // Draw a faint "sweep" arc instead of a solid circle for melee
+            const opacity = 1 - (this.aliveTime / this.lifetime);
+            ctx.globalAlpha = opacity * 0.3;
+            // Sweep should be centered on player, but for now we draw the circle faintly
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        } else {
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        }
         ctx.fillStyle = this.color;
         ctx.fill();
 

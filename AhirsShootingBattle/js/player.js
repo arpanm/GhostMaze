@@ -1,7 +1,7 @@
 import { Projectile } from './projectile.js';
 import { Decoy } from './decoy.js';
 import { state, input } from './shared.js';
-import { playFireSound, playHitSound } from './main.js';
+import { playFireSound, playHitSound } from './audio.js';
 
 export class Player {
     constructor(config) {
@@ -18,9 +18,26 @@ export class Player {
 
         this.health = 100;
         this.money = 0;
+        this.weaponValue = config.weapon ? config.weapon.price : 0;
+        this.inventory = [config.weapon];
         this.isPlayer = true;
         this.decoyCharges = 0;
         this.lastFireTime = 0;
+    }
+
+    addWeapon(weapon) {
+        if (!this.inventory.find(w => w.id === weapon.id)) {
+            this.inventory.push(weapon);
+        }
+    }
+
+    equipWeapon(weaponId) {
+        const weapon = this.inventory.find(w => w.id === weaponId);
+        if (weapon) {
+            this.weapon = weapon;
+            return true;
+        }
+        return false;
     }
 
     update(dt, input, map, canvas) {
@@ -79,14 +96,21 @@ export class Player {
             this.angle = angle; // Update player angle to face tap
         }
 
+        const isMelee = this.weapon.projectileSpeed === 0;
+        const spawnDist = isMelee ? this.weapon.range / 2 : 10;
+        const radius = isMelee ? this.weapon.range / 2 : 4;
+
         state.projectiles.push(new Projectile({
-            x: this.x,
-            y: this.y,
+            x: this.x + Math.cos(angle) * spawnDist,
+            y: this.y + Math.sin(angle) * spawnDist,
             angle: angle,
             speed: this.weapon.projectileSpeed,
             dmg: this.weapon.dmg,
             owner: 'player',
-            color: this.color
+            color: this.color,
+            radius: radius,
+            isMelee: isMelee,
+            lifetime: isMelee ? 150 : 5000 // Melee lasts 150ms, bullets 5s
         }));
 
         this.lastFireTime = now;

@@ -44,23 +44,38 @@ export class Map {
 
         // Generate Money Vaults
         for (let i = 0; i < vaultCount; i++) {
-            let x, y;
-            do {
-                x = 50 + Math.random() * (this.width - 100);
-                y = 50 + Math.random() * (this.height - 100);
-            } while (this.isColliding(x, y, 30));
-
-            this.vaults.push({
-                x, y,
-                size: 30,
-                collected: false,
-                amount: 500 + Math.floor(Math.random() * 1000)
-            });
+            this.spawnVault(500 + Math.floor(Math.random() * 1000), 30000); // Initial vaults last 30s
         }
     }
 
+    spawnVault(amount, lifetime = 15000) {
+        let x, y, tries = 0;
+        do {
+            x = 50 + Math.random() * (this.width - 100);
+            y = 50 + Math.random() * (this.height - 100);
+            tries++;
+        } while (this.isColliding(x, y, 30) && tries < 20);
+
+        this.vaults.push({
+            x, y,
+            size: 30,
+            collected: false,
+            amount: amount,
+            lifetime: lifetime,
+            maxLifetime: lifetime
+        });
+    }
+
+    update(dt) {
+        this.vaults = this.vaults.filter(v => {
+            if (v.collected) return false;
+            v.lifetime -= dt;
+            return v.lifetime > 0;
+        });
+    }
+
     isNearStart(x, y, zone) {
-        // User starts bottom left, Enemy starts top right (approx)
+        // ... (existing code remains same)
         const userStart = { x: 50, y: this.height - 50 };
         const enemyStart = { x: this.width - 50, y: 50 };
 
@@ -95,14 +110,13 @@ export class Map {
 
     hasLineOfSight(x1, y1, x2, y2) {
         const dist = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-        const steps = Math.floor(dist / 10); // Check every 10 pixels
+        const steps = Math.floor(dist / 10);
 
         for (let i = 1; i < steps; i++) {
             const t = i / steps;
             const px = x1 + (x2 - x1) * t;
             const py = y1 + (y2 - y1) * t;
 
-            // radius 5 for "bullet-like" check
             if (this.checkWallCollision(px, py, 5)) {
                 return false;
             }
@@ -114,7 +128,7 @@ export class Map {
         this.width = width;
         this.height = height;
 
-        // Draw Grass Texture (Simple)
+        // Draw Grass Texture
         ctx.fillStyle = '#101b2d';
         ctx.fillRect(0, 0, width, height);
 
@@ -134,6 +148,9 @@ export class Map {
         // Draw Vaults
         this.vaults.forEach(v => {
             if (v.collected) return;
+
+            // Blinking effect when expiring
+            if (v.lifetime < 3000 && Math.floor(Date.now() / 250) % 2 === 0) return;
 
             ctx.save();
             ctx.beginPath();

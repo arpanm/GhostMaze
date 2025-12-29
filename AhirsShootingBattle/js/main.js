@@ -100,6 +100,7 @@ function initBattle() {
     state.projectiles = [];
     state.vaults = [];
     state.decoys = [];
+    state.vaultSpawnTimer = 0;
     state.startTime = Date.now();
 
     // Initialize Classes
@@ -175,6 +176,14 @@ function update(dt) {
     // Collision & Events
     checkMoneyCollection();
     updateHUD();
+
+    // Dynamic Vaults
+    state.map.update(dt);
+    state.vaultSpawnTimer += dt;
+    if (state.vaultSpawnTimer > 5000) { // Every 5 seconds
+        state.vaultSpawnTimer = 0;
+        state.map.spawnVault(500 + Math.floor(Math.random() * 1000), 15000); // New vaults last 15s
+    }
 }
 
 function endGame(result) {
@@ -186,7 +195,7 @@ function endGame(result) {
     const hpBonus = result === 'win' ? state.player.health * CONFIG.SURVIVAL_MULTIPLIER : 0;
     const winBonus = result === 'win' ? CONFIG.WIN_BONUS : 0;
     const moneyCollected = state.player.money;
-    const weaponValue = state.player.weapon.price;
+    const weaponValue = state.player.weaponValue || 0;
     const total = hpBonus + winBonus + moneyCollected + weaponValue;
 
     document.getElementById('game-over-title').innerText = result === 'win' ? 'MISSION ACCOMPLISHED' : 'MISSION FAILED';
@@ -306,17 +315,24 @@ function triggerFlash(id) {
 function buyItem(itemId) {
     const result = WeaponSystem.handlePurchase(state.player.id, itemId, state.player.money);
     if (result.success) {
-        state.player.money -= result.cost;
         if (result.type === 'heal') {
+            state.player.money -= result.cost;
             state.player.health = Math.min(100, state.player.health + 10);
         } else if (result.type === 'decoy') {
+            state.player.money -= result.cost;
             state.player.decoyCharges += result.charges;
         } else if (result.type === 'weapon') {
-            state.player.weapon = result.item;
+            const isOwned = state.player.inventory.find(w => w.id === itemId);
+            if (!isOwned) {
+                state.player.money -= result.cost;
+                state.player.weaponValue = (state.player.weaponValue || 0) + result.item.price;
+                state.player.addWeapon(result.item);
+            }
+            state.player.equipWeapon(itemId);
         }
         updateStore();
         updateHUD();
-        playMoneySound(); // Re-use for feedback
+        playMoneySound();
     }
 }
 
@@ -428,12 +444,79 @@ function updateHUD() {
     document.getElementById('enemy-health-val').innerText = Math.max(0, state.enemy.health);
     document.getElementById('enemy-health-bar').style.width = state.enemy.health + '%';
     document.getElementById('enemy-money-val').innerText = state.enemy.money;
+
+    // Update Top HUD Weapon Display
+    const weaponDisp = document.getElementById('user-weapon-disp');
+    if (weaponDisp && state.player) {
+        weaponDisp.innerText = state.player.weapon.name;
+    }
+
+    // Update Weapon Inventory Selector
+    const invHud = document.getElementById('weapon-inventory-hud');
+    if (invHud && state.player) {
+        invHud.innerHTML = '';
+        state.player.inventory.forEach(weapon => {
+            const div = document.createElement('div');
+            div.className = `inventory-item ${state.player.weapon.id === weapon.id ? 'active' : ''}`;
+            div.innerText = weapon.symbol;
+            div.title = weapon.name;
+            div.onclick = (e) => {
+                e.stopPropagation();
+                state.player.equipWeapon(weapon.id);
+                updateHUD();
+                playMoneySound(); // Feedback for switch
+            };
+            invHud.appendChild(div);
+        });
+    }
 }
 
 function updateStore() {
-    document.getElementById('store-money-val').innerText = state.player.money;
-}
+    const playerMoney = state.player.money;
+    document.getElementById('store-money-val').innerText = playerMoney.toLocaleString();
 
+    document.querySelectorAll('.store-item').forEach(item => {
+        const type = item.dataset.id;
+        const price = parseInt(item.dataset.price);
+        const buyBtn = item.querySelector('.buy-btn');
+
+        // Clear existing messages
+        const oldMsg = item.querySelector('.insufficient-funds-msg');
+        if (oldMsg) oldMsg.remove();
+
+        const isOwned = state.player.inventory.find(w => w.id === type);
+        const isActive = state.player.weapon.id === type;
+
+        if (type !== 'heal' && type !== 'decoy' && isOwned) {
+            if (isActive) {
+                buyBtn.innerText = 'EQUIPPED';
+                buyBtn.className = 'buy-btn equipped';
+                buyBtn.style.opacity = '0.5';
+                buyBtn.style.cursor = 'default';
+            } else {
+                buyBtn.innerText = 'EQUIP';
+                buyBtn.className = 'buy-btn equip';
+                buyBtn.style.opacity = '1';
+                buyBtn.style.cursor = 'pointer';
+            }
+        } else if (playerMoney < price) {
+            buyBtn.innerText = type === 'heal' ? 'HEAL' : 'BUY';
+            buyBtn.className = 'buy-btn';
+            buyBtn.style.opacity = '0.5';
+            buyBtn.style.cursor = 'not-allowed';
+
+            const msg = document.createElement('div');
+            msg.className = 'insufficient-funds-msg';
+            msg.innerText = 'Collect more fund to buy';
+            item.appendChild(msg);
+        } else {
+            buyBtn.innerText = type === 'heal' ? 'HEAL' : 'BUY';
+            buyBtn.className = 'buy-btn';
+            buyBtn.style.opacity = '1';
+            buyBtn.style.cursor = 'pointer';
+        }
+    });
+}
 function startTimer() {
     if (state.timerInterval) clearInterval(state.timerInterval);
     state.timerInterval = setInterval(() => {
@@ -447,56 +530,5 @@ function startTimer() {
     }, 1000);
 }
 
-// --- Audio ---
-let audioCtx = null;
-
-function initAudio() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-}
-
-function playFireSound() {
-    if (!audioCtx) return;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
-    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.1);
-}
-
-function playMoneySound() {
-    if (!audioCtx) return;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.1);
-    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.2);
-}
-
-function playHitSound() {
-    if (!audioCtx) return;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'square';
-    osc.frequency.setValueAtTime(100, audioCtx.currentTime);
-    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.1);
-}
-
-export { playFireSound, playMoneySound, playHitSound };
+import { initAudio, playFireSound, playMoneySound, playHitSound } from './audio.js';
+export { initAudio, playFireSound, playMoneySound, playHitSound };
