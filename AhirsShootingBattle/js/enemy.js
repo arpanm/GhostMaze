@@ -28,16 +28,26 @@ export class Enemy {
         // --- AI Logic ---
         this.think(player, map);
         this.move(map, canvas);
-        this.attack(player);
+        this.attack();
     }
 
     think(player, map) {
-        // Simple priority: 1. Attack Player if close, 2. Chase Vault if exists, 3. Wander
-        const distToPlayer = Math.sqrt((this.x - player.x) ** 2 + (this.y - player.y) ** 2);
+        // Find nearest potential target (Player or Decoy)
+        const targets = [player, ...state.decoys].filter(t => !t.dead);
+        let nearestTarget = null;
+        let minDist = Infinity;
 
-        if (distToPlayer < 400) {
+        targets.forEach(t => {
+            const d = Math.sqrt((this.x - t.x) ** 2 + (this.y - t.y) ** 2);
+            if (d < minDist) {
+                minDist = d;
+                nearestTarget = t;
+            }
+        });
+
+        if (nearestTarget && minDist < 450) {
             this.state = 'ATTACKING';
-            this.target = player;
+            this.target = nearestTarget;
         } else {
             const nearestVault = this.findNearestVault(map);
             if (nearestVault) {
@@ -53,7 +63,7 @@ export class Enemy {
     findNearestVault(map) {
         let minDesc = Infinity;
         let nearest = null;
-        map.vaults.forEach(v => {
+        state.vaults.forEach(v => {
             if (v.collected) return;
             const d = Math.sqrt((this.x - v.x) ** 2 + (this.y - v.y) ** 2);
             if (d < minDesc) {
@@ -71,7 +81,6 @@ export class Enemy {
         let ty = this.y;
 
         if (this.state === 'WANDERING') {
-            // Slight random movement or towards center
             tx = canvas.width / 2;
             ty = canvas.height / 2;
         } else {
@@ -83,9 +92,9 @@ export class Enemy {
         const angle = Math.atan2(ty - this.y, tx - this.x);
         this.angle = angle;
 
-        // Tactical Distance Maintenance
-        if (this.state === 'ATTACKING' || (this.target && (this.target.isPlayer || this.target.isDecoy))) {
-            const preferredDist = 200; // Keep 200px distance
+        // Tactical Distance Maintenance (for Player or Decoy)
+        if (this.state === 'ATTACKING' && this.target) {
+            const preferredDist = 200;
             const hasLOS = map.hasLineOfSight(this.x, this.y, this.target.x, this.target.y);
 
             if (hasLOS) {
@@ -124,17 +133,19 @@ export class Enemy {
         }
     }
 
-    attack(player) {
+    attack() {
+        if (this.state !== 'ATTACKING' || !this.target) return;
+
         const now = Date.now();
         if (now - this.lastFireTime < this.fireRate) return;
 
-        // Check line of sight (Simplified: just distance and accuracy)
-        const dist = Math.sqrt((this.x - player.x) ** 2 + (this.y - player.y) ** 2);
-        if (dist > 500) return;
+        // Check line of sight and range to target
+        const dist = Math.sqrt((this.x - this.target.x) ** 2 + (this.y - this.target.y) ** 2);
+        if (dist > 550) return;
 
         // Accuracy Roll
         const error = (1 - this.accuracy) * (Math.random() - 0.5) * 0.5;
-        const fireAngle = Math.atan2(player.y - this.y, player.x - this.x) + error;
+        const fireAngle = Math.atan2(this.target.y - this.y, this.target.x - this.x) + error;
 
         state.projectiles.push(new Projectile({
             x: this.x,

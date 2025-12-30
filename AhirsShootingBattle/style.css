@@ -356,8 +356,24 @@ button {
     gap: 0.5rem;
 }
 
-.weapon-box {
+.weapon-box,
+.utility-box {
     color: var(--accent);
+}
+
+.key-hint {
+    font-size: 0.6rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0 4px;
+    border-radius: 3px;
+    margin-left: 2px;
+    display: none;
+}
+
+@media (min-width: 769px) {
+    .key-hint {
+        display: inline-block;
+    }
 }
 
 .hud-center {

@@ -355,6 +355,11 @@ function setupInputListeners() {
         if (e.key === 'ArrowLeft' || e.key === 'a') input.left = true;
         if (e.key === 'ArrowRight' || e.key === 'd') input.right = true;
         if (e.key === ' ') input.fire = true;
+        if (e.key === 'e' || e.key === 'E') {
+            if (state.player && state.player.decoyCharges > 0) {
+                state.player.spawnDecoy();
+            }
+        }
     });
 
     window.addEventListener('keyup', e => {
@@ -440,6 +445,12 @@ function updateHUD() {
     document.getElementById('user-health-val').innerText = Math.max(0, state.player.health);
     document.getElementById('user-health-bar').style.width = state.player.health + '%';
     document.getElementById('user-money-val').innerText = state.player.money;
+
+    // Update Decoy Count
+    const decoyCountEl = document.getElementById('decoy-count');
+    if (decoyCountEl) decoyCountEl.innerText = state.player.decoyCharges;
+    const topDecoyCountEl = document.getElementById('top-decoy-count');
+    if (topDecoyCountEl) topDecoyCountEl.innerText = state.player.decoyCharges;
 
     document.getElementById('enemy-health-val').innerText = Math.max(0, state.enemy.health);
     document.getElementById('enemy-health-bar').style.width = state.enemy.health + '%';
