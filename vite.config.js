@@ -6,7 +6,8 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 main: resolve(__dirname, 'index.html'),
-                shooting: resolve(__dirname, 'AhirsShootingBattle/index.html')
+                shooting: resolve(__dirname, 'AhirsShootingBattle/index.html'),
+                sharkRace: resolve(__dirname, 'AhirSharkRace/index.html')
             }
         }
     }

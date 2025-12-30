@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ahir's Shark Race | Aquatic Speed</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="game-container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen">
+            <div class="bubbles-bg"></div>
+            <div class="logo-container">
+                <h1 class="glitch-text" data-text="SHARK RACE">SHARK RACE</h1>
+                <p class="subtitle">AHIR'S AQUATIC SPEEDWAY</p>
+            </div>
+
+            <div class="setup-box glass">
+                <div class="input-group">
+                    <label for="player-name">COMMANDEER NAME</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="player-name" maxlength="15" placeholder="Enter Name..."
+                            autocomplete="off">
+                        <span id="name-error" class="error hidden">REQUIRED</span>
+                    </div>
+                </div>
+
+                <div class="customization-grid">
+                    <div class="custom-item">
+                        <label>SHARK COLOR</label>
+                        <div class="color-picker" id="shark-color-picker">
+                            <div class="color-opt active" data-color="#3498db" style="background: #3498db;"></div>
+                            <div class="color-opt" data-color="#e74c3c" style="background: #e74c3c;"></div>
+                            <div class="color-opt" data-color="#2ecc71" style="background: #2ecc71;"></div>
+                            <div class="color-opt" data-color="#f1c40f" style="background: #f1c40f;"></div>
+                            <div class="color-opt" data-color="#9b59b6" style="background: #9b59b6;"></div>
+                        </div>
+                    </div>
+                    <div class="custom-item">
+                        <label>SHARK LOGO</label>
+                        <div class="logo-selector" id="shark-logo-picker">
+                            <div class="logo-opt active" data-logo="🦈">🦈</div>
+                            <div class="logo-opt" data-logo="⚡">⚡</div>
+                            <div class="logo-opt" data-logo="🌊">🌊</div>
+                            <div class="logo-opt" data-logo="🦴">🦴</div>
+                            <div class="logo-opt" data-logo="🔥">🔥</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="difficulty-group">
+                    <label>RACE DIFFICULTY</label>
+                    <div class="diff-selector">
+                        <button class="diff-btn active" data-diff="easy">RECREATIONAL</button>
+                        <button class="diff-btn" data-diff="medium">PRO RACER</button>
+                        <button class="diff-btn" data-diff="hard">APEX PREDATOR</button>
+                    </div>
+                </div>
+
+                <button id="start-btn" class="primary-btn pulse">DIVE IN</button>
+            </div>
+
+            <div class="menu-actions-row">
+                <button id="leaderboard-btn" class="secondary-btn">HALL OF FAME</button>
+                <button id="credits-btn" class="secondary-btn">OUR STORY</button>
+            </div>
+
+            <!-- Integration Carousel -->
+            <div class="game-carousel-container">
+                <h4>MISSION ARCHIVE</h4>
+                <div class="game-carousel">
+                    <a href="../index.html" class="game-card">
+                        <span class="card-icon">👻</span>
+                        <h5>Ghost Maze</h5>
+                    </a>
+                    <a href="../AhirsShootingBattle/index.html" class="game-card">
+                        <span class="card-icon">🔫</span>
+                        <h5>Shooting Battle</h5>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- HUD -->
+        <div id="game-hud" class="hidden">
+            <div class="hud-top">
+                <div class="hud-side player-hud">
+                    <div class="hud-avatar-box">
+                        <span id="user-avatar-disp">🦈</span>
+                        <div class="hud-name" id="user-name-disp">PLAYER</div>
+                    </div>
+                    <div class="status-bars">
+                        <div class="health-container">
+                            <div class="health-bar" id="user-health-bar"></div>
+                            <span class="status-label">HP: <span id="user-health-val">100</span></span>
+                        </div>
+                        <div class="score-box">
+                            <span class="icon">🏆</span>
+                            <span id="user-score-val">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hud-center">
+                    <div class="race-progress-container">
+                        <div class="race-progress-bar" id="race-progress"></div>
+                        <div class="race-label">RACE PROGRESS</div>
+                    </div>
+                    <div class="speed-indicator">
+                        <span id="speed-val">0</span> <small>knots</small>
+                    </div>
+                </div>
+            </div>
+
+            <canvas id="game-canvas"></canvas>
+
+            <!-- Mobile Controls -->
+            <div id="controls-layer" class="hidden">
+                <div id="joystick-zone">
+                    <div id="joystick-knob"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overlays (Leaderboard, Credits, Game Over) shared structure... -->
+        <!-- Leaderboard -->
+        <div id="leaderboard-screen" class="screen hidden">
+            <h2 class="glitch-text">AQUATIC RECORDS</h2>
+            <div class="leaderboard-container glass">
+                <table id="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>RANK</th>
+                            <th>SHARK</th>
+                            <th>HP BN</th>
+                            <th>FISH BN</th>
+                            <th>TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body"></tbody>
+                </table>
+            </div>
+            <button id="back-to-start-btn" class="secondary-btn">SURFACE</button>
+        </div>
+
+        <!-- Game Over -->
+        <div id="game-over-screen" class="screen hidden">
+            <div id="result-badge">🏁</div>
+            <h1 id="game-over-title">RACE FINISHED</h1>
+            <p id="game-over-reason">You reached the finish line!</p>
+
+            <div class="score-breakdown glass">
+                <div class="score-row">
+                    <span>FINISH HP BN</span>
+                    <span id="breakdown-health">0</span>
+                </div>
+                <div class="score-row">
+                    <span>FISH & EXPL BN</span>
+                    <span id="breakdown-fish">0</span>
+                </div>
+                <div class="score-row total">
+                    <span>MISSION TOTAL</span>
+                    <span id="total-score">0</span>
+                </div>
+            </div>
+
+            <div class="menu-actions">
+                <button id="restart-btn" class="primary-btn">RACE AGAIN</button>
+                <button id="menu-btn" class="secondary-btn">MAIN MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Credits -->
+    <div id="credits-screen" class="screen hidden">
+        <h2 class="glitch-text">OCEANIC TALES</h2>
+        <div class="credits-body glass">
+            <p>After conquering the maze and the battlefield, Ahir looked at the deep blue sea.
+                <br><br><i>"What if I was a shark, racing through the ocean and eating everything?"</i> he wondered.
+                <br><br>And thus, <b>Shark Race</b> was born.
+                <br><br>In this mission, Ahir designed the dynamic speed system where a shark's health dictates its
+                velocity. He architected the aquatic ecosystem, from the harmless tropical fish to the dangerous
+                electric eels and the mighty whales.
+                <br><br>Ahir also realized that the ocean isn't always empty—humans pass by in boats and sometimes try
+                to defend themselves. This added a tactical layer of risk and reward to the high-speed chase.
+                <br><br>This project celebrates the boundless curiosity of an 8-year-old creator, turning a simple race
+                into a strategic survival adventure.
+            </p>
+            <div class="credits-signature">
+                <strong>Ahir Mukherjee</strong>: Master of the Depths<br>
+                <strong>Father</strong>: Current Controller
+            </div>
+        </div>
+        <button id="back-from-credits-btn" class="secondary-btn">SURFACE</button>
+    </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>
