@@ -132,6 +132,11 @@ function setupInput() {
         if (e.key === 'ArrowDown' || e.key === 's') input.down = true;
         if (e.key === 'ArrowLeft' || e.key === 'a') input.left = true;
         if (e.key === 'ArrowRight' || e.key === 'd') input.right = true;
+
+        // Pause Shortcuts
+        if (state.active && (e.key === 'p' || e.key === 'Escape')) {
+            togglePause(!state.paused);
+        }
     });
     window.addEventListener('keyup', e => {
         if (e.key === 'ArrowUp' || e.key === 'w') input.up = false;
@@ -179,7 +184,63 @@ function setupInput() {
     zone.addEventListener('touchend', () => {
         knob.style.transform = 'translate(0, 0)';
         input.joystick.active = false;
+        input.joystick.x = 0;
+        input.joystick.y = 0;
     });
+
+    // --- Screen Touch (Swipe/Drag to move) ---
+    let touchDragging = false;
+
+    window.addEventListener('touchstart', (e) => {
+        if (!state.active || state.paused) return;
+        // Don't interfere if touching the joystick zone or HUD buttons
+        if (e.target.closest('#joystick-zone') || e.target.closest('.hud-btn')) return;
+
+        touchDragging = true;
+        handleScreenTouch(e);
+    }, { passive: false });
+
+    window.addEventListener('touchmove', (e) => {
+        if (!touchDragging || state.paused) return;
+        if (e.target.closest('#joystick-zone')) return;
+
+        e.preventDefault();
+        handleScreenTouch(e);
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => {
+        if (touchDragging) {
+            touchDragging = false;
+            input.joystick.active = false;
+            input.joystick.x = 0;
+            input.joystick.y = 0;
+        }
+    });
+
+    function handleScreenTouch(e) {
+        if (!state.player) return;
+        const touch = e.touches[0];
+        const canvas = document.getElementById('game-canvas');
+        const rect = canvas.getBoundingClientRect();
+
+        const tx = touch.clientX - rect.left;
+        const ty = touch.clientY - rect.top;
+
+        // Move shark towards touch point
+        const dx = tx - state.player.x;
+        const dy = ty - state.player.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist > 15) {
+            input.joystick.active = true;
+            input.joystick.x = Math.max(-1, Math.min(1, dx / 50));
+            input.joystick.y = Math.max(-1, Math.min(1, dy / 50));
+        } else {
+            input.joystick.active = false;
+            input.joystick.x = 0;
+            input.joystick.y = 0;
+        }
+    }
 }
 
 function startGame(name, color, logo) {

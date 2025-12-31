@@ -42,12 +42,22 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    /* Start from top for scrolling */
     z-index: 100;
     background: linear-gradient(135deg, #0a192f 0%, #020c1b 100%);
-    padding: 3rem 1rem;
+    padding: 2.5rem 1rem;
     overflow-y: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure content can push the flex container height */
+.screen>* {
+    flex-shrink: 0;
+}
+
+.scroll-spacer {
+    min-height: 8rem;
+    width: 100%;
 }
 
 .hidden {
