@@ -34,14 +34,14 @@ export class Sea {
         // Firing Logic for Humans in Boats
         state.entities.forEach(entity => {
             if (entity.symbol === '🚤' && !entity.dead) {
-                if (Math.random() < 0.01) { // Chance to fire
+                if (Math.random() < state.difficulty.bulletFreq) { // Use difficulty bullet frequency
                     state.entities.push(new Entity({
                         type: 'bullet',
                         symbol: '🌑',
                         x: entity.x,
                         y: entity.y,
                         radius: 5,
-                        speed: 8,
+                        speed: 8 * state.difficulty.speedMult,
                         damage: 10,
                         isDangerous: true
                     }));
@@ -54,40 +54,54 @@ export class Sea {
         const rand = Math.random();
         let config = {};
 
-        if (rand < 0.4) {
+        // Adjust dangerous vs safe creature probability based on dangerMult
+        // dangerMult = 1.0 is default. 
+        // We can skew the 'rand' value to make higher results (usually dangerous) more likely.
+        let adjustedRand = rand;
+        if (state.difficulty.dangerMult > 1) {
+            // Skew upwards: x^(1/n) where n > 1 pushes values towards 1
+            adjustedRand = Math.pow(rand, 1 / state.difficulty.dangerMult);
+        } else {
+            // Skew downwards if easier
+            adjustedRand = Math.pow(rand, state.difficulty.dangerMult);
+        }
+
+        const sMult = state.difficulty.speedMult;
+
+        if (adjustedRand < 0.3) {
             // High Value Prey: Tropical Fish
-            config = { type: 'fish', symbol: '🐠', radius: 10, speed: 2, points: 150, hpValue: 5, color: '#ff9f43' };
-        } else if (rand < 0.55) {
+            config = { type: 'fish', symbol: '🐠', radius: 10, speed: 2 * sMult, points: 150, hpValue: 5, color: '#ff9f43' };
+        } else if (adjustedRand < 0.45) {
             // Standard Prey: Blue Fish
-            config = { type: 'fish', symbol: '🐟', radius: 12, speed: 1.5, points: 100, hpValue: 5, color: '#3498db' };
-        } else if (rand < 0.65) {
-            // New: Crab (Bottom dweller behavior later maybe, for now just floating)
-            config = { type: 'crab', symbol: '🦀', radius: 15, speed: 0.8, points: 200, hpValue: 10, color: '#ee5253' };
-        } else if (rand < 0.72) {
+            config = { type: 'fish', symbol: '🐟', radius: 12, speed: 1.5 * sMult, points: 100, hpValue: 5, color: '#3498db' };
+        } else if (adjustedRand < 0.55) {
+            // New: Crab
+            config = { type: 'crab', symbol: '🦀', radius: 15, speed: 0.8 * sMult, points: 200, hpValue: 10, color: '#ee5253' };
+        } else if (adjustedRand < 0.62) {
             // New: Tortoise
-            config = { type: 'tortoise', symbol: '🐢', radius: 25, speed: 0.5, points: 300, hpValue: 15, color: '#10ac84' };
-        } else if (rand < 0.78) {
+            config = { type: 'tortoise', symbol: '🐢', radius: 25, speed: 0.5 * sMult, points: 300, hpValue: 15, color: '#10ac84' };
+        } else if (adjustedRand < 0.68) {
             // New: Octopus
-            config = { type: 'octopus', symbol: '🐙', radius: 20, speed: 1.2, points: 400, hpValue: 10, color: '#5f27cd' };
-        } else if (rand < 0.84) {
+            config = { type: 'octopus', symbol: '🐙', radius: 20, speed: 1.2 * sMult, points: 400, hpValue: 10, color: '#5f27cd' };
+        } else if (adjustedRand < 0.78) {
             // Dangerous: Jellyfish
-            config = { type: 'jellyfish', symbol: '🪼', radius: 15, speed: 1, damage: 15, isDangerous: true, color: '#ff9ff3' };
-        } else if (rand < 0.90) {
+            config = { type: 'jellyfish', symbol: '🪼', radius: 15, speed: 1 * sMult, damage: 15, isDangerous: true, color: '#ff9ff3' };
+        } else if (adjustedRand < 0.88) {
             // Dangerous: Eel
-            config = { type: 'eel', symbol: '🐍', radius: 20, speed: 2.5, damage: 25, isDangerous: true, color: '#00d2d3' };
-        } else if (rand < 0.96) {
+            config = { type: 'eel', symbol: '🐍', radius: 20, speed: 2.5 * sMult, damage: 25, isDangerous: true, color: '#00d2d3' };
+        } else if (adjustedRand < 0.94) {
             // Human Swimmer
-            config = { type: 'human', symbol: '🏊', radius: 18, speed: 0.5, points: 500, hpValue: 20, color: '#ffcc00' };
+            config = { type: 'human', symbol: '🏊', radius: 18, speed: 0.5 * sMult, points: 500, hpValue: 20, color: '#ffcc00' };
         } else {
             // Extreme Danger: Whale
-            config = { type: 'whale', symbol: '🐋', radius: 45, speed: 0.2, damage: 50, isDangerous: true, color: '#54a0ff' };
+            config = { type: 'whale', symbol: '🐋', radius: 45, speed: 0.2 * sMult, damage: 50, isDangerous: true, color: '#54a0ff' };
         }
 
         state.entities.push(new Entity(config));
 
-        // Occasional Boat
-        if (Math.random() < 0.08) {
-            state.entities.push(new Entity({ type: 'human', symbol: '🚤', radius: 30, speed: 3, points: 1000, hpValue: 30, color: '#ffffff' }));
+        // Occasional Boat - frequency also scales
+        if (Math.random() < 0.08 * state.difficulty.dangerMult) {
+            state.entities.push(new Entity({ type: 'human', symbol: '🚤', radius: 30, speed: 3 * sMult, points: 1000, hpValue: 30, color: '#ffffff' }));
         }
     }
 

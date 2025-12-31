@@ -58,7 +58,7 @@
                 </div>
 
                 <div class="difficulty-group">
-                    <label>RACE DIFFICULTY</label>
+                    <div style="margin-bottom: 1rem;">RACE DIFFICULTY</div>
                     <div class="diff-selector">
                         <button class="diff-btn active" data-diff="easy">RECREATIONAL</button>
                         <button class="diff-btn" data-diff="medium">PRO RACER</button>
@@ -74,17 +74,17 @@
                 <button id="credits-btn" class="secondary-btn">OUR STORY</button>
             </div>
 
-            <!-- Integration Carousel -->
+            <!-- Cross-Game Carousel -->
             <div class="game-carousel-container">
-                <h4>MISSION ARCHIVE</h4>
+                <h4>Try Something New</h4>
                 <div class="game-carousel">
+                    <a href="./AhirsShootingBattle/index.html" class="game-card">
+                        <span class="card-icon">🔫</span>
+                        <h5>Shooting Battle</h5>
+                    </a>
                     <a href="../index.html" class="game-card">
                         <span class="card-icon">👻</span>
                         <h5>Ghost Maze</h5>
-                    </a>
-                    <a href="../AhirsShootingBattle/index.html" class="game-card">
-                        <span class="card-icon">🔫</span>
-                        <h5>Shooting Battle</h5>
                     </a>
                 </div>
             </div>
@@ -101,7 +101,7 @@
                     <div class="status-bars">
                         <div class="health-container">
                             <div class="health-bar" id="user-health-bar"></div>
-                            <span class="status-label">HP: <span id="user-health-val">100</span></span>
+                            <span class="status-label">HEALTH: <span id="user-health-val">100</span></span>
                         </div>
                         <div class="score-box">
                             <span class="icon">🏆</span>
@@ -141,8 +141,8 @@
                         <tr>
                             <th>RANK</th>
                             <th>SHARK</th>
-                            <th>HP BN</th>
-                            <th>FISH BN</th>
+                            <th>HEALTH BONUS</th>
+                            <th>FISH BONUS</th>
                             <th>TOTAL</th>
                         </tr>
                     </thead>
@@ -160,11 +160,11 @@
 
             <div class="score-breakdown glass">
                 <div class="score-row">
-                    <span>FINISH HP BN</span>
+                    <span>HEALTH BONUS</span>
                     <span id="breakdown-health">0</span>
                 </div>
                 <div class="score-row">
-                    <span>FISH & EXPL BN</span>
+                    <span>FISH BONUS</span>
                     <span id="breakdown-fish">0</span>
                 </div>
                 <div class="score-row total">
