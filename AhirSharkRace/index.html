@@ -78,7 +78,7 @@
             <div class="game-carousel-container">
                 <h4>Try Something New</h4>
                 <div class="game-carousel">
-                    <a href="./AhirsShootingBattle/index.html" class="game-card">
+                    <a href="../AhirsShootingBattle/index.html" class="game-card">
                         <span class="card-icon">🔫</span>
                         <h5>Shooting Battle</h5>
                     </a>
@@ -143,13 +143,17 @@
                             <th>SHARK</th>
                             <th>HEALTH BONUS</th>
                             <th>FISH BONUS</th>
+                            <th>FINISH BONUS</th>
                             <th>TOTAL</th>
                         </tr>
                     </thead>
                     <tbody id="leaderboard-body"></tbody>
                 </table>
             </div>
-            <button id="back-to-start-btn" class="secondary-btn">SURFACE</button>
+            <div class="menu-actions-row">
+                <button id="back-to-start-btn" class="secondary-btn">SURFACE</button>
+                <button id="clear-leaderboard-btn" class="secondary-btn danger-text">CLEAR RECORDS</button>
+            </div>
         </div>
 
         <!-- Game Over -->
@@ -166,6 +170,10 @@
                 <div class="score-row">
                     <span>FISH BONUS</span>
                     <span id="breakdown-fish">0</span>
+                </div>
+                <div class="score-row">
+                    <span>FINISH BONUS</span>
+                    <span id="breakdown-finish">0</span>
                 </div>
                 <div class="score-row total">
                     <span>MISSION TOTAL</span>

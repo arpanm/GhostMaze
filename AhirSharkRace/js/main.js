@@ -74,6 +74,13 @@ function setupUI() {
         document.getElementById('start-screen').classList.remove('hidden');
     };
 
+    document.getElementById('clear-leaderboard-btn').onclick = () => {
+        if (confirm('Are you sure you want to wipe all aquatic records?')) {
+            localStorage.removeItem('ahir_shark_race_records');
+            showLeaderboard();
+        }
+    };
+
     // Game Over / Restart Listeners
     document.getElementById('restart-btn').onclick = () => {
         state.active = false;
@@ -243,7 +250,7 @@ function checkEndConditions() {
         endGame('EATEN BY THE OCEAN', 'Your HP reached zero...');
     } else if (state.distanceTravelled >= CONFIG.raceDistance) {
         // Winning bonus
-        state.score += 50000;
+        state.score += state.difficulty.finishBonus;
         endGame('RACE WON!', 'You crossed the finish line first!');
     }
 }
@@ -255,7 +262,8 @@ function endGame(title, reason) {
     document.getElementById('game-over-reason').innerText = reason;
 
     document.getElementById('breakdown-health').innerText = state.player.health * 10;
-    document.getElementById('breakdown-fish').innerText = state.score;
+    document.getElementById('breakdown-fish').innerText = state.score - (state.distanceTravelled >= CONFIG.raceDistance ? state.difficulty.finishBonus : 0);
+    document.getElementById('breakdown-finish').innerText = state.distanceTravelled >= CONFIG.raceDistance ? state.difficulty.finishBonus : 0;
     document.getElementById('total-score').innerText = (state.player.health * 10) + state.score;
 
     saveScore();
@@ -268,6 +276,7 @@ function saveScore() {
         name: state.player.name,
         health: state.player.health,
         score: state.score,
+        finishBonus: state.distanceTravelled >= CONFIG.raceDistance ? state.difficulty.finishBonus : 0,
         total: total,
         date: new Date().toLocaleDateString()
     });
@@ -298,7 +307,8 @@ function showLeaderboard() {
             <td>${i + 1}</td>
             <td>${r.name}</td>
             <td>${r.health * 10}</td>
-            <td>${r.score}</td>
+            <td>${r.score - (r.finishBonus || 0)}</td>
+            <td>${r.finishBonus || 0}</td>
             <td class="total-cell">${r.total}</td>
         </tr>
     `).join('');

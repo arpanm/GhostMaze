@@ -230,6 +230,16 @@ input[type="text"]:focus {
     color: white;
 }
 
+.secondary-btn.danger-text {
+    color: var(--danger);
+    border-color: rgba(231, 76, 60, 0.3);
+}
+
+.secondary-btn.danger-text:hover {
+    background: rgba(231, 76, 60, 0.1);
+    border-color: var(--danger);
+}
+
 /* HUD */
 #game-hud {
     position: absolute;
@@ -464,7 +474,8 @@ input[type="text"]:focus {
     width: 100%;
     max-width: 600px;
     margin: 2rem 0;
-    overflow: hidden;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 table {
