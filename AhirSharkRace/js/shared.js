@@ -5,8 +5,8 @@ export const CONFIG = {
     maxHealth: 100,
     raceDistance: 10000, // Distance to finial
     diffs: {
-        easy: { id: 'easy', enemySpeedMult: 0.8, spawnRate: 2.0, scoreMult: 1, dangerMult: 0.5, speedMult: 0.8, bulletFreq: 0.1, finishBonus: 1000 },
-        medium: { id: 'medium', enemySpeedMult: 1.0, spawnRate: 1.0, scoreMult: 10, dangerMult: 1.0, speedMult: 1.0, bulletFreq: 0.4, finishBonus: 2000 },
+        easy: { id: 'easy', enemySpeedMult: 0.8, spawnRate: 2.0, scoreMult: 1, dangerMult: 0.5, speedMult: 0.8, bulletFreq: 0.001, finishBonus: 1000 },
+        medium: { id: 'medium', enemySpeedMult: 1.0, spawnRate: 1.0, scoreMult: 10, dangerMult: 1.0, speedMult: 1.0, bulletFreq: 0.04, finishBonus: 2000 },
         hard: { id: 'hard', enemySpeedMult: 1.4, spawnRate: 0.5, scoreMult: 100, dangerMult: 2.0, speedMult: 1.4, bulletFreq: 0.8, finishBonus: 3000 }
     }
 };
@@ -21,6 +21,7 @@ export const state = {
     canvas: null,
     ctx: null,
     level: 1,
+    sector: 1,
     score: 0,
     difficulty: CONFIG.diffs.easy,
     lastTime: 0,

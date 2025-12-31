@@ -113,12 +113,18 @@
                 <div class="hud-center">
                     <div class="race-progress-container">
                         <div class="race-progress-bar" id="race-progress"></div>
-                        <div class="race-label">RACE PROGRESS</div>
+                        <div class="race-label">RACE PROGRESS - <span id="sector-val">SECTOR 1</span> (<span
+                                id="level-val">TIER 1</span>)</div>
                     </div>
                     <div class="speed-indicator">
                         <span id="speed-val">0</span> <small>knots</small>
                     </div>
                 </div>
+            </div>
+
+            <div id="transition-overlay" class="hidden">
+                <h1 id="transition-title">SECTOR CONQUERED</h1>
+                <p id="transition-subtitle">ENTERING DEEPER WATERS...</p>
             </div>
 
             <canvas id="game-canvas"></canvas>
@@ -145,6 +151,7 @@
                             <th>FISH BONUS</th>
                             <th>FINISH BONUS</th>
                             <th>TOTAL</th>
+                            <th>PROGRESS</th>
                         </tr>
                     </thead>
                     <tbody id="leaderboard-body"></tbody>

@@ -178,14 +178,14 @@ function startGame(name, color, logo) {
 }
 
 function gameLoop(timestamp) {
-    if (!state.active) return;
-
     const dt = timestamp - state.lastTime;
     state.lastTime = timestamp;
 
-    update(dt);
-    draw();
+    if (state.active) {
+        update(dt);
+    }
 
+    draw();
     requestAnimationFrame(gameLoop);
 }
 
@@ -243,16 +243,59 @@ function updateHUD() {
 
     const progress = (state.distanceTravelled / CONFIG.raceDistance) * 100;
     document.getElementById('race-progress').style.width = Math.min(100, progress) + '%';
+
+    document.getElementById('sector-val').innerText = `SECTOR ${state.sector}`;
+    document.getElementById('level-val').innerText = `TIER ${state.level}`;
 }
 
 function checkEndConditions() {
     if (state.player.dead) {
         endGame('EATEN BY THE OCEAN', 'Your HP reached zero...');
     } else if (state.distanceTravelled >= CONFIG.raceDistance) {
-        // Winning bonus
-        state.score += state.difficulty.finishBonus;
-        endGame('RACE WON!', 'You crossed the finish line first!');
+        nextSector();
     }
+}
+
+function nextSector() {
+    state.active = false; // Pause while transitioning
+
+    // Update State
+    let prevSector = state.sector;
+    let prevLevel = state.level;
+
+    state.sector++;
+    if (state.sector > 3) {
+        state.sector = 1;
+        state.level++;
+    }
+
+    // UI Update
+    const overlay = document.getElementById('transition-overlay');
+    const title = document.getElementById('transition-title');
+    const subtitle = document.getElementById('transition-subtitle');
+
+    if (state.sector === 1) {
+        title.innerText = `LEVEL ${prevLevel} COMPLETE`;
+        subtitle.innerText = `ASCENDING TO TIER ${state.level}...`;
+    } else {
+        title.innerText = `SECTOR ${prevSector} CONQUERED`;
+        subtitle.innerText = "ENTERING DEEPER WATERS...";
+    }
+
+    overlay.classList.remove('hidden');
+
+    // Reset for next run
+    state.distanceTravelled = 0;
+    state.entities = []; // Clear current entities
+
+    // Bonus for finishing territory
+    state.score += state.difficulty.finishBonus;
+
+    setTimeout(() => {
+        overlay.classList.add('hidden');
+        state.lastTime = performance.now(); // Essential: Reset timestamp to prevent DT spike
+        state.active = true;
+    }, 2500);
 }
 
 function endGame(title, reason) {
@@ -266,6 +309,7 @@ function endGame(title, reason) {
     document.getElementById('breakdown-finish').innerText = state.distanceTravelled >= CONFIG.raceDistance ? state.difficulty.finishBonus : 0;
     document.getElementById('total-score').innerText = (state.player.health * 10) + state.score;
 
+    document.getElementById('game-over-reason').innerText = `You reached TIER ${state.level}, SECTOR ${state.sector}!`;
     saveScore();
 }
 
@@ -278,6 +322,7 @@ function saveScore() {
         score: state.score,
         finishBonus: state.distanceTravelled >= CONFIG.raceDistance ? state.difficulty.finishBonus : 0,
         total: total,
+        progress: `T${state.level}-S${state.sector}`,
         date: new Date().toLocaleDateString()
     });
     records.sort((a, b) => b.total - a.total);
@@ -310,6 +355,7 @@ function showLeaderboard() {
             <td>${r.score - (r.finishBonus || 0)}</td>
             <td>${r.finishBonus || 0}</td>
             <td class="total-cell">${r.total}</td>
+            <td>${r.progress || 'N/A'}</td>
         </tr>
     `).join('');
 }
