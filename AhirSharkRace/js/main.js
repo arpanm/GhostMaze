@@ -61,6 +61,16 @@ function setupUI() {
     };
 
     document.getElementById('leaderboard-btn').onclick = () => showLeaderboard();
+
+    document.getElementById('how-to-play-btn').onclick = () => {
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('how-to-play-screen').classList.remove('hidden');
+    };
+    document.getElementById('back-from-guide-btn').onclick = () => {
+        document.getElementById('how-to-play-screen').classList.add('hidden');
+        document.getElementById('start-screen').classList.remove('hidden');
+    };
+
     document.getElementById('credits-btn').onclick = () => {
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('credits-screen').classList.remove('hidden');
@@ -89,6 +99,30 @@ function setupUI() {
     document.getElementById('menu-btn').onclick = () => {
         location.reload();
     };
+
+    // Pause / Resume / Abandon
+    document.getElementById('pause-btn').onclick = () => togglePause(true);
+    document.getElementById('resume-btn').onclick = () => togglePause(false);
+    document.getElementById('restart-pause-btn').onclick = () => {
+        togglePause(false);
+        state.active = false;
+        startGame(state.player.name, state.player.color, state.player.logo);
+    };
+    document.getElementById('abandon-btn').onclick = () => {
+        togglePause(false);
+        endGame('MISSION ABANDONED', 'The predator has left the waters...');
+    };
+}
+
+function togglePause(pause) {
+    state.paused = pause;
+    const screen = document.getElementById('pause-screen');
+    if (pause) {
+        screen.classList.remove('hidden');
+    } else {
+        screen.classList.add('hidden');
+        state.lastTime = performance.now(); // Avoid DT spike on resume
+    }
 }
 
 function setupInput() {
@@ -151,7 +185,10 @@ function setupInput() {
 function startGame(name, color, logo) {
     state.active = true;
     state.score = 0;
+    state.totalFinishBonus = 0;
     state.distanceTravelled = 0;
+    state.level = 1;
+    state.sector = 1;
     state.entities = [];
     state.enemies = [];
 
@@ -181,7 +218,7 @@ function gameLoop(timestamp) {
     const dt = timestamp - state.lastTime;
     state.lastTime = timestamp;
 
-    if (state.active) {
+    if (state.active && !state.paused) {
         update(dt);
     }
 
@@ -290,6 +327,7 @@ function nextSector() {
 
     // Bonus for finishing territory
     state.score += state.difficulty.finishBonus;
+    state.totalFinishBonus += state.difficulty.finishBonus;
 
     setTimeout(() => {
         overlay.classList.add('hidden');
@@ -305,8 +343,8 @@ function endGame(title, reason) {
     document.getElementById('game-over-reason').innerText = reason;
 
     document.getElementById('breakdown-health').innerText = state.player.health * 10;
-    document.getElementById('breakdown-fish').innerText = state.score - (state.distanceTravelled >= CONFIG.raceDistance ? state.difficulty.finishBonus : 0);
-    document.getElementById('breakdown-finish').innerText = state.distanceTravelled >= CONFIG.raceDistance ? state.difficulty.finishBonus : 0;
+    document.getElementById('breakdown-fish').innerText = state.score - state.totalFinishBonus;
+    document.getElementById('breakdown-finish').innerText = state.totalFinishBonus;
     document.getElementById('total-score').innerText = (state.player.health * 10) + state.score;
 
     document.getElementById('game-over-reason').innerText = `You reached TIER ${state.level}, SECTOR ${state.sector}!`;
@@ -320,7 +358,7 @@ function saveScore() {
         name: state.player.name,
         health: state.player.health,
         score: state.score,
-        finishBonus: state.distanceTravelled >= CONFIG.raceDistance ? state.difficulty.finishBonus : 0,
+        finishBonus: state.totalFinishBonus,
         total: total,
         progress: `T${state.level}-S${state.sector}`,
         date: new Date().toLocaleDateString()

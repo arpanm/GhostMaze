@@ -23,6 +23,7 @@ export const state = {
     level: 1,
     sector: 1,
     score: 0,
+    totalFinishBonus: 0,
     difficulty: CONFIG.diffs.easy,
     lastTime: 0,
     distanceTravelled: 0,
