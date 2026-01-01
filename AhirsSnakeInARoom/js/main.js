@@ -148,7 +148,7 @@ game.bindUI({
         screens.controls.classList.add('hidden');
         screens.gameOver.classList.remove('hidden');
 
-        document.getElementById('game-over-title').textContent = result.win ? "ROOM CLEARED!" : "GAME OVER";
+        document.getElementById('game-over-title').textContent = result.win ? "WIN: ROOM CLEARED!" : "LOST: GAME OVER";
         document.getElementById('game-over-reason').textContent = result.reason;
 
         document.getElementById('breakdown-insects').textContent = result.insects * 10;
