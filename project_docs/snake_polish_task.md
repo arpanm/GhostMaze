@@ -1,0 +1,28 @@
+# Task List: Ahir's Snake in a Room
+
+- [x] Planning Phase
+    - [x] Explore existing structure
+    - [x] Create Implementation Plan
+- [x] Setup Phase
+    - [x] Create Directory Structure `AhirsSnakeInARoom` <!-- id: 1 -->
+    - [x] Create `index.html` with UI shell (Start, Game, End, Credits) <!-- id: 2 -->
+    - [x] Create `style.css` for visual design <!-- id: 3 -->
+- [x] Core Gameplay Implementation
+    - [x] Implement `js/main.js` (State Machine) <!-- id: 4 -->
+    - [x] Implement `js/snake.js` (Snake Class, Movement, Rendering) <!-- id: 5 -->
+    - [x] Implement `js/input.js` (Keyboard, Touch/Joystick) <!-- id: 6 -->
+    - [x] Implement `js/game.js` (Game Loop, Insects, Collision) <!-- id: 7 -->
+    - [x] Implement AI logic for Enemy Snakes <!-- id: 8 -->
+- [x] Advanced Mechanics
+    - [x] Implement Body Collision (Cut mechanics) <!-- id: 9 -->
+    - [x] Implement Encirclement Logic (Polygon check) <!-- id: 10 -->
+    - [x] Implement Win/Loss Conditions & Scoring <!-- id: 11 -->
+- [ ] Polish Phase
+    - [x] Integration of Hall of Fame (LocalStorage) <!-- id: 12 -->
+    - [ ] Sound Effects (if applicable/requested, otherwise just placeholder) <!-- id: 13 -->
+    - [x] Credits & How To Play content <!-- id: 14 -->
+    - [x] Add Logo Selector to Start Screen <!-- id: 16 -->
+    - [x] Render Logo on Snake Head <!-- id: 17 -->
+    - [x] Enhance Leaderboard (Breakdown, Difficulty, Style) <!-- id: 18 -->
+- [ ] Verification
+    - [ ] Manual Playtest <!-- id: 15 -->

@@ -1,0 +1,75 @@
+# Ghost-Maze Development Task List
+
+- [x] Project Scaffolding
+    - [x] Create index.html, style.css, script.js
+    - [x] Setup assets folder (if needed, or use base64/generative graphics)
+- [x] Start Screen & User Input
+    - [x] Design Start Screen UI
+    - [x] Implement Avatar Selection
+    - [x] Handle Name Input
+- [x] Core Game Engine
+    - [x] Implement Maze Generation (Recursive Backtracker)
+    - [x] Setup HTML5 Canvas rendering
+    - [x] Implement Player rendering
+- [x] Controls
+    - [x] Implement Keyboard Controls (Arrow/WASD)
+    - [x] Implement Virtual Joystick (Touch/Mouse)
+- [x] Game Entities & Logic
+    - [x] Implement Stones (Types, Values, Spawning/Despawning)
+    - [x] Implement Ghosts (Spawn logic, Chase behavior, Alarm/Red Light)
+    - [x] Implement Collision Detection (Walls, Stones, Ghosts, Exit)
+    - [x] Implement Health & Scoring System
+- [x] Game Flow Management
+    - [x] Win/Loss Conditions
+    - [x] Game Over Screen
+- [x] Data & Leaderboard
+    - [x] Implement LocalStorage Saver/Loader
+    - [x] Create Leaderboard UI
+- [x] Refinement
+    - [x] Responsive Design (Mobile/Tab/Desktop)
+    - [x] Audio Effects (Alarm)
+    - [x] Polish Styles
+- [x] Build Setup
+    - [x] Initialize npm & vite
+- [x] Production Build
+- [x] UI Polish & Features
+    - [x] Add Ghost Favicon
+    - [x] Update HUD (Show Stone Count)
+    - [x] Enhance Game Over Screen (Icons, detailed reasons)
+- [x] UI Polish & Features
+    - [x] Add Ghost Favicon
+    - [x] Update HUD (Show Stone Count)
+    - [x] Enhance Game Over Screen (Icons, detailed reasons)
+    - [x] Polish Leaderboard UI
+- [x] Advanced Features
+    - [x] Track specific stone types collected
+    - [x] Update HUD with multi-stone counters
+- [x] Advanced Features
+    - [x] Track specific stone types collected
+    - [x] Update HUD with multi-stone counters
+    - [x] Detailed Breakdown in Game Over & Leaderboard
+    - [x] Implement Ghost Escape Bonus (Distance * 100)
+    - [x] Add Ghost Bonus to Breakdown & Leaderboard
+    - [x] Format Leaderboard Columns (Grid Layout & Headers)
+    - [x] Add Clear All Button to Leaderboard
+
+- [x] Difficulty Levels
+    - [x] Add difficulty selection UI on start screen
+    - [x] Implement Easy mode (far spawn, 3s chase, 5s interval, 10x multiplier)
+    - [x] Implement Medium mode (medium spawn, 4s chase, 4s interval, 100x multiplier)
+    - [x] Implement Hard mode (near spawn, 5s chase, 3s interval, 1000x multiplier)
+    - [x] Update Ghost class to support configurable spawn distance
+    - [x] Update score calculation with difficulty multiplier
+    - [x] Display difficulty in leaderboard
+
+- [x] Credits Screen
+    - [x] Add "Credits" button to start screen
+    - [x] Create Credits screen with the provided story
+    - [x] Implement transition logic in main.js
+    - [x] Style the credits text for readability
+
+- [x] Mobile Scrolling Fix
+    - [x] Update global CSS to allow touch-scrolling in UI
+    - [x] Restrict `touch-action: none` to gameplay elements
+    - [x] Adjust screen alignment for overflowing content
+    - [x] Verify scrolling on simulated mobile devices
