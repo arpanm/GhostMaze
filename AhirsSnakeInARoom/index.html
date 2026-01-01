@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ahir's Snake in a Room | Slither Strategy</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="game-container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen">
+            <div class="room-bg"></div>
+            <div class="logo-container">
+                <h1 class="glitch-text" data-text="SNAKE ROOM">SNAKE ROOM</h1>
+                <p class="subtitle">AHIR'S SLITHER ARENA</p>
+            </div>
+
+            <div class="setup-box glass">
+                <div class="input-group">
+                    <label for="player-name">PLAYER NAME</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="player-name" maxlength="15" placeholder="Enter Name..."
+                            autocomplete="off">
+                        <span id="name-error" class="error hidden">REQUIRED</span>
+                    </div>
+                </div>
+
+                <div class="customization-grid">
+                    <div class="custom-item">
+                        <label>SNAKE COLOR</label>
+                        <div class="color-picker" id="color-picker">
+                            <div class="color-opt active" data-color="#00ff00" style="background: #00ff00;"></div>
+                            <div class="color-opt" data-color="#3498db" style="background: #3498db;"></div>
+                            <div class="color-opt" data-color="#e74c3c" style="background: #e74c3c;"></div>
+                            <div class="color-opt" data-color="#f1c40f" style="background: #f1c40f;"></div>
+                            <div class="color-opt" data-color="#9b59b6" style="background: #9b59b6;"></div>
+                        </div>
+                    </div>
+                    <div class="custom-item">
+                        <label>SNAKE LOGO</label>
+                        <div class="logo-selector" id="logo-picker">
+                            <div class="logo-opt active" data-logo="🐍">🐍</div>
+                            <div class="logo-opt" data-logo="☠️">☠️</div>
+                            <div class="logo-opt" data-logo="⚡">⚡</div>
+                            <div class="logo-opt" data-logo="👑">👑</div>
+                            <div class="logo-opt" data-logo="👁️">👁️</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="difficulty-group">
+                    <div style="margin-bottom: 1rem;">DIFFICULTY LEVEL</div>
+                    <div class="diff-selector">
+                        <button class="diff-btn active" data-diff="easy">HARMLESS</button>
+                        <button class="diff-btn" data-diff="medium">VENOMOUS</button>
+                        <button class="diff-btn" data-diff="hard">DEADLY</button>
+                    </div>
+                </div>
+
+                <button id="start-btn" class="primary-btn pulse">ENTER ROOM</button>
+            </div>
+
+            <div class="menu-actions-row">
+                <button id="how-to-play-btn" class="secondary-btn">HOW TO PLAY</button>
+                <button id="leaderboard-btn" class="secondary-btn">HALL OF FAME</button>
+                <button id="credits-btn" class="secondary-btn">CREDITS</button>
+            </div>
+
+            <div class="game-carousel-container">
+                <h4>More From Ahir</h4>
+                <div class="game-carousel">
+                    <a href="../AhirSharkRace/index.html" class="game-card">
+                        <span class="card-icon">🦈</span>
+                        <h5>Shark Race</h5>
+                    </a>
+                    <a href="../AhirsShootingBattle/index.html" class="game-card">
+                        <span class="card-icon">🔫</span>
+                        <h5>Shooting Battle</h5>
+                    </a>
+                    <a href="../index.html" class="game-card">
+                        <span class="card-icon">👻</span>
+                        <h5>Ghost Maze</h5>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- HUD -->
+        <div id="game-hud" class="hidden">
+            <div class="hud-top">
+                <div class="hud-side player-hud">
+                    <div class="hud-name" id="user-name-disp">PLAYER</div>
+                    <div class="score-box">
+                        <span class="icon">🐛</span>
+                        <span id="user-score-val">0</span>
+                    </div>
+                </div>
+
+                <div class="hud-center">
+                    <div id="message-area" class="message-area"></div>
+                </div>
+
+                <div class="hud-side">
+                    <button id="pause-btn" class="hud-btn">
+                        <span class="icon">⏸</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <canvas id="game-canvas"></canvas>
+
+        <!-- Mobile Controls -->
+        <div id="controls-layer" class="hidden">
+            <div id="joystick-zone">
+                <div id="joystick-knob"></div>
+            </div>
+            <div class="instruction-overlay-mobile">Swipe or use Joystick</div>
+        </div>
+
+        <!-- Pause Screen -->
+        <div id="pause-screen" class="screen hidden">
+            <h1 class="glitch-text">PAUSED</h1>
+            <div id="pause-score-display" style="font-size: 1.5rem; color: var(--primary-color); margin-bottom: 2rem;">
+                Current Score: 0</div>
+            <div class="menu-actions">
+                <button id="resume-btn" class="primary-btn">RESUME</button>
+                <button id="restart-pause-btn" class="secondary-btn">RESTART</button>
+                <button id="abandon-btn" class="secondary-btn danger-text">EXIT ROOM</button>
+            </div>
+        </div>
+
+        <!-- How to Play -->
+        <div id="how-to-play-screen" class="screen hidden">
+            <h2 class="glitch-text">SURVIVAL GUIDE</h2>
+            <div class="how-to-play-container glass">
+                <div class="guide-section">
+                    <h3>🕹️ CONTROLS</h3>
+                    <div class="guide-item">
+                        <strong>Desktop:</strong> WASD or Arrow Keys to turn.
+                    </div>
+                    <div class="guide-item">
+                        <strong>Mobile:</strong> Use the joystick or Swipe.
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3>🐍 MECHANICS</h3>
+                    <div class="guide-item">
+                        <strong>Eat to Grow:</strong> Eat insects (🐞, 🪰, 🦗) to grow longer and earn points.
+                    </div>
+                    <div class="guide-item">
+                        <strong>Attack:</strong> If your head touches another snake's body, you bite it! They lose the
+                        rest of their tail, and you eat it to grow huge.
+                    </div>
+                    <div class="guide-item">
+                        <strong>Defend:</strong> Don't let others touch your body.
+                    </div>
+                    <div class="guide-item">
+                        <strong>Encircle:</strong> Completely surround an enemy to eliminate them instantly and claim a
+                        massive bonus.
+                    </div>
+                    <div class="guide-item">
+                        <strong>Win:</strong> Be the last snake slithering or reach the score limit!
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-spacer"></div>
+            <button id="back-from-guide-btn" class="secondary-btn">BACK</button>
+        </div>
+
+        <!-- Leaderboard -->
+        <div id="leaderboard-screen" class="screen hidden">
+            <h2 class="glitch-text">HALL OF FAME</h2>
+            <div class="leaderboard-container glass">
+                <table id="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>RANK</th>
+                            <th>PLAYER</th>
+                            <th>BREAKDOWN (Food/Kills/Bonus)</th>
+                            <th>TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body">
+                        <!-- Entries injected by JS -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="menu-actions-row">
+                <button id="back-to-start-btn" class="secondary-btn">BACK</button>
+                <button id="clear-leaderboard-btn" class="secondary-btn danger-text">RESET</button>
+            </div>
+            <div class="scroll-spacer"></div>
+        </div>
+
+        <!-- Game Over -->
+        <div id="game-over-screen" class="screen hidden">
+            <div id="result-badge">☠️</div>
+            <h1 id="game-over-title">GAME OVER</h1>
+            <p id="game-over-reason">You were eaten.</p>
+            <div class="score-breakdown glass">
+                <div class="score-row">
+                    <span>INSECTS EATEN</span>
+                    <span id="breakdown-insects">0</span>
+                </div>
+                <div class="score-row">
+                    <span>SNAKES DEFEATED</span>
+                    <span id="breakdown-kills">0</span>
+                </div>
+                <div class="score-row">
+                    <span>ENCIRCLEMENTS</span>
+                    <span id="breakdown-circle">0</span>
+                </div>
+                <div class="score-row total">
+                    <span>TOTAL SCORE</span>
+                    <span id="total-score">0</span>
+                </div>
+            </div>
+            <div class="menu-actions" style="margin-top: 2rem;">
+                <button id="restart-btn" class="primary-btn">PLAY AGAIN</button>
+                <button id="menu-btn" class="secondary-btn">MAIN MENU</button>
+            </div>
+            <div class="scroll-spacer"></div>
+        </div>
+
+        <!-- Credits -->
+        <div id="credits-screen" class="screen hidden">
+            <h2 class="glitch-text">CREDITS</h2>
+            <div class="credits-body glass"
+                style="text-align: left; padding: 2rem; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+                <p>"Snake in a Room" is a tactical survival game imagined by Ahir.
+                    <br><br>
+                    The concept is simple: <b>Eat or be Eaten.</b>
+                    <br><br>
+                    Ahir wanted a game where you aren't just running away, but actively hunting other snakes. The unique
+                    "Encirclement" mechanic was added to reward strategic play - trap your enemies and leave them no
+                    escape!
+                    <br><br>
+                    This game requires quick reflexes and a sharp mind. Good luck in the Room!
+                </p>
+                <div class="credits-signature"
+                    style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                    <strong>Ahir Mukherjee</strong>: Game Designer & Creator<br>
+                    <strong>Father</strong>: Code Architect
+                </div>
+            </div>
+            <button id="back-from-credits-btn" class="secondary-btn" style="margin-top: 2rem;">BACK</button>
+            <div class="scroll-spacer"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>

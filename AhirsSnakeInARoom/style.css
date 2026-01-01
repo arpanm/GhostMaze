@@ -1,0 +1,539 @@
+:root {
+    --primary-color: #00ff00;
+    --secondary-color: #008800;
+    --bg-dark: #050505;
+    --text-light: #ffffff;
+    --glass-bg: rgba(20, 20, 20, 0.85);
+    --glass-border: rgba(0, 255, 0, 0.2);
+    --font-head: 'Orbitron', sans-serif;
+    --font-body: 'Outfit', sans-serif;
+    --neon-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    --danger-color: #ff4444;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    font-family: var(--font-body);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+#game-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* --- Screens & UI --- */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at center, #101010 0%, #000000 100%);
+    z-index: 10;
+    transition: opacity 0.3s ease;
+    overflow-y: auto;
+    /* Allow scrolling for content */
+    padding: 20px;
+}
+
+.screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Background grid effect */
+.room-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(rgba(0, 255, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 0, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    padding: 2rem;
+    max-width: 90%;
+    width: 400px;
+    margin: 1rem 0;
+}
+
+.glitch-text {
+    font-family: var(--font-head);
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-shadow: var(--neon-shadow);
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.subtitle {
+    font-size: 1rem;
+    color: #888;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Form Elements */
+.input-group {
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+    color: #aaa;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+input[type="text"] {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    font-family: var(--font-head);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+input[type="text"]:focus {
+    border-color: var(--primary-color);
+}
+
+.error {
+    color: var(--danger-color);
+    font-size: 0.7rem;
+    position: absolute;
+    right: 0;
+    bottom: -18px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Buttons */
+button {
+    cursor: pointer;
+    font-family: var(--font-head);
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.primary-btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--primary-color);
+    color: black;
+    font-weight: 700;
+    font-size: 1.2rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.primary-btn:active {
+    transform: scale(0.98);
+}
+
+.primary-btn.pulse {
+    animation: pulse-green 2s infinite;
+}
+
+.secondary-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ccc;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    margin: 0.5rem;
+}
+
+.secondary-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: white;
+    color: white;
+}
+
+.danger-text {
+    color: var(--danger-color);
+    border-color: rgba(255, 68, 68, 0.3);
+}
+
+/* Customization Grid */
+.customization-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.custom-item label {
+    display: block;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+    color: #aaa;
+}
+
+.color-picker,
+.logo-selector {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.color-opt {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s;
+}
+
+.logo-opt {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.color-opt.active {
+    border-color: white;
+    transform: scale(1.2);
+}
+
+.logo-opt.active {
+    border-color: var(--primary-color);
+    background: rgba(0, 255, 0, 0.1);
+    transform: scale(1.1);
+}
+
+.logo-opt:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.diff-btn {
+    flex: 1;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #888;
+    padding: 8px;
+    font-size: 0.7rem;
+    border-radius: 4px;
+}
+
+.diff-btn.active {
+    background: var(--primary-color);
+    color: black;
+    border-color: var(--primary-color);
+    font-weight: bold;
+}
+
+/* Carousel */
+.game-carousel-container {
+    margin-top: 2rem;
+    text-align: center;
+    width: 100%;
+}
+
+.game-carousel-container h4 {
+    margin-bottom: 1rem;
+    color: #666;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.game-carousel {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding: 10px;
+    justify-content: center;
+}
+
+.game-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    width: 100px;
+    text-decoration: none;
+    color: white;
+    transition: transform 0.2s, background 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-5px);
+}
+
+.card-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.game-card h5 {
+    font-size: 0.7rem;
+    font-weight: normal;
+    text-align: center;
+}
+
+/* HUD */
+#game-hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+    padding: 20px;
+}
+
+.hud-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.hud-side {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: auto;
+}
+
+.player-hud {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hud-name {
+    font-family: var(--font-head);
+    font-size: 0.9rem;
+    color: #bbb;
+    margin-bottom: 4px;
+}
+
+.score-box {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hud-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: background 0.2s;
+}
+
+.hud-btn:active {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#message-area {
+    margin-top: 100px;
+    text-align: center;
+    font-family: var(--font-head);
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    text-shadow: 0 0 5px black;
+    height: 30px;
+}
+
+/* Canvas */
+#game-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: #111;
+}
+
+/* Mobile Controls */
+#controls-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
+    z-index: 4;
+}
+
+#joystick-zone {
+    position: absolute;
+    bottom: 50px;
+    left: 50px;
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: none;
+    /* Shown via JS on touch devices */
+}
+
+#joystick-knob {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .glitch-text {
+        font-size: 2.2rem;
+    }
+
+    .glass {
+        width: 100%;
+    }
+
+    #joystick-zone {
+        display: block;
+    }
+
+    .instruction-overlay-mobile {
+        position: absolute;
+        bottom: 20px;
+        width: 100%;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.3);
+        font-size: 0.8rem;
+        pointer-events: none;
+    }
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+th {
+    text-align: left;
+    color: #888;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.7rem;
+}
+
+td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.score-breakdown .score-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #ccc;
+}
+
+.score-breakdown .total {
+    border-bottom: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: 10px;
+    padding-top: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.scroll-spacer {
+    height: 50px;
+    width: 100%;
+}
+
+@keyframes pulse-green {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(0, 255, 0, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 255, 0, 0);
+    }
+}
