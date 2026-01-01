@@ -716,7 +716,13 @@ th {
     padding: 10px;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    justify-content: center;
+    justify-content: flex-start;
+}
+
+@media (min-width: 768px) {
+    .game-carousel {
+        justify-content: center;
+    }
 }
 
 .game-carousel::-webkit-scrollbar {

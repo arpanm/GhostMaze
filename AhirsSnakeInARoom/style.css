@@ -38,7 +38,8 @@ body {
 
 /* --- Screens & UI --- */
 .screen {
-    position: absolute;
+    position: fixed;
+    /* Fixed handles viewport better on mobile */
     top: 0;
     left: 0;
     width: 100%;
@@ -46,13 +47,35 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    /* Align top so scroll works naturally */
     background: radial-gradient(circle at center, #101010 0%, #000000 100%);
     z-index: 10;
     transition: opacity 0.3s ease;
     overflow-y: auto;
-    /* Allow scrolling for content */
-    padding: 20px;
+    -webkit-overflow-scrolling: touch;
+    padding: 40px 20px 100px 20px;
+    /* Extra bottom padding for mobile bars */
+}
+
+/* ... existing .screen.hidden and .room-bg ... */
+
+/* ... */
+
+.game-carousel {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding: 10px;
+    justify-content: flex-start;
+    /* Fixes first card cut-off on mobile */
+}
+
+@media (min-width: 768px) {
+    .game-carousel {
+        justify-content: center;
+        /* Center on desktop if it fits */
+    }
 }
 
 .screen.hidden {
