@@ -135,12 +135,13 @@ export class Plane extends Unit {
 }
 
 export class Projectile {
-    constructor(x, y, vx, vy, type) {
+    constructor(x, y, vx, vy, type, team) {
         this.x = x;
         this.y = y;
         this.vx = vx;
         this.vy = vy;
         this.type = type; // 'missile', 'bomb'
+        this.team = team; // 'blue' or 'red'
         this.radius = 4;
         this.active = true;
     }
@@ -211,5 +212,37 @@ export class Structure extends Unit {
         ctx.fillRect(this.x - this.width / 2, this.y - 10, this.width, 5);
         ctx.fillStyle = '#2ecc71';
         ctx.fillRect(this.x - this.width / 2, this.y - 10, this.width * hpPct, 5);
+    }
+}
+
+export class Particle {
+    constructor(x, y, color, speed, life) {
+        this.x = x;
+        this.y = y;
+        const angle = Math.random() * Math.PI * 2;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.color = color;
+        this.life = life; // Frames or time
+        this.maxLife = life;
+        this.size = Math.random() * 3 + 1;
+        this.gravity = 0.1;
+    }
+
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += this.gravity; // Gravity fall
+        this.life--;
+        this.size *= 0.95; // Shrink
+    }
+
+    draw(ctx) {
+        ctx.globalAlpha = this.life / this.maxLife;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, Math.max(0, this.size), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
     }
 }

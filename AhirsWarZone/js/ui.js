@@ -63,29 +63,41 @@ export class UIManager {
         this.updateLeaderboard(totalScore);
     }
 
-    updateLeaderboard(currentScore) {
-        // Load from LocalStorage
+    updateLeaderboard(currentScore, containerId = 'leaderboard-list') {
         const key = 'AhirsWarZone_Leaderboard';
-        let scores = JSON.parse(localStorage.getItem(key) || '[]');
+        let scores = [];
+        try {
+            scores = JSON.parse(localStorage.getItem(key) || '[]');
+        } catch (e) {
+            console.error("Leaderboard Parse Error", e);
+            scores = [];
+        }
 
         // Display
-        this.elements.leaderboardList.innerHTML = '';
+        const container = document.getElementById(containerId);
+        if (!container) {
+            console.warn(`Leaderboard container #${containerId} not found`);
+            return;
+        }
+
+        container.innerHTML = '';
         if (scores.length === 0) {
-            this.elements.leaderboardList.innerHTML = '<p>No Records Yet. Be the first!</p>';
+            container.innerHTML = '<p style="text-align:center; padding:10px; color:#bdc3c7;">No Records Yet. Play a mission!</p>';
         } else {
-            scores.sort((a, b) => b.score - a.score).slice(0, 5).forEach((entry, i) => {
+            scores.sort((a, b) => b.score - a.score).slice(0, 10).forEach((entry, i) => {
                 const row = document.createElement('div');
                 row.className = 'leaderboard-row';
                 row.style.display = 'flex';
                 row.style.justifyContent = 'space-between';
-                row.style.padding = '5px';
-                row.style.borderBottom = '1px solid #555';
+                row.style.padding = '8px';
+                row.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+                row.style.fontSize = '0.9em';
 
                 row.innerHTML = `
-                    <span>#${i + 1} ${entry.logo} ${entry.name}</span>
-                    <span>${entry.score} pts (${entry.diff})</span>
+                    <span><span style="color:#f1c40f; width:20px; display:inline-block;">#${i + 1}</span> ${entry.logo} ${entry.name}</span>
+                    <span>${entry.score} <span style="font-size:0.8em; color:#95a5a6;">(${entry.diff.toUpperCase()})</span></span>
                 `;
-                this.elements.leaderboardList.appendChild(row);
+                container.appendChild(row);
             });
         }
     }

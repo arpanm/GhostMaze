@@ -1,6 +1,6 @@
 import { InputHandler } from './input.js';
 import { Terrain } from './terrain.js';
-import { Tank, Plane, Projectile, Structure } from './entities.js';
+import { Tank, Plane, Projectile, Structure, Particle } from './entities.js';
 import { AIController } from './ai.js';
 import { UIManager } from './ui.js';
 
@@ -160,7 +160,7 @@ export class Game {
         this.spawnUnit('tank', 'red', this.canvas.width - 100);
         this.spawnUnit('plane', 'red', this.canvas.width - 50);
 
-        // Spawn Structures (Smartly)
+        // Spawn Structures (Smartly) - Enemy (Red)
         for (let i = 0; i < 4; i++) {
             let attempts = 0;
             let success = false;
@@ -175,12 +175,77 @@ export class Game {
             }
         }
 
+        // Spawn Structures (Smartly) - Friendly (Blue)
+        for (let i = 0; i < 3; i++) { // Fewer friendly ones
+            let attempts = 0;
+            let success = false;
+            while (attempts < 10 && !success) {
+                const x = 50 + Math.random() * (this.canvas.width / 2 - 150); // Left side
+                if (this.isSpotClear(x)) {
+                    const type = Math.random() > 0.5 ? 'bunker' : 'tower';
+                    this.spawnStructure(type, 'blue', x);
+                    success = true;
+                }
+                attempts++;
+            }
+        }
+
+
         // AI
         this.ai = new AIController(this, this.difficulty);
         this.enemyCurrency = 500;
 
         this.state = 'PLAY';
         this.ui.showScreen('hud');
+        this.ui.updateHUD(this.score, 100, 100, this.wind, this.currency); // Initial HUD update
+    }
+
+    togglePause() {
+        if (this.state === 'PLAY') {
+            this.state = 'PAUSE';
+            this.ui.showScreen('pause-screen');
+        } else if (this.state === 'PAUSE') {
+            this.state = 'PLAY';
+            this.ui.showScreen('hud');
+            this.lastTime = performance.now();
+            requestAnimationFrame((t) => this.loop(t));
+        }
+    }
+
+    toggleShop() {
+        if (this.state === 'PLAY') {
+            this.state = 'SHOP';
+            this.ui.showScreen('shop-screen');
+        } else if (this.state === 'SHOP') {
+            this.state = 'PLAY';
+            this.ui.showScreen('hud');
+            this.lastTime = performance.now();
+            requestAnimationFrame((t) => this.loop(t));
+        }
+    }
+
+    buyItem(type, cost) {
+        if (this.currency >= cost) {
+            this.currency -= cost;
+            // Spawn logic
+            if (type === 'tank') this.spawnUnit('tank', 'blue', 100);
+            if (type === 'plane') this.spawnUnit('plane', 'blue', 150);
+            if (type === 'repair') {
+                this.units.forEach(u => {
+                    if (u.team === 'blue') u.health = Math.min(u.health + 50, u.maxHealth);
+                });
+            }
+            if (type === 'nuke') {
+                // Kill all enemies
+                this.units.forEach(u => { if (u.team === 'red') u.takeDamage(1000); });
+                this.structures.forEach(s => { if (s.team === 'red') s.health = 0; }); // Destroy structures too
+            }
+
+            this.ui.updateHUD(this.score, this.getPlayerHealthAvg(), this.getEnemyHealthAvg(), this.wind, this.currency);
+            alert("Purchased: " + type);
+        } else {
+            alert("Not enough funds!");
+        }
     }
 
     isSpotClear(x) {
@@ -293,7 +358,7 @@ export class Game {
             // Offset
         }
 
-        this.projectiles.push(new Projectile(unit.x, unit.y - 20, vx, vy, unit.type === 'plane' ? 'bomb' : 'missile'));
+        this.projectiles.push(new Projectile(unit.x, unit.y - 20, vx, vy, unit.type === 'plane' ? 'bomb' : 'missile', unit.team));
     }
 
     update(dt) {
@@ -332,6 +397,10 @@ export class Game {
 
         this.structures = this.structures.filter(s => s.alive); // Structures can die too
 
+        // Particles
+        this.particles = this.particles.filter(p => p.life > 0);
+        this.particles.forEach(p => p.update());
+
         // Projectiles
         this.projectiles = this.projectiles.filter(p => p.active);
         this.projectiles.forEach(p => {
@@ -340,19 +409,21 @@ export class Game {
             // Ground Collision
             if (p.x >= 0 && p.x <= this.canvas.width && p.y > this.terrain.getHeightAt(p.x)) {
                 p.active = false;
+                this.createExplosion(p.x, p.y, '#f1c40f', 10); // Explode on ground
             }
 
             // Unit Collision
             this.units.forEach(u => {
-                if (u.alive && Math.abs(u.x - p.x) < 20 && Math.abs(u.y - p.y) < 20) {
+                // Friendly Fire Check: Only hit enemies
+                if (u.alive && u.team !== p.team && Math.abs(u.x - p.x) < 20 && Math.abs(u.y - p.y) < 20) {
                     this.hitUnit(u, p);
                 }
             });
 
             // Structure Collision
             this.structures.forEach(s => {
-                // Structures are rectangles, careful collision
-                if (s.alive &&
+                // Friendly Fire Check for structures too
+                if (s.alive && s.team !== p.team &&
                     p.x > s.x - s.width / 2 && p.x < s.x + s.width / 2 &&
                     p.y > s.y && p.y < s.y + s.height) {
                     this.hitUnit(s, p);
@@ -372,15 +443,25 @@ export class Game {
         if (!blueAlive) this.gameOver(false); // Loss
 
         // Red units check
-        if (!this.units.some(u => u.team === 'red')) {
-            // Check if any significant structures left? Nah, just kill mobile units to win?
-            // "if all of opponents objects destroys we win" - user said this earlier. 
-            // Let's stick to units for "Mission Complete" but user can destroy structs for points.
-            this.gameOver(true);
-        }
+        const redUnitsAlive = this.units.some(u => u.team === 'red');
+        const redStructuresAlive = this.structures.some(s => s.team === 'red');
 
-        // HUD
-        this.ui.updateHUD(this.score, this.getPlayerHealthAvg(), this.getEnemyHealthAvg(), this.wind, this.currency);
+        if (!redUnitsAlive && !redStructuresAlive) {
+            this.gameOver(true); // Win!
+        } else {
+            this.ui.updateHUD(this.score, this.getPlayerHealthAvg(), this.getEnemyHealthAvg(), this.wind, this.currency);
+        }
+    }
+
+    createExplosion(x, y, color, count = 15) {
+        for (let i = 0; i < count; i++) {
+            // Random color variation
+            let c = color;
+            if (color === 'fire') {
+                c = Math.random() > 0.5 ? '#f1c40f' : '#e74c3c';
+            }
+            this.particles.push(new Particle(x, y, c, Math.random() * 5, 30 + Math.random() * 15));
+        }
     }
 
     hitUnit(u, p) {
@@ -388,8 +469,11 @@ export class Game {
         u.takeDamage(damage);
         p.active = false;
 
+        this.createExplosion(p.x, p.y, 'fire', 8); // Small hit
+
         // Score
         if (u.health <= 0) {
+            this.createExplosion(u.x, u.y, 'fire', 40); // Big Explosion
             if (u.team === 'red') {
                 let pts = 100;
                 if (u.type === 'tank') pts = 200;
@@ -432,6 +516,9 @@ export class Game {
 
         // Projectiles
         this.projectiles.forEach(p => p.draw(this.ctx));
+
+        // Particles
+        this.particles.forEach(p => p.draw(this.ctx));
 
         // Aim Line (Drag)
         if (this.input.isDragging && this.state === 'PLAY' && this.dragStartedOnUnit) {
