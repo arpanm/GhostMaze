@@ -1,9 +1,11 @@
 export class Unit {
-    constructor(x, y, team, type) {
+    constructor(x, y, team, type, color, logo) {
         this.x = x;
         this.y = y;
         this.team = team; // 'red' or 'blue'
         this.type = type; // 'tank' or 'plane'
+        this.color = color || (team === 'blue' ? '#3498db' : '#e74c3c');
+        this.logo = logo; // Emoji logic
         this.width = 40;
         this.height = 20;
         this.health = 100;
@@ -23,18 +25,29 @@ export class Unit {
 
     draw(ctx) {
         // Base Unit Draw (Subclasses override)
-        ctx.fillStyle = this.team === 'blue' ? '#3498db' : '#e74c3c';
+        ctx.fillStyle = this.color;
         if (this.selected) {
             ctx.strokeStyle = '#f1c40f';
             ctx.lineWidth = 3;
             ctx.strokeRect(this.x - this.width / 2 - 5, this.y - this.height - 5, this.width + 10, this.height + 10);
         }
     }
+
+    drawLogo(ctx) {
+        if (this.logo) {
+            ctx.font = '16px serif';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            // Draw logo offset a bit above or on the unit
+            ctx.fillText(this.logo, 0, -15);
+        }
+    }
 }
 
 export class Tank extends Unit {
-    constructor(x, y, team) {
-        super(x, y, team, 'tank');
+    constructor(x, y, team, color, logo) {
+        super(x, y, team, 'tank', color, logo);
         this.speed = 2;
         this.turretAngle = team === 'blue' ? -Math.PI / 4 : -Math.PI * 0.75;
     }
@@ -64,7 +77,7 @@ export class Tank extends Unit {
         ctx.rotate(this.angle);
 
         // Body
-        ctx.fillStyle = this.team === 'blue' ? '#2980b9' : '#c0392b';
+        ctx.fillStyle = this.color;
         ctx.fillRect(-15, -10, 30, 10); // Main Body
         ctx.fillRect(-10, -15, 20, 10); // Turret Base
 
@@ -73,14 +86,19 @@ export class Tank extends Unit {
         ctx.rotate(this.turretAngle);
         ctx.fillStyle = '#2c3e50';
         ctx.fillRect(0, -3, 25, 6);
+        ctx.rotate(-this.turretAngle);
+        ctx.rotate(this.angle);
+
+        // Logo
+        this.drawLogo(ctx);
 
         ctx.restore();
     }
 }
 
 export class Plane extends Unit {
-    constructor(x, y, team) {
-        super(x, y, team, 'plane');
+    constructor(x, y, team, color, logo) {
+        super(x, y, team, 'plane', color, logo);
         this.y = 80 + Math.random() * 100; // Fly high
         this.baseY = this.y;
         this.speed = 2.5;
@@ -91,8 +109,8 @@ export class Plane extends Unit {
     update(terrain, keys) {
         // Controlled via keys if selected and blue
         if (this.team === 'blue' && this.selected) {
-            if (keys['ArrowLeft']) this.x -= this.speed;
-            if (keys['ArrowRight']) this.x += this.speed;
+            if (keys['ArrowLeft']) { this.x -= this.speed; this.direction = -1; }
+            if (keys['ArrowRight']) { this.x += this.speed; this.direction = 1; }
         } else if (this.team === 'red') {
             // AI Movement (Simple patrol)
             this.x += this.speed * this.direction;
@@ -113,7 +131,7 @@ export class Plane extends Unit {
         ctx.translate(this.x, this.y);
         if (this.direction < 0) ctx.scale(-1, 1);
 
-        ctx.fillStyle = this.team === 'blue' ? '#3498db' : '#e74c3c';
+        ctx.fillStyle = this.color || (this.team === 'blue' ? '#3498db' : '#e74c3c');
 
         // Simple Plane Shape
         ctx.beginPath();
@@ -129,6 +147,13 @@ export class Plane extends Unit {
         ctx.lineTo(-5, 15);
         ctx.lineTo(0, 0);
         ctx.fill();
+
+        // Logo
+        if (this.direction < 0) ctx.scale(-1, 1); // Unflip for text? No, text draws backwards if flipped.
+        // If flipped, we need to unflip just for text or draw text separate.
+        // Actually, simple fix:
+        ctx.scale(this.direction < 0 ? -1 : 1, 1); // Reset
+        this.drawLogo(ctx);
 
         ctx.restore();
     }
@@ -177,8 +202,8 @@ export class Projectile {
 }
 
 export class Structure extends Unit {
-    constructor(x, y, team, type) {
-        super(x, y, team, type); // type: 'bunker' or 'tower'
+    constructor(x, y, team, type, color, logo) {
+        super(x, y, team, type, color, logo); // type: 'bunker' or 'tower'
         this.width = type === 'bunker' ? 50 : 30;
         this.height = type === 'bunker' ? 20 : 60;
         this.y -= this.height; // Sit ON terrain
@@ -192,7 +217,7 @@ export class Structure extends Unit {
 
     draw(ctx) {
         // Base
-        ctx.fillStyle = this.team === 'blue' ? '#2980b9' : '#c0392b';
+        ctx.fillStyle = this.color;
         ctx.fillRect(this.x - this.width / 2, this.y, this.width, this.height);
 
         // Detail
@@ -205,6 +230,11 @@ export class Structure extends Unit {
             // Tower head
             ctx.fillRect(this.x - this.width / 2 - 5, this.y - 10, this.width + 10, 10);
         }
+
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        this.drawLogo(ctx);
+        ctx.restore();
 
         // Health bar mini
         const hpPct = this.health / this.maxHealth;

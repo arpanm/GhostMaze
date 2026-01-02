@@ -63,7 +63,6 @@ export class Game {
             this.initGame();
         });
         document.getElementById('exit-btn').addEventListener('click', () => location.reload());
-        document.getElementById('menu-btn').addEventListener('click', () => location.reload());
 
         document.getElementById('play-again-btn').addEventListener('click', () => this.initGame());
 
@@ -91,6 +90,7 @@ export class Game {
                 document.querySelectorAll('.color-option').forEach(e => e.classList.remove('selected'));
                 el.classList.add('selected');
                 this.player.color = el.dataset.color;
+                console.log("Selected Color:", this.player.color);
             });
         });
 
@@ -104,6 +104,7 @@ export class Game {
 
         document.getElementById('how-to-play-btn').addEventListener('click', () => this.ui.showScreen('how-to-play-screen'));
         document.getElementById('back-from-help').addEventListener('click', () => this.ui.showScreen('start-screen'));
+        document.getElementById('back-from-game-over').addEventListener('click', () => this.ui.showScreen('start-screen'));
 
         document.querySelectorAll('.diff-btn').forEach(el => {
             el.addEventListener('click', () => {
@@ -141,7 +142,19 @@ export class Game {
     }
 
     initGame() {
-        this.player.name = document.getElementById('player-name').value || 'Commander';
+        const nameInput = document.getElementById('player-name');
+        const errorMsg = document.getElementById('name-error');
+        const name = nameInput.value.trim();
+
+        if (!name) {
+            errorMsg.style.display = 'block';
+            nameInput.style.border = '2px solid #e74c3c';
+            return; // Stop initialization
+        }
+
+        errorMsg.style.display = 'none';
+        nameInput.style.border = 'none';
+        this.player.name = name;
         // Reset Stats
         this.score = 0;
         this.currency = 500;
@@ -197,7 +210,28 @@ export class Game {
 
         this.state = 'PLAY';
         this.ui.showScreen('hud');
+        this.ui.updatePlayerLogo(this.player.logo); // Update Logo
         this.ui.updateHUD(this.score, 100, 100, this.wind, this.currency); // Initial HUD update
+    }
+
+    // ...
+
+    spawnUnit(type, team, x) {
+        let unit;
+        let y = this.terrain.getHeightAt(x);
+
+        // Use player custom color/logo if team is blue
+        const color = team === 'blue' ? this.player.color : null;
+        const logo = team === 'blue' ? this.player.logo : null;
+
+        console.log(`Spawning ${type} for ${team} with color: ${color}, logo: ${logo}, PlayerColor: ${this.player.color}`);
+
+        if (type === 'tank') {
+            unit = new Tank(x, y, team, color, logo);
+        } else if (type === 'plane') {
+            unit = new Plane(x, 0, team, color, logo); // Plane determines its own Y
+        }
+        this.units.push(unit);
     }
 
     togglePause() {
@@ -255,17 +289,7 @@ export class Game {
         return true;
     }
 
-    spawnUnit(type, team, x) {
-        let unit;
-        let y = this.terrain.getHeightAt(x);
 
-        if (type === 'tank') {
-            unit = new Tank(x, y, team);
-        } else if (type === 'plane') {
-            unit = new Plane(x, 0, team); // Plane determines its own Y
-        }
-        this.units.push(unit);
-    }
 
     spawnStructure(type, team, x) {
         let y = this.terrain.getHeightAt(x);
@@ -580,7 +604,7 @@ export class Game {
             document.getElementById('game-over-title').style.color = "#e74c3c";
         }
 
-        this.ui.updateGameOverScreen(this.kills, Math.floor(survivalBonus), economyBonus, totalScore);
+        this.ui.updateGameOverScreen(this.kills, this.score, Math.floor(survivalBonus), economyBonus, totalScore);
         this.ui.showScreen('game-over-screen');
     }
 }

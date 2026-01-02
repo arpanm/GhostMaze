@@ -17,7 +17,12 @@ export class UIManager {
             finalEconomy: document.getElementById('final-economy'),
             finalTotal: document.getElementById('final-total'),
             leaderboardList: document.getElementById('leaderboard-list'),
+            playerLogo: document.getElementById('player-logo-display'),
         };
+    }
+
+    updatePlayerLogo(logo) {
+        if (this.elements.playerLogo) this.elements.playerLogo.textContent = logo;
     }
 
     showScreen(screenId) {
@@ -54,8 +59,8 @@ export class UIManager {
         this.elements.pauseKills.textContent = kills;
     }
 
-    updateGameOverScreen(kills, survivalBonus, economyBonus, totalScore) {
-        this.elements.finalKills.textContent = kills;
+    updateGameOverScreen(kills, combatScore, survivalBonus, economyBonus, totalScore) {
+        this.elements.finalKills.textContent = `${kills} (${combatScore} PTS)`; // Show both kills and the points from them
         this.elements.finalSurvival.textContent = survivalBonus;
         this.elements.finalEconomy.textContent = economyBonus;
         this.elements.finalTotal.textContent = totalScore;
@@ -94,8 +99,8 @@ export class UIManager {
                 row.style.fontSize = '0.9em';
 
                 row.innerHTML = `
-                    <span><span style="color:#f1c40f; width:20px; display:inline-block;">#${i + 1}</span> ${entry.logo} ${entry.name}</span>
-                    <span>${entry.score} <span style="font-size:0.8em; color:#95a5a6;">(${entry.diff.toUpperCase()})</span></span>
+                    <span><span style="color:#f1c40f; width:20px; display:inline-block;">#${i + 1}</span> ${entry.logo} ${entry.name} <span style="font-size:0.8em; color:#95a5a6;">(${entry.diff.toUpperCase()})</span></span>
+                    <span>${entry.score}</span>
                 `;
                 container.appendChild(row);
             });

@@ -24,6 +24,7 @@
                 <div class="input-group">
                     <label>Commander Name</label>
                     <input type="text" id="player-name" placeholder="Enter Name" maxlength="15">
+                    <span id="name-error" class="error-msg" style="display:none;">Name is required!</span>
                 </div>
                 <div class="input-group">
                     <label>Team Color</label>
@@ -233,7 +234,7 @@
                         <span id="final-survival">0</span>
                     </div>
                     <div class="score-row">
-                        <span>Economy Bonus:</span>
+                        <span>Destroyer Bonus:</span>
                         <span id="final-economy">0</span>
                     </div>
                     <div class="score-row total">
@@ -248,7 +249,7 @@
                     </div>
                 </div>
                 <button id="play-again-btn" class="primary-btn">PLAY AGAIN</button>
-                <a href="index.html" id="menu-btn" class="secondary-btn">MAIN MENU</a>
+                <button id="back-from-game-over" class="secondary-btn">MAIN MENU</button>
             </div>
         </div>
     </div>
