@@ -316,21 +316,23 @@ button {
 .primary-btn,
 .secondary-btn,
 .danger-btn {
-    padding: 15px 30px;
+    padding: 10px 20px;
     border: none;
     border-radius: 5px;
-    font-size: 1.2rem;
+    font-size: 10px;
     margin-top: 10px;
     cursor: pointer;
     font-weight: bold;
     width: 100%;
-    max-width: 300px;
+    max-width: 150px;
     transition: background 0.2s;
 }
 
 .primary-btn {
     background: var(--secondary-color);
     color: white;
+    font-size: 1rem;
+    max-width: 250px;
 }
 
 .primary-btn:hover {

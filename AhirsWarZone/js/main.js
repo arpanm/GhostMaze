@@ -140,7 +140,73 @@ export class Game {
         });
     }
 
-    // ... (initGame remains) ...
+    initGame() {
+        this.player.name = document.getElementById('player-name').value || 'Commander';
+        // Reset Stats
+        this.score = 0;
+        this.currency = 500;
+        this.kills = 0;
+        this.wind = (Math.random() - 0.5) * 2;
+
+        // Create World
+        this.terrain = new Terrain(this.canvas.width, this.canvas.height);
+        this.units = [];
+        this.structures = [];
+        this.projectiles = [];
+
+        // Spawn Initial Units
+        this.spawnUnit('tank', 'blue', 100);
+        this.spawnUnit('plane', 'blue', 150);
+        this.spawnUnit('tank', 'red', this.canvas.width - 100);
+        this.spawnUnit('plane', 'red', this.canvas.width - 50);
+
+        // Spawn Structures (Smartly)
+        for (let i = 0; i < 4; i++) {
+            let attempts = 0;
+            let success = false;
+            while (attempts < 10 && !success) {
+                const x = this.canvas.width / 2 + Math.random() * (this.canvas.width / 2 - 100);
+                if (this.isSpotClear(x)) {
+                    const type = Math.random() > 0.5 ? 'bunker' : 'tower';
+                    this.spawnStructure(type, 'red', x);
+                    success = true;
+                }
+                attempts++;
+            }
+        }
+
+        // AI
+        this.ai = new AIController(this, this.difficulty);
+        this.enemyCurrency = 500;
+
+        this.state = 'PLAY';
+        this.ui.showScreen('hud');
+    }
+
+    isSpotClear(x) {
+        const safeDist = 60;
+        for (let u of this.units) if (Math.abs(u.x - x) < safeDist) return false;
+        for (let s of this.structures) if (Math.abs(s.x - x) < safeDist) return false;
+        return true;
+    }
+
+    spawnUnit(type, team, x) {
+        let unit;
+        let y = this.terrain.getHeightAt(x);
+
+        if (type === 'tank') {
+            unit = new Tank(x, y, team);
+        } else if (type === 'plane') {
+            unit = new Plane(x, 0, team); // Plane determines its own Y
+        }
+        this.units.push(unit);
+    }
+
+    spawnStructure(type, team, x) {
+        let y = this.terrain.getHeightAt(x);
+        this.structures.push(new Structure(x, y, team, type));
+    }
+
 
     // Input Hooks
     handleTap(x, y) {
@@ -221,7 +287,7 @@ export class Game {
         // If plane dropping bomb, inherit velocity?
         if (unit.type === 'plane') {
             vx = 0; // Drop straight
-            vy = 2; // Initial push down
+            vy = 5; // Faster initial push
         } else {
             // Tank: spawn from turret tip
             // Offset

@@ -153,10 +153,25 @@ export class Projectile {
     }
 
     draw(ctx) {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = this.type === 'bomb' ? '#2c3e50' : '#e67e22';
-        ctx.fill();
+        if (this.type === 'bomb') {
+            // Fire Blast visual
+            const gradient = ctx.createRadialGradient(this.x, this.y, 1, this.x, this.y, this.radius * 2);
+            gradient.addColorStop(0, '#f1c40f'); // Yellow center
+            gradient.addColorStop(0.5, '#e67e22'); // Orange mid
+            gradient.addColorStop(1, 'rgba(192, 57, 43, 0)'); // Red/Transparent edge
+
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius * 2.5, 0, Math.PI * 2); // Larger visual than collider
+            ctx.fill();
+
+        } else {
+            // Missile
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.type === 'bomb' ? '#2c3e50' : '#e67e22'; // Fallback
+            ctx.fill();
+        }
     }
 }
 

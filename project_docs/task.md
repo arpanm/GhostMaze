@@ -34,7 +34,9 @@ This document tracks all planned improvements, technical debt, and feature reque
 - [ ] **Fix:** Main Menu button behavior (return to start).
 - [ ] **Fix:** Hall of Fame display on start.
 - [ ] **Fix:** Carousel alignment.
-- [ ] **Feature:** Add Bunkers and Watch Towers.
+- [x] **Feature:** Enhanced Controls (Space/Tap to Bomb, Swipe to Move).
+- [ ] **Polish:** Center align "Play Other Missions".
+- [ ] **Polish:** Improve Bomb visuals (fire blast) and fix drop direction.
 - [ ] **Polish:** Add particle effects for explosions.
 
 
