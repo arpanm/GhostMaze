@@ -8,7 +8,8 @@ export default defineConfig({
                 main: resolve(__dirname, 'index.html'),
                 shooting: resolve(__dirname, 'AhirsShootingBattle/index.html'),
                 sharkRace: resolve(__dirname, 'AhirSharkRace/index.html'),
-                snakeInARoom: resolve(__dirname, 'AhirsSnakeInARoom/index.html')
+                snakeInARoom: resolve(__dirname, 'AhirsSnakeInARoom/index.html'),
+                warZone: resolve(__dirname, 'AhirsWarZone/index.html')
             }
         }
     }

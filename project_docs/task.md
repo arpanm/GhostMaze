@@ -28,6 +28,16 @@ This document tracks all planned improvements, technical debt, and feature reque
 - [ ] **Economy:** Add a "Daily Bonus" or "Start Bonus" for returning players (localStorage).
 - [ ] **Audio:** Add specific sound effects for "Boss Appearance" and "Store Purchase".
 
+## 🏰 Ahirs War Zone
+- [x] **Initial Release:** Core gameplay, AI, Economy, and Responsive UI implemented.
+- [ ] **Fix:** Spawn Player (Blue) Plane.
+- [ ] **Fix:** Main Menu button behavior (return to start).
+- [ ] **Fix:** Hall of Fame display on start.
+- [ ] **Fix:** Carousel alignment.
+- [ ] **Feature:** Add Bunkers and Watch Towers.
+- [ ] **Polish:** Add particle effects for explosions.
+
+
 ## 🛠️ General / Infrastructure
 - [ ] **Navigation:** Unify the "Home" / "Back" button logic. Some games use `../index.html` hardcoded, others might use absolute paths. Ensure consistent routing.
 - [ ] **Styles:** Extract common CSS (buttons, glassmorphism panels) into a `common/style.css` to reduce duplication in `style.css` of each game.

@@ -1,0 +1,200 @@
+export class Unit {
+    constructor(x, y, team, type) {
+        this.x = x;
+        this.y = y;
+        this.team = team; // 'red' or 'blue'
+        this.type = type; // 'tank' or 'plane'
+        this.width = 40;
+        this.height = 20;
+        this.health = 100;
+        this.maxHealth = 100;
+        this.selected = false;
+        this.angle = 0; // Movement angle (for planes mostly, or ground slope)
+        this.alive = true;
+    }
+
+    takeDamage(amount) {
+        this.health -= amount;
+        if (this.health <= 0) {
+            this.health = 0;
+            this.alive = false;
+        }
+    }
+
+    draw(ctx) {
+        // Base Unit Draw (Subclasses override)
+        ctx.fillStyle = this.team === 'blue' ? '#3498db' : '#e74c3c';
+        if (this.selected) {
+            ctx.strokeStyle = '#f1c40f';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(this.x - this.width / 2 - 5, this.y - this.height - 5, this.width + 10, this.height + 10);
+        }
+    }
+}
+
+export class Tank extends Unit {
+    constructor(x, y, team) {
+        super(x, y, team, 'tank');
+        this.speed = 2;
+        this.turretAngle = team === 'blue' ? -Math.PI / 4 : -Math.PI * 0.75;
+    }
+
+    update(terrain, keys, boundsWidth) {
+        if (!this.selected && this.team === 'blue') return; // Only update movement if selected (or AI controlled externally)
+
+        if (this.team === 'blue') {
+            if (keys['ArrowLeft']) this.move(-1, terrain);
+            if (keys['ArrowRight']) this.move(1, terrain);
+        }
+    }
+
+    move(dir, terrain) {
+        this.x += dir * this.speed;
+        // Clamp to terrain
+        this.y = terrain.getHeightAt(this.x);
+        // Calculate angle based on terrain slope
+        const nextY = terrain.getHeightAt(this.x + 5);
+        this.angle = Math.atan2(nextY - this.y, 5);
+    }
+
+    draw(ctx) {
+        super.draw(ctx);
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle);
+
+        // Body
+        ctx.fillStyle = this.team === 'blue' ? '#2980b9' : '#c0392b';
+        ctx.fillRect(-15, -10, 30, 10); // Main Body
+        ctx.fillRect(-10, -15, 20, 10); // Turret Base
+
+        // Barrel (Independent rotation)
+        ctx.rotate(-this.angle); // Cancel body rotation for barrel
+        ctx.rotate(this.turretAngle);
+        ctx.fillStyle = '#2c3e50';
+        ctx.fillRect(0, -3, 25, 6);
+
+        ctx.restore();
+    }
+}
+
+export class Plane extends Unit {
+    constructor(x, y, team) {
+        super(x, y, team, 'plane');
+        this.y = 80 + Math.random() * 100; // Fly high
+        this.baseY = this.y;
+        this.speed = 2.5;
+        this.direction = team === 'blue' ? 1 : -1;
+        this.time = Math.random() * 100;
+    }
+
+    update(terrain, keys) {
+        // Controlled via keys if selected and blue
+        if (this.team === 'blue' && this.selected) {
+            if (keys['ArrowLeft']) this.x -= this.speed;
+            if (keys['ArrowRight']) this.x += this.speed;
+        } else if (this.team === 'red') {
+            // AI Movement (Simple patrol)
+            this.x += this.speed * this.direction;
+            if (this.x > 2000 || this.x < 0) this.direction *= -1;
+        }
+
+        // Ensure bounds
+        if (this.x < 0) this.x = 0;
+        if (this.x > 2000) this.x = 2000; // Assuming world width
+
+        this.time += 0.05;
+        this.y = this.baseY + Math.sin(this.time) * 5; // Slight hover effect
+    }
+
+    draw(ctx) {
+        super.draw(ctx);
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        if (this.direction < 0) ctx.scale(-1, 1);
+
+        ctx.fillStyle = this.team === 'blue' ? '#3498db' : '#e74c3c';
+
+        // Simple Plane Shape
+        ctx.beginPath();
+        ctx.moveTo(15, 0); // Nose
+        ctx.lineTo(-10, -10); // Tail top
+        ctx.lineTo(-10, 5); // Bottom
+        ctx.fill();
+
+        // Wing
+        ctx.fillStyle = '#ddd';
+        ctx.beginPath();
+        ctx.moveTo(5, 0);
+        ctx.lineTo(-5, 15);
+        ctx.lineTo(0, 0);
+        ctx.fill();
+
+        ctx.restore();
+    }
+}
+
+export class Projectile {
+    constructor(x, y, vx, vy, type) {
+        this.x = x;
+        this.y = y;
+        this.vx = vx;
+        this.vy = vy;
+        this.type = type; // 'missile', 'bomb'
+        this.radius = 4;
+        this.active = true;
+    }
+
+    update(gravity, wind) {
+        this.vy += gravity;
+        this.vx += wind * 0.05; // Wind effect
+        this.x += this.vx;
+        this.y += this.vy;
+    }
+
+    draw(ctx) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.type === 'bomb' ? '#2c3e50' : '#e67e22';
+        ctx.fill();
+    }
+}
+
+export class Structure extends Unit {
+    constructor(x, y, team, type) {
+        super(x, y, team, type); // type: 'bunker' or 'tower'
+        this.width = type === 'bunker' ? 50 : 30;
+        this.height = type === 'bunker' ? 20 : 60;
+        this.y -= this.height; // Sit ON terrain
+        this.health = type === 'bunker' ? 200 : 150;
+        this.maxHealth = this.health;
+    }
+
+    update(terrain) {
+        // Static
+    }
+
+    draw(ctx) {
+        // Base
+        ctx.fillStyle = this.team === 'blue' ? '#2980b9' : '#c0392b';
+        ctx.fillRect(this.x - this.width / 2, this.y, this.width, this.height);
+
+        // Detail
+        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        if (this.type === 'bunker') {
+            // Embrasures
+            ctx.fillRect(this.x - 15, this.y + 5, 10, 5);
+            ctx.fillRect(this.x + 5, this.y + 5, 10, 5);
+        } else {
+            // Tower head
+            ctx.fillRect(this.x - this.width / 2 - 5, this.y - 10, this.width + 10, 10);
+        }
+
+        // Health bar mini
+        const hpPct = this.health / this.maxHealth;
+        ctx.fillStyle = 'red';
+        ctx.fillRect(this.x - this.width / 2, this.y - 10, this.width, 5);
+        ctx.fillStyle = '#2ecc71';
+        ctx.fillRect(this.x - this.width / 2, this.y - 10, this.width * hpPct, 5);
+    }
+}

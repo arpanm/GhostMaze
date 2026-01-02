@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ahir's War Zone</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+</head>
+
+<body>
+    <div id="game-container">
+        <!-- Game Canvas -->
+        <canvas id="game-canvas"></canvas>
+
+        <!-- UI Overlay -->
+        <div id="ui-layer">
+
+            <!-- Start Screen -->
+            <div id="start-screen" class="screen active">
+                <h1 class="game-title">AHIR'S WAR ZONE</h1>
+                <div class="input-group">
+                    <label>Commander Name</label>
+                    <input type="text" id="player-name" placeholder="Enter Name" maxlength="15">
+                </div>
+                <div class="input-group">
+                    <label>Team Color</label>
+                    <div class="color-picker">
+                        <div class="color-option selected" data-color="#3498db" style="background: #3498db;"></div>
+                        <div class="color-option" data-color="#2ecc71" style="background: #2ecc71;"></div>
+                        <div class="color-option" data-color="#9b59b6" style="background: #9b59b6;"></div>
+                        <div class="color-option" data-color="#f1c40f" style="background: #f1c40f;"></div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Select Logo</label>
+                    <div class="logo-picker">
+                        <div class="logo-option selected" data-logo="🦅">🦅</div>
+                        <div class="logo-option" data-logo="🦁">🦁</div>
+                        <div class="logo-option" data-logo="🐺">🐺</div>
+                        <div class="logo-option" data-logo="🐲">🐲</div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Difficulty</label>
+                    <div class="difficulty-selector">
+                        <button class="diff-btn" data-diff="easy">EASY</button>
+                        <button class="diff-btn selected" data-diff="medium">MEDIUM</button>
+                        <button class="diff-btn" data-diff="hard">HARD</button>
+                    </div>
+                </div>
+                <button id="start-btn" class="primary-btn">DEPLOY TROOPS</button>
+                <div class="menu-actions-row"
+                    style="margin-top:10px; display:flex; gap:10px; width:100%; justify-content:center;">
+                    <button id="how-to-play-btn" class="secondary-btn" style="flex:1;">HOW TO PLAY</button>
+                    <button id="leaderboard-btn" class="secondary-btn" style="flex:1;">HALL OF FAME</button>
+                    <button id="credits-btn" class="secondary-btn" style="flex:1;">OUR STORY</button>
+                </div>
+
+                <div class="game-carousel-container" style="margin-top: 20px; width: 100%;">
+                    <h4
+                        style="color: #bdc3c7; border-bottom: 1px solid #555; padding-bottom: 5px; margin-bottom: 10px; justify-content: center;">
+                        Play Other Missions</h4>
+                    <div class="game-carousel" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;">
+                        <a href="../AhirSharkRace/index.html" class="game-card"
+                            style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; text-decoration: none; color: white; min-width: 100px; text-align: center;">
+                            <span class="card-icon" style="font-size: 1.5rem;">🦈</span>
+                            <h5 style="margin: 5px 0 0 0; font-size: 0.8rem;">Shark Race</h5>
+                        </a>
+                        <a href="../AhirsShootingBattle/index.html" class="game-card"
+                            style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; text-decoration: none; color: white; min-width: 100px; text-align: center;">
+                            <span class="card-icon" style="font-size: 1.5rem;">🔫</span>
+                            <h5 style="margin: 5px 0 0 0; font-size: 0.8rem;">Shooting Battle</h5>
+                        </a>
+                        <a href="../AhirsSnakeInARoom/index.html" class="game-card"
+                            style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; text-decoration: none; color: white; min-width: 100px; text-align: center;">
+                            <span class="card-icon" style="font-size: 1.5rem;">🐍</span>
+                            <h5 style="margin: 5px 0 0 0; font-size: 0.8rem;">Snake Room</h5>
+                        </a>
+                        <a href="../index.html" class="game-card"
+                            style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; text-decoration: none; color: white; min-width: 100px; text-align: center;">
+                            <span class="card-icon" style="font-size: 1.5rem;">👻</span>
+                            <h5 style="margin: 5px 0 0 0; font-size: 0.8rem;">Ghost Maze</h5>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How to Play Screen -->
+            <div id="how-to-play-screen" class="screen">
+                <h2>MISSION BRIEFING</h2>
+                <div class="instructions-content">
+                    <p><strong>Goal:</strong> Destroy all enemy units (Red Team) while protecting yours.</p>
+                    <p><strong>Controls:</strong></p>
+                    <ul>
+                        <li><strong>Select:</strong> Tap on your Tank or Plane.</li>
+                        <li><strong>Move:</strong> Use on-screen arrows or Keyboard Arrow keys.</li>
+                        <li><strong>Attack (Tank):</strong> Drag and release to aim & fire missile.</li>
+                        <li><strong>Attack (Plane):</strong> Tap 'DROP BOMB' button when above target.</li>
+                    </ul>
+                    <p><strong>Wind:</strong> Watch the wind indicator! It affects projectile path.</p>
+                    <p><strong>Shop:</strong> Earn points to buy reinforcements.</p>
+                </div>
+                <button id="back-from-help" class="secondary-btn">BACK</button>
+            </div>
+
+            <!-- HUD (Heads Up Display) -->
+            <div id="hud" class="screen">
+                <div class="top-bar">
+                    <div class="player-info">
+                        <span id="player-logo-display">🦅</span>
+                        <div class="bars">
+                            <div class="health-bar-container">
+                                <div id="player-health-bar" style="width: 100%;"></div>
+                            </div>
+                            <span id="score-display">0 PTS</span>
+                        </div>
+                    </div>
+                    <div class="wind-indicator">
+                        <span>WIND</span>
+                        <div id="wind-arrow">➔</div>
+                        <span id="wind-force">0</span>
+                    </div>
+                    <div class="enemy-info">
+                        <div class="bars">
+                            <div class="health-bar-container">
+                                <div id="enemy-health-bar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        <span id="enemy-logo-display">💀</span>
+                    </div>
+                    <button id="pause-btn">⏸</button>
+                </div>
+
+                <div class="controls-overlay">
+                    <div id="move-controls">
+                        <button id="move-left">⬅️</button>
+                        <button id="move-right">➡️</button>
+                    </div>
+                    <div id="action-controls">
+                        <button id="fire-btn" class="action-btn">FIRE</button> <!-- Context sensitive -->
+                    </div>
+                </div>
+
+                <button id="shop-btn">🛒 SHOP</button>
+            </div>
+
+            <!-- Pause Screen -->
+            <div id="pause-screen" class="screen">
+                <h2>GAME PAUSED</h2>
+                <div class="stats-box">
+                    <h3>Current Session</h3>
+                    <p>Score: <span id="pause-score">0</span></p>
+                    <p>Enemies Destroyed: <span id="pause-kills">0</span></p>
+                </div>
+                <button id="resume-btn" class="primary-btn">RESUME MISSION</button>
+                <button id="restart-btn" class="secondary-btn">RESTART MISSION</button>
+                <button id="exit-btn" class="danger-btn">ABORT MISSION (EXIT)</button>
+            </div>
+
+            <!-- Shop Screen -->
+            <div id="shop-screen" class="screen">
+                <h2>ARMORY</h2>
+                <div class="shop-balance">Funds: <span id="shop-currency">0</span></div>
+                <div class="shop-items">
+                    <div class="shop-item" data-cost="500" data-type="tank">
+                        <div class="icon">🚜</div>
+                        <div class="details">
+                            <h4>Reinforcement Tank</h4>
+                            <p>Basic ground unit.</p>
+                            <span>500 PTS</span>
+                        </div>
+                    </div>
+                    <div class="shop-item" data-cost="800" data-type="plane">
+                        <div class="icon">✈️</div>
+                        <div class="details">
+                            <h4>Bomber Plane</h4>
+                            <p>Air support unit.</p>
+                            <span>800 PTS</span>
+                        </div>
+                    </div>
+                    <div class="shop-item" data-cost="1000" data-type="repair">
+                        <div class="icon">🔧</div>
+                        <div class="details">
+                            <h4>Field Repair</h4>
+                            <p>Heal all units +50 HP</p>
+                            <span>1000 PTS</span>
+                        </div>
+                    </div>
+                </div>
+                <button id="close-shop-btn" class="secondary-btn">CLOSE</button>
+            </div>
+
+            <!-- Leaderboard Screen -->
+            <div id="leaderboard-screen" class="screen">
+                <h2>HALL OF FAME</h2>
+                <div id="leaderboard-full-list"
+                    style="width: 100%; max-width: 500px; max-height: 400px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 10px;">
+                    <!-- Populated by JS -->
+                </div>
+                <button id="back-from-leaderboard" class="secondary-btn">BACK</button>
+            </div>
+
+            <!-- Credits Screen -->
+            <div id="credits-screen" class="screen">
+                <h2>MISSION BRIEF: ORIGINS</h2>
+                <div class="credits-content" style="max-width: 600px; text-align: left; line-height: 1.6;">
+                    <p>Commander Ahir scanned the horizon. The battlefield was vast, the winds unpredictable.
+                        <br><br><i>"To win this war,"</i> he declared, <i>"we must master the elements. The wind shall
+                            guide our missiles!"</i>
+                        <br><br>And so, <b>Ahir's War Zone</b> was established.
+                        <br><br>In this simulation, every tank shot requires calculation, and every air raid demands
+                        timing. It is not just about firepower; it is about precision.
+                        <br><br>Created by: <strong>Ahir Mukherjee</strong> (Chief Strategist)<br>
+                        Support: <strong>Father</strong> (Logistics Officer)
+                    </p>
+                </div>
+                <button id="back-from-credits" class="secondary-btn">BACK</button>
+            </div>
+
+            <!-- Game Over Screen -->
+            <div id="game-over-screen" class="screen">
+                <h1 id="game-over-title">MISSION ACCOMPLISHED</h1>
+                <div class="final-score-box">
+                    <div class="score-row">
+                        <span>Enemies Destroyed:</span>
+                        <span id="final-kills">0</span>
+                    </div>
+                    <div class="score-row">
+                        <span>Survival Bonus:</span>
+                        <span id="final-survival">0</span>
+                    </div>
+                    <div class="score-row">
+                        <span>Economy Bonus:</span>
+                        <span id="final-economy">0</span>
+                    </div>
+                    <div class="score-row total">
+                        <span>TOTAL SCORE:</span>
+                        <span id="final-total">0</span>
+                    </div>
+                </div>
+                <div id="leaderboard-section">
+                    <h3>HALL OF FAME</h3>
+                    <div id="leaderboard-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+                <button id="play-again-btn" class="primary-btn">PLAY AGAIN</button>
+                <a href="index.html" id="menu-btn" class="secondary-btn">MAIN MENU</a>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>
