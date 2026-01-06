@@ -173,6 +173,15 @@ export class Game {
         this.spawnUnit('tank', 'red', this.canvas.width - 100);
         this.spawnUnit('plane', 'red', this.canvas.width - 50);
 
+        // Default Selection: Plane
+        this.units.forEach(u => {
+            if (u.team === 'blue' && u.type === 'plane') {
+                u.selected = true;
+            } else {
+                u.selected = false;
+            }
+        });
+
         // Spawn Structures (Smartly) - Enemy (Red)
         for (let i = 0; i < 4; i++) {
             let attempts = 0;
