@@ -417,7 +417,7 @@ button {
 }
 
 .game-carousel {
-    justify-content: flex-start;
+    justify-content: center;
     /* Fix scroll cut-off */
     padding-left: 10px;
     /* Add breathing room */
