@@ -417,9 +417,15 @@ button {
 }
 
 .game-carousel {
-    justify-content: center;
+    justify-content: flex-start;
     /* Fix scroll cut-off */
     padding-left: 10px;
     /* Add breathing room */
     padding-right: 10px;
+}
+
+@media (min-width: 768px) {
+    .game-carousel {
+        justify-content: center;
+    }
 }

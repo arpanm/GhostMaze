@@ -314,8 +314,14 @@ button:active {
     gap: 15px;
     overflow-x: auto;
     padding: 10px;
-    justify-content: center;
-    /* Allow scroll */
+    justify-content: flex-start;
+    /* Fix scroll cut-off */
+}
+
+@media (min-width: 768px) {
+    .game-carousel {
+        justify-content: center;
+    }
 }
 
 .game-card {
