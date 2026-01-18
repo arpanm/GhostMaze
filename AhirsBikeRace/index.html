@@ -50,6 +50,8 @@
 
                     <button id="start-btn" class="neon-btn">START RACE</button>
                     <button id="instructions-btn" class="secondary-btn">HOW TO PLAY</button>
+                    <button id="hall-of-fame-btn" class="secondary-btn">HALL OF FAME</button>
+                    <button id="credits-btn" class="secondary-btn">CREDITS</button>
                 </div>
                 <!-- Cross Linking Carousel -->
                 <div class="game-carousel-container">
@@ -88,6 +90,102 @@
                             <h5>Bike Race</h5>
                         </a>
                     </div>
+                </div>
+            </div>
+
+            <!-- How To Play Screen -->
+            <div id="how-to-play-screen" class="screen">
+                <h2>HOW TO PLAY</h2>
+                <div class="menu-box" style="max-width: 600px; text-align: left; max-height: 80vh; overflow-y: auto;">
+                    <div class="rule-block">
+                        <h3>OBJECTIVE</h3>
+                        <p>Race through different terrains, dodge traffic, fighting off opponents, and avoid the police
+                            to reach the finish line in one piece!</p>
+                    </div>
+                    <div class="rule-block">
+                        <h3>CONTROLS</h3>
+                        <ul>
+                            <li><strong>Arrow Keys / Touch:</strong> Steer Left/Right, Accelerate, Brake</li>
+                            <li><strong>Space / Action Button:</strong> Attack opponents (Kick/Punch)</li>
+                        </ul>
+                    </div>
+                    <div class="rule-block">
+                        <h3>RULES OF THE ROAD</h3>
+                        <ul style="font-size: 0.9rem; color: #ddd;">
+                            <li><strong>Combat:</strong> Get close to other bikers and hit <strong>Attack</strong> to
+                                knock them down for bonus points. Be careful, they hit back!</li>
+                            <li><strong>Crashes:</strong> Hitting cars, rocks, or trees will deplete your Health. If
+                                Health reaches 0, you crash and respawn (if you have time).</li>
+                            <li><strong>The Law:</strong> Police cars will chase you if you speed or fight. Don't let
+                                them pin you down or you'll get <strong>BUSTED</strong>!</li>
+                            <li><strong>Scoring:</strong> Points are awarded for Distance travelled, Speed maintained,
+                                and Opponent Takedowns.</li>
+                        </ul>
+                    </div>
+                    <button id="back-htp-btn" class="secondary-btn" style="width: 100%; margin-top: 20px;">BACK</button>
+                </div>
+            </div>
+
+            <!-- Credits Screen -->
+            <div id="credits-screen" class="screen">
+                <h2>CREDITS</h2>
+                <div class="credits-content menu-box" style="max-width: 500px; text-align: center;">
+                    <div class="credit-block">
+                        <p class="role">LEAD ARCHITECT</p>
+                        <h3 class="name">AHIR MUKHERJEE</h3>
+                    </div>
+
+                    <div class="credit-block" style="text-align: justify; padding: 0 1rem;">
+                        <p class="role" style="text-align: center;">THE ORIGIN STORY</p>
+                        <p style="color: #ddd; font-size: 0.95rem; line-height: 1.6; margin-top: 0.5rem;">
+                            Inspired by the adrenaline of classic road racing games, Ahir wanted to recreate that thrill
+                            in a modern browser experience.
+                            He loves the feeling of speed and the strategy of vehicular combat.
+                            <br><br>
+                            This project is a testament to his passion for gaming and coding.
+                            Built with the support of his father, who helped integrate the complex physics engine,
+                            debugged the AI opponents, and handled the deployments.
+                        </p>
+                    </div>
+
+                    <div class="credit-block">
+                        <p class="role">SPECIAL THANKS</p>
+                        <ul class="thanks-list">
+                            <li>Father (AI Tools, Physics Debugging & DevOps)</li>
+                            <li>Mother (Creative Direction)</li>
+                            <li>Open Source Community</li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-note">
+                        Powered by <strong>GhostEngine™</strong>
+                    </div>
+                    <button id="back-credits-btn" class="secondary-btn"
+                        style="width: 100%; margin-top: 20px;">BACK</button>
+                </div>
+            </div>
+
+            <!-- Leaderboard Screen -->
+            <div id="leaderboard-screen" class="screen">
+                <h2>HALL OF FAME</h2>
+                <div class="menu-box" style="width: 90%; max-width: 600px;">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>RANK</th>
+                                <th>NAME</th>
+                                <th>SCORE</th>
+                                <th>DIFF</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-list">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                    <p id="no-records-msg" style="text-align: center; color: #aaa; margin-top: 10px; display: none;">No
+                        records yet.</p>
+                    <button id="back-leaderboard-btn" class="secondary-btn"
+                        style="width: 100%; margin-top: 20px;">BACK</button>
                 </div>
             </div>
 

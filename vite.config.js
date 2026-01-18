@@ -12,7 +12,7 @@ export default defineConfig({
                 warZone: resolve(__dirname, 'AhirsWarZone/index.html'),
                 chess: resolve(__dirname, 'AhirsChess/index.html'),
                 snakeAndLadder: resolve(__dirname, 'AhirsSnakeAndLadder/index.html'),
-                roadRash: resolve(__dirname, 'AhirsRoadRash/index.html')
+                bikeRace: resolve(__dirname, 'AhirsBikeRace/index.html')
             }
         }
     }

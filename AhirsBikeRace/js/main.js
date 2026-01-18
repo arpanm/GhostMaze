@@ -63,6 +63,20 @@ function setupEventListeners() {
     document.getElementById('go-restart-btn').addEventListener('click', startGame);
     document.getElementById('go-home-btn').addEventListener('click', showMainMenu);
 
+    // Navigation Buttons
+    document.getElementById('instructions-btn').addEventListener('click', () => showScreen('how-to-play-screen'));
+    document.getElementById('back-htp-btn').addEventListener('click', () => showScreen('start-screen'));
+
+    document.getElementById('credits-btn').addEventListener('click', () => showScreen('credits-screen'));
+    document.getElementById('back-credits-btn').addEventListener('click', () => showScreen('start-screen'));
+
+    document.getElementById('hall-of-fame-btn').addEventListener('click', () => {
+        loadLeaderboard();
+        showScreen('leaderboard-screen');
+    });
+    document.getElementById('back-leaderboard-btn').addEventListener('click', () => showScreen('start-screen'));
+
+
     // Keyboard Controls
     window.addEventListener('keydown', (e) => {
         if (!game.running) return;
@@ -92,6 +106,44 @@ function setupEventListeners() {
     setupTouchControls();
 }
 
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden')); // Add hidden for consistency if used in CSS
+    const screen = document.getElementById(id);
+    if (screen) {
+        screen.classList.add('active');
+        screen.classList.remove('hidden');
+    }
+}
+
+function loadLeaderboard() {
+    const list = document.getElementById('leaderboard-list');
+    const msg = document.getElementById('no-records-msg');
+
+    // Clear list
+    list.innerHTML = '';
+
+    const scores = JSON.parse(localStorage.getItem('ahirs-bike-race-scores') || '[]');
+
+    if (scores.length === 0) {
+        msg.style.display = 'block';
+        return;
+    }
+
+    msg.style.display = 'none';
+
+    scores.forEach((s, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>#${i + 1}</td>
+            <td>${s.name}</td>
+            <td>${s.score}</td>
+            <td>${s.difficulty.toUpperCase()}</td>
+        `;
+        list.appendChild(tr);
+    });
+}
+
 function setupTouchControls() {
     // Detect touch device roughly
     if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
@@ -112,9 +164,7 @@ function setupTouchControls() {
 }
 
 function startGame() {
-    startScreen.classList.remove('active');
-    pauseScreen.classList.remove('active');
-    gameOverScreen.classList.remove('active');
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     hud.classList.add('active'); // Actually it's just visible by default z-index, but we keep it clear
 
     // Config Difficulty
@@ -135,8 +185,7 @@ function togglePause() {
 
 function showMainMenu() {
     game.running = false;
-    pauseScreen.classList.remove('active');
-    gameOverScreen.classList.remove('active');
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     startScreen.classList.add('active');
 }
 
@@ -215,24 +264,33 @@ function handleGameOver(stats) {
     const goPosVal = document.getElementById('pos-val');
 
     if (goRank) goRank.innerText = stats.rank ? `#${stats.rank}` : 'DNF';
-    if (goTakedowns) goTakedowns.innerText = game ? game.takedowns : (stats.takedowns || 0); // Pass from game or stats? Game has it.
-    // Better to pass everything in 'stats' object from game.js finishRace
-
-    // In game.js we passed: { score, distance, reason, rank }. 
-    // We should pass takedowns and health too for display purity.
-    // Relying on global 'game' object is risky if it's reset.
-    // Let's assume stats object has it (I will update game.js to pass it).
     if (goTakedowns) goTakedowns.innerText = stats.takedowns || 0;
     if (goHealth) goHealth.innerText = stats.healthBonus || 0;
     if (goPosVal) goPosVal.innerText = stats.rank ? `#${stats.rank}/5` : 'DNF';
 
-    // Save High Score
+    // Save High Score (Leaderboard List)
+    const newEntry = {
+        name: gameOptions.name,
+        score: stats.score,
+        difficulty: gameOptions.difficulty,
+        date: new Date().toLocaleDateString()
+    };
+
+    const scores = JSON.parse(localStorage.getItem('ahirs-bike-race-scores') || '[]');
+    scores.push(newEntry);
+
+    // Sort by score desc, keep top 10
+    scores.sort((a, b) => b.score - a.score);
+    const topScores = scores.slice(0, 10);
+
+    localStorage.setItem('ahirs-bike-race-scores', JSON.stringify(topScores));
+
+    // Also update legacy single high score key if needed, or deprecate it. Let's keep it for compatibility if referenced elsewhere.
     const diff = gameOptions.difficulty;
     const key = `roadrash_highscore_${diff}`;
     const highScore = localStorage.getItem(key) || 0;
     if (stats.score > highScore) {
         localStorage.setItem(key, stats.score);
-        // Show New Record msg?
     }
 }
 

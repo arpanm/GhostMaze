@@ -57,6 +57,7 @@
                     <button id="start-btn" class="primary-btn">START GAME</button>
 
                     <div class="menu-links">
+                        <button id="how-to-play-btn" class="link-btn">HOW TO PLAY</button>
                         <button id="credits-btn" class="link-btn">CREDITS</button>
                         <button id="hall-of-fame-btn" class="link-btn">HALL OF FAME</button>
                     </div>
@@ -155,24 +156,57 @@
                 </div>
             </div>
 
+            <!-- How To Play Screen -->
+            <div id="how-to-play-screen" class="screen hidden">
+                <h2>HOW TO PLAY</h2>
+                <div class="glass" style="text-align: left; max-width: 500px;">
+                    <ul style="list-style: none; padding:0; line-height: 2;">
+                        <li>🎲 <strong>Roll the Dice:</strong> Click ROLL to move your pawn.</li>
+                        <li>🐍 <strong>Beware of Snakes:</strong> Landing on a Snake's head sends you down to its tail!
+                        </li>
+                        <li>🪜 <strong>Climb Ladders:</strong> Landing on a Ladder's base boosts you up to the top!</li>
+                        <li>🏁 <strong>Reach 100:</strong> The first player to land EXACTLY on tile 100 wins.</li>
+                        <li>🤖 <strong>Bots:</strong> Watch out for AI opponents, they play fast!</li>
+                    </ul>
+                </div>
+                <button id="back-htp-btn" class="secondary-btn">BACK</button>
+            </div>
+
             <!-- Credits Screen -->
             <div id="credits-screen" class="screen hidden">
                 <h2>CREDITS</h2>
-                <div class="credits-text glass" style="text-align: left; line-height: 1.6;">
-                    <p><strong>Lead Architect:</strong> Ahir Mukherjee</p>
-                    <p><em>"Combining the chaos of snakes with the logic of code."</em></p>
-                    <br>
-                    <p><strong>Game Design:</strong> The Ahirs Studio Team</p>
-                    <p><strong>Inspiration:</strong> Ancient Indian game 'Moksha Patam'</p>
-                    <br>
-                    <p><strong>Special Thanks:</strong></p>
-                    <ul style="list-style-type: none; padding-left: 0;">
-                        <li>• Father (Logic & Testing)</li>
-                        <li>• Mother (Visual Direction)</li>
-                        <li>• The Open Source Community</li>
-                    </ul>
-                    <br>
-                    <p>Running on the Custom <strong>GhostEngine™</strong></p>
+                <div class="credits-content glass">
+                    <div class="credit-block">
+                        <p class="role">ARCHITECT OF INNOVATION</p>
+                        <h3 class="name">AHIR MUKHERJEE</h3>
+                        <p class="quote">"Building worlds, one line at a time."</p>
+                    </div>
+
+                    <div class="credit-block" style="text-align: justify; padding: 0 1rem;">
+                        <p class="role" style="text-align: center;">THE ORIGIN STORY</p>
+                        <p style="color: #ddd; font-size: 0.95rem; line-height: 1.6; margin-top: 0.5rem;">
+                            Snake & Ladder has been a household favorite for Ahir for years.
+                            While he loves the classic, he wanted to elevate the experience by adding
+                            <strong>dynamic visuals</strong> and <strong>fun elements</strong> that go beyond the board.
+                            <br><br>
+                            This project is his vision come to life—a blend of tradition and modern tech.
+                            He was supported by his father, who assisted with AI tools,
+                            helped squash tricky bugs, and managed the deployments.
+                        </p>
+                    </div>
+
+                    <div class="credit-block">
+                        <p class="role">SPECIAL THANKS</p>
+                        <ul class="thanks-list">
+                            <li>Father (AI Tools, Debugging & DevOps)</li>
+                            <li>Mother (Visual Direction)</li>
+                            <li>Open Source Community</li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-note">
+                        Powered by <strong>GhostEngine™</strong>
+                    </div>
                 </div>
                 <button id="back-credits-btn" class="secondary-btn">BACK</button>
             </div>
@@ -180,8 +214,21 @@
             <!-- Leaderboard Screen -->
             <div id="leaderboard-screen" class="screen hidden">
                 <h2>HALL OF FAME</h2>
-                <div class="leaderboard-list glass" id="leaderboard-list">
-                    <!-- Populated via JS -->
+                <div class="glass">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>RANK</th>
+                                <th>NAME</th>
+                                <th>MOVES</th>
+                                <th>DATE</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-list">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                    <p id="no-records-msg" style="display:none; color:#888;">No Heroes Yet. Be the First!</p>
                 </div>
                 <button id="back-leaderboard-btn" class="secondary-btn">BACK</button>
             </div>

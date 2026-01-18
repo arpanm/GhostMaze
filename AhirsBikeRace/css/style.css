@@ -7,6 +7,10 @@
     --glass-bg: rgba(0, 0, 0, 0.8);
 }
 
+.hidden {
+    display: none !important;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -411,4 +415,90 @@ button {
 .game-card h5 {
     margin: 0;
     font-size: 0.9rem;
+}
+
+/* New CSS for Credits, HTP, Leaderboard */
+.rule-block {
+    margin-bottom: 20px;
+}
+
+.rule-block h3 {
+    color: var(--secondary-color);
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+.rule-block ul {
+    padding-left: 20px;
+    line-height: 1.5;
+    font-size: 0.9rem;
+    color: #eee;
+}
+
+.credits-content .role {
+    color: #aaa;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    margin-bottom: 2px;
+}
+
+.credits-content .name {
+    color: white;
+    font-size: 1.5rem;
+    font-family: 'Russo One', sans-serif;
+    color: var(--secondary-color);
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px var(--secondary-color);
+}
+
+.thanks-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 5px;
+    color: #ddd;
+    line-height: 1.6;
+}
+
+.footer-note {
+    margin-top: 2rem;
+    font-size: 0.8rem;
+    color: #666;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1rem;
+}
+
+/* Leaderboard Table */
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+
+.leaderboard-table th {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid var(--secondary-color);
+    color: var(--secondary-color);
+    font-size: 0.9rem;
+}
+
+.leaderboard-table td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 1rem;
+}
+
+.leaderboard-table tr:first-child td {
+    color: gold;
+    font-weight: bold;
+    text-shadow: 0 0 5px gold;
+}
+
+.leaderboard-table tr:nth-child(2) td {
+    color: silver;
+}
+
+.leaderboard-table tr:nth-child(3) td {
+    color: #cd7f32;
+    /* Bronze */
 }

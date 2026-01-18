@@ -85,11 +85,43 @@ export class Game {
         document.getElementById('play-again-btn').addEventListener('click', () => location.reload()); // Simple reload for now
         document.getElementById('main-menu-back-btn').addEventListener('click', () => location.reload());
 
-        // Credits / Leaderboard
+        // Credits / Leaderboard / HTP
         document.getElementById('credits-btn').addEventListener('click', () => this.showScreen('credits-screen'));
         document.getElementById('back-credits-btn').addEventListener('click', () => this.showScreen('start-screen'));
-        document.getElementById('hall-of-fame-btn').addEventListener('click', () => this.showScreen('leaderboard-screen'));
+
+        document.getElementById('how-to-play-btn').addEventListener('click', () => this.showScreen('how-to-play-screen'));
+        document.getElementById('back-htp-btn').addEventListener('click', () => this.showScreen('start-screen'));
+
+        document.getElementById('hall-of-fame-btn').addEventListener('click', () => {
+            this.loadLeaderboard();
+            this.showScreen('leaderboard-screen');
+        });
         document.getElementById('back-leaderboard-btn').addEventListener('click', () => this.showScreen('start-screen'));
+    }
+
+    loadLeaderboard() {
+        const list = document.getElementById('leaderboard-list');
+        const msg = document.getElementById('no-records-msg');
+        list.innerHTML = '';
+
+        const scores = JSON.parse(localStorage.getItem('ahirs-snake-ladder-scores') || '[]');
+
+        if (scores.length === 0) {
+            msg.style.display = 'block';
+            return;
+        }
+
+        msg.style.display = 'none';
+        scores.forEach((s, i) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>#${i + 1}</td>
+                <td>${s.name}</td>
+                <td>${s.moves}</td>
+                <td>${s.date}</td>
+            `;
+            list.appendChild(tr);
+        });
     }
 
     showScreen(id) {
@@ -277,8 +309,10 @@ export class Game {
         document.getElementById('winner-moves').textContent = winner.moves;
         document.getElementById('winner-avatar').textContent = "🏆";
 
-        // Save Score
-        this.saveScore(winner.name, winner.moves);
+        // Save Score only if human
+        if (!winner.isBot) {
+            this.saveScore(winner.name, winner.moves);
+        }
     }
 
     saveScore(name, moves) {
