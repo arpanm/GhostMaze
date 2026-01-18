@@ -662,31 +662,20 @@ button {
     }
 }
 
-/* --- Cross-Game Carousel --- */
+/* Carousel */
 .game-carousel-container {
+    margin-top: 20px;
     width: 100%;
-    margin: 40px 0;
     text-align: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 30px;
-}
-
-.game-carousel-container h4 {
-    margin-bottom: 20px;
-    color: var(--primary-color);
-    font-family: 'Orbitron', sans-serif;
-    letter-spacing: 2px;
-    font-size: 1rem;
 }
 
 .game-carousel {
     display: flex;
-    gap: 20px;
+    gap: 15px;
     overflow-x: auto;
-    padding: 15px;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
+    padding: 10px;
     justify-content: flex-start;
+    /* Fix scroll cut-off */
 }
 
 @media (min-width: 768px) {
@@ -695,66 +684,31 @@ button {
     }
 }
 
-.game-carousel::-webkit-scrollbar {
-    height: 4px;
-}
-
-.game-carousel::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
-}
-
 .game-card {
-    flex: 0 0 220px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(46, 204, 113, 0.2);
-    backdrop-filter: blur(10px);
-    border-radius: 4px;
-    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
     text-decoration: none;
     color: white;
-    scroll-snap-align: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    transition: background 0.2s;
 }
 
 .game-card:hover {
-    background: rgba(46, 204, 113, 0.08);
-    border-color: var(--primary-color);
-    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.2);
 }
 
-.game-card .card-icon {
-    font-size: 2.5rem;
-    filter: drop-shadow(0 0 5px rgba(46, 204, 113, 0.5));
+.card-icon {
+    font-size: 2rem;
+    margin-bottom: 5px;
 }
 
 .game-card h5 {
     margin: 0;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1rem;
-    color: var(--primary-color);
-}
-
-.game-card p {
-    margin: 0;
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.6);
-    text-align: center;
-    font-family: 'Outfit', sans-serif;
-}
-
-.game-card .play-btn-mini {
-    margin-top: 10px;
-    background: var(--primary-color);
-    color: #0b1426;
-    padding: 6px 20px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    font-family: 'Orbitron', sans-serif;
-    clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+    font-size: 0.9rem;
 }
 
 /* --- Leaderboard/Hall of Fame --- */

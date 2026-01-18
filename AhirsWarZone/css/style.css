@@ -416,16 +416,51 @@ button {
     /* Lift up for easier thumb access */
 }
 
+/* Carousel */
+.game-carousel-container {
+    margin-top: 20px;
+    width: 100%;
+    text-align: center;
+}
+
 .game-carousel {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 10px;
     justify-content: flex-start;
     /* Fix scroll cut-off */
-    padding-left: 10px;
-    /* Add breathing room */
-    padding-right: 10px;
 }
 
 @media (min-width: 768px) {
     .game-carousel {
         justify-content: center;
     }
+}
+
+.game-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: white;
+    min-width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.game-card:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.card-icon {
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+
+.game-card h5 {
+    margin: 0;
+    font-size: 0.9rem;
 }

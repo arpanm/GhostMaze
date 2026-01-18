@@ -1,0 +1,414 @@
+/* Global Styles */
+:root {
+    --primary-color: #ff0055;
+    --secondary-color: #00eeff;
+    --bg-dark: #0a0a0a;
+    --text-light: #ffffff;
+    --glass-bg: rgba(0, 0, 0, 0.8);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body {
+    background-color: #000;
+    font-family: 'Orbitron', sans-serif;
+    color: var(--text-light);
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
+
+#game-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #333;
+    /* Fallback */
+}
+
+/* UI Overlay */
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* Let clicks pass through to canvas primarily, but screens enable it back */
+}
+
+/* Screens */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+}
+
+.screen.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* HUD (Always visible during gameplay) */
+#hud {
+    background: transparent;
+    backdrop-filter: none;
+    justify-content: space-between;
+    align-items: stretch;
+    padding: 20px;
+    z-index: 5;
+}
+
+#hud.active {
+    pointer-events: none;
+}
+
+/* Typography */
+.game-title {
+    font-family: 'Russo One', sans-serif;
+    font-size: 4rem;
+    text-align: center;
+    line-height: 1;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
+    animation: pulse 2s infinite;
+}
+
+.highlight {
+    color: var(--primary-color);
+    font-style: italic;
+    font-size: 5rem;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        text-shadow: 0 0 10px var(--primary-color);
+    }
+
+    50% {
+        transform: scale(1.05);
+        text-shadow: 0 0 20px var(--primary-color), 0 0 40px var(--primary-color);
+    }
+}
+
+/* Menu Elements */
+.menu-box {
+    background: var(--glass-bg);
+    padding: 2rem;
+    border: 2px solid var(--secondary-color);
+    border-radius: 10px;
+    box-shadow: 0 0 15px var(--secondary-color);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    min-width: 300px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.input-group label {
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+input,
+select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #444;
+    padding: 10px;
+    color: white;
+    font-family: inherit;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+}
+
+button {
+    padding: 12px 24px;
+    font-family: 'Russo One', sans-serif;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    margin-top: 10px;
+}
+
+.neon-btn {
+    background: var(--primary-color);
+    color: white;
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+.neon-btn:hover {
+    background: #ff3377;
+    box-shadow: 0 0 20px #ff3377;
+    transform: translateY(-2px);
+}
+
+.secondary-btn {
+    background: transparent;
+    border: 2px solid var(--secondary-color);
+    color: var(--secondary-color);
+}
+
+.secondary-btn:hover {
+    background: rgba(0, 238, 255, 0.1);
+    box-shadow: 0 0 10px var(--secondary-color);
+}
+
+.danger-btn {
+    background: transparent;
+    border: 2px solid #ff3333;
+    color: #ff3333;
+}
+
+.danger-btn:hover {
+    background: rgba(255, 51, 51, 0.1);
+    box-shadow: 0 0 10px #ff3333;
+}
+
+/* HUD styles */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 1.2rem;
+    text-shadow: 2px 2px 0 #000;
+}
+
+.gauge-cluster {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.speedometer {
+    font-size: 2.5rem;
+    font-family: 'Russo One', sans-serif;
+    color: var(--secondary-color);
+    text-shadow: 0 0 10px var(--secondary-color);
+}
+
+.speedometer .unit {
+    font-size: 1rem;
+    color: #aaa;
+}
+
+.health-bar-container {
+    width: 200px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid #555;
+    border-radius: 4px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.bar-label {
+    position: absolute;
+    left: -30px;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.health-bar {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff3333, #ffaa00, #00ff00);
+    transition: width 0.2s;
+}
+
+#message-area {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    color: var(--secondary-color);
+    text-shadow: 0 0 10px black;
+    pointer-events: none;
+    text-align: center;
+}
+
+/* Touch Controls */
+#touch-controls {
+    display: none;
+    /* Hidden on desktop by default, JS enables it on touch */
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    height: 150px;
+    pointer-events: none;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 20;
+}
+
+#touch-controls.active {
+    display: flex;
+}
+
+.d-pad,
+.action-buttons {
+    display: flex;
+    gap: 20px;
+    pointer-events: auto;
+    align-items: flex-end;
+}
+
+.t-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    color: white;
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px);
+    touch-action: manipulation;
+}
+
+.t-btn:active {
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(0.95);
+}
+
+.t-btn.big {
+    width: 80px;
+    height: 80px;
+    font-weight: bold;
+    background: rgba(0, 255, 0, 0.2);
+}
+
+.t-btn.sm {
+    width: 50px;
+    height: 50px;
+    font-size: 1rem;
+    background: rgba(255, 0, 0, 0.2);
+}
+
+.t-btn.med {
+    background: rgba(255, 170, 0, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .game-title {
+        font-size: 2.5rem;
+    }
+
+    .highlight {
+        font-size: 3rem;
+    }
+
+    #touch-controls {
+        display: flex;
+    }
+
+    /* Show on small screens by default or JS check */
+    .gauge-cluster {
+        top: 20px;
+        bottom: auto;
+        transform: scale(0.8);
+        transform-origin: top left;
+    }
+}
+
+/* Carousel */
+.game-carousel-container {
+    margin-top: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+.game-carousel {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 10px;
+    justify-content: flex-start;
+    /* Fix scroll cut-off */
+}
+
+@media (min-width: 768px) {
+    .game-carousel {
+        justify-content: center;
+    }
+}
+
+.game-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: white;
+    min-width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.game-card:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.card-icon {
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+
+.game-card h5 {
+    margin: 0;
+    font-size: 0.9rem;
+}

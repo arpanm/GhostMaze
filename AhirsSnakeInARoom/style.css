@@ -307,54 +307,51 @@ button {
 
 /* Carousel */
 .game-carousel-container {
-    margin-top: 2rem;
-    text-align: center;
+    margin-top: 20px;
     width: 100%;
-}
-
-.game-carousel-container h4 {
-    margin-bottom: 1rem;
-    color: #666;
-    font-size: 0.8rem;
-    text-transform: uppercase;
+    text-align: center;
 }
 
 .game-carousel {
     display: flex;
-    gap: 1rem;
+    gap: 15px;
     overflow-x: auto;
     padding: 10px;
-    justify-content: center;
+    justify-content: flex-start;
+    /* Fix scroll cut-off */
+}
+
+@media (min-width: 768px) {
+    .game-carousel {
+        justify-content: center;
+    }
 }
 
 .game-card {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
     padding: 15px;
-    width: 100px;
+    border-radius: 10px;
     text-decoration: none;
     color: white;
-    transition: transform 0.2s, background 0.2s;
+    min-width: 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    transition: background 0.2s;
 }
 
 .game-card:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .card-icon {
     font-size: 2rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 5px;
 }
 
 .game-card h5 {
-    font-size: 0.7rem;
-    font-weight: normal;
-    text-align: center;
+    margin: 0;
+    font-size: 0.9rem;
 }
 
 /* HUD */
