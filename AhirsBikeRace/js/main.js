@@ -12,6 +12,7 @@ const touchControls = document.getElementById('touch-controls');
 // UI Fields
 const speedVal = document.getElementById('speed-val');
 const scoreVal = document.getElementById('score-val');
+// const takedownVal = ... (Removed, queried dynamically to be safe)
 const distVal = document.getElementsByClassName('dist-val'); // if any
 const healthFill = document.getElementById('health-fill');
 const goScore = document.getElementById('go-score');
@@ -207,6 +208,24 @@ function handleGameOver(stats) {
     goScore.innerText = stats.score;
     goDistance.innerText = Math.floor(stats.distance / 1000);
 
+    // Detailed Stats
+    const goRank = document.getElementById('go-rank');
+    const goTakedowns = document.getElementById('go-takedowns');
+    const goHealth = document.getElementById('go-health');
+    const goPosVal = document.getElementById('pos-val');
+
+    if (goRank) goRank.innerText = stats.rank ? `#${stats.rank}` : 'DNF';
+    if (goTakedowns) goTakedowns.innerText = game ? game.takedowns : (stats.takedowns || 0); // Pass from game or stats? Game has it.
+    // Better to pass everything in 'stats' object from game.js finishRace
+
+    // In game.js we passed: { score, distance, reason, rank }. 
+    // We should pass takedowns and health too for display purity.
+    // Relying on global 'game' object is risky if it's reset.
+    // Let's assume stats object has it (I will update game.js to pass it).
+    if (goTakedowns) goTakedowns.innerText = stats.takedowns || 0;
+    if (goHealth) goHealth.innerText = stats.healthBonus || 0;
+    if (goPosVal) goPosVal.innerText = stats.rank ? `#${stats.rank}/5` : 'DNF';
+
     // Save High Score
     const diff = gameOptions.difficulty;
     const key = `roadrash_highscore_${diff}`;
@@ -218,14 +237,30 @@ function handleGameOver(stats) {
 }
 
 function updateHud(data) {
-    speedVal.innerText = data.speed;
-    scoreVal.innerText = data.score;
-    document.getElementById('pos-val').innerText = '1/12'; // Mock position for now
+    if (speedVal) speedVal.innerText = data.speed;
+    if (scoreVal) scoreVal.innerText = data.score;
+
+    const tkElem = document.getElementById('takedowns-val');
+    if (tkElem) tkElem.innerText = data.takedowns || 0;
+
+    const timerVal = document.getElementById('time-val');
+    if (timerVal) {
+        let mins = Math.floor(game.time / 60);
+        let secs = Math.floor(game.time % 60);
+        timerVal.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    const posVal = document.getElementById('pos-val');
+    let posNo = data.rank ? data.rank : (data.rank || 1); // Pass from game or stats? Game has it.
+    if (posVal) posVal.innerText = posNo + '/5';
 
     // Health Bar
-    healthFill.style.width = `${data.health}%`;
-    if (data.health < 30) healthFill.style.background = '#ff0000';
-    else healthFill.style.background = 'linear-gradient(90deg, #ff3333, #ffaa00, #00ff00)';
+    if (healthFill) {
+        let hp = Math.max(0, data.health);
+        healthFill.style.width = `${hp}%`;
+        if (hp < 30) healthFill.style.background = '#ff0000';
+        else healthFill.style.background = 'linear-gradient(90deg, #ff3333, #ffaa00, #00ff00)';
+    }
 }
 
 function showMessage(text) {

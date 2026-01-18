@@ -1,0 +1,27 @@
+# Task List: Ahirs Snake & Ladder
+
+- [/] Project Setup <!-- id: 0 -->
+    - [x] Create directory structure (`AhirsSnakeAndLadder`, `css`, `js`, `assets`) <!-- id: 1 -->
+    - [x] Create initial `index.html` (Screens: Start, Game, Win, Credits) <!-- id: 2 -->
+    - [x] Create initial `style.css` (Theming, Responsive Grid/Canvas container) <!-- id: 3 -->
+    - [x] Create core JS files (`main.js`, `game.js`, `board.js`, `player.js`, `utils.js`) <!-- id: 4 -->
+- [ ] Visuals & Board Logic <!-- id: 10 -->
+    - [ ] **Board Polish**: "Super cool" dynamic board colors & fancy Ladder graphics <!-- id: 11 -->
+    - [ ] **Dynamic Snakes**: Procedural, wiggling/breathing snake animations <!-- id: 12 -->
+    - [ ] **Logic Fix**: Ensure Snake Head and Ladder Bottom never overlap <!-- id: 33 -->
+    - [ ] **Dice**: Fix 3D animation to reset correctly after each roll <!-- id: 17 -->
+- [ ] Gameplay & Fun <!-- id: 50 -->
+    - [ ] **Opponents**: Add 1-3 AI Opponents selection <!-- id: 51 -->
+    - [ ] **Fun Elements**: Add Mystery Tiles / Golden Dice / Teleport events <!-- id: 52 -->
+    - [ ] **Dynamic Snakes**: Make snakes move/slither across the board occasionally <!-- id: 53 -->
+- [ ] UI & Navigation <!-- id: 16 -->
+    - [ ] **Pause Button**: Change hamburger to proper Pause icon <!-- id: 60 -->
+    - [ ] **Exit Link**: Fix to go to Game Start Screen, not Ghost Game <!-- id: 61 -->
+    - [ ] **Credits**: Add detailed storytelling content <!-- id: 62 -->
+    - [ ] **Winning Screen**: Fix 0 moves count & implement Hall of Fame saving <!-- id: 63 -->
+- [ ] Audio & FX <!-- id: 70 -->
+    - [ ] **Sound**: Roll, Move, Snake Bite, Ladder Climb, Win, Finish Line <!-- id: 71 -->
+    - [ ] **FX**: Particles/Confetti on win, visual cues for events <!-- id: 72 -->
+- [ ] Cross-Linking <!-- id: 21 -->
+    - [ ] Add Snake & Ladder card to ALL other games <!-- id: 22 -->
+    - [ ] Add other games to this game's carousel <!-- id: 23 -->

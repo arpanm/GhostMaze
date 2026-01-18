@@ -95,6 +95,7 @@
             <div id="hud" class="screen">
                 <div class="top-bar">
                     <div class="score-box">SCORE: <span id="score-val">0</span></div>
+                    <div class="score-box" style="color: #ff4444;">HIJACKS: <span id="takedowns-val">0</span></div>
                     <div class="timer-box">TIME: <span id="time-val">00:00</span></div>
                     <div class="pos-box">POS: <span id="pos-val">1/20</span></div>
                 </div>
@@ -128,8 +129,10 @@
             <div id="game-over-screen" class="screen">
                 <h2 id="go-title">GAME OVER</h2>
                 <div class="stats-box">
-                    <p>Distance: <span id="go-distance">0</span> km</p>
+                    <p>Rank: <span id="go-rank">-</span></p>
                     <p>Takedowns: <span id="go-takedowns">0</span></p>
+                    <p>Health Bonus: <span id="go-health">0</span></p>
+                    <p>Distance: <span id="go-distance">0</span> km</p>
                     <p class="final-score">Total Score: <span id="go-score">0</span></p>
                 </div>
                 <button id="go-restart-btn" class="neon-btn">RACE AGAIN</button>

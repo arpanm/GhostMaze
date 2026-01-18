@@ -1,4 +1,5 @@
 import { images } from './assets.js';
+import { SoundManager } from './audio.js';
 import Entity from './entities/Entity.js';
 import Car from './entities/Car.js';
 import Opponent from './entities/Opponent.js';
@@ -72,10 +73,6 @@ export class Game {
             PLAYER_STRAIGHT: { x: 0, y: 0, w: 64, h: 64, imageId: 'player' },
             TREE: { x: 0, y: 0, w: 48, h: 48, scale: 20, imageId: 'obstacles' },
             ROCK: { x: 48, y: 0, w: 48, h: 48, scale: 10, imageId: 'obstacles' },
-            CAR: { x: 0, y: 0, w: 64, h: 64, scale: 8, imageId: 'car' },
-            POLICE: { x: 0, y: 0, w: 64, h: 64, scale: 7, imageId: 'police' },
-            COMPETITOR1: { x: 0, y: 0, w: 64, h: 64, scale: 7, imageId: 'competitor1' },
-            COMPETITOR2: { x: 0, y: 0, w: 64, h: 64, scale: 7, imageId: 'competitor2' }
         };
 
         // Fallback checks
@@ -97,6 +94,8 @@ export class Game {
         this.entities = []; // Cars, Opponents
         this.police = new Police(0, 0);
 
+        this.sound = new SoundManager();
+        this.screenShake = 0; // x, y offset intensity
 
         // Resize listener
         window.addEventListener('resize', () => this.resize());
@@ -120,11 +119,17 @@ export class Game {
         this.reset();
         this.running = true;
         this.paused = false;
+
+        // Audio
+        this.sound.init();
+        this.sound.startEngine();
+
         this.lastTime = performance.now();
         requestAnimationFrame((t) => this.loop(t));
     }
 
     reset() {
+        this.state = 'RUNNING';
         this.segments = [];
         this.createRoad();
 
@@ -132,6 +137,7 @@ export class Game {
         this.player.x = 0;
         this.position = 0;
         this.score = 0;
+        this.takedowns = 0;
         this.health = 100;
         this.time = 0;
         this.distance = 0;
@@ -314,6 +320,7 @@ export class Game {
         this.lastTime = now;
 
         if (!this.paused) {
+            this.time += this.dt; // Increment time
             try {
                 this.update(this.dt);
                 this.draw();
@@ -358,12 +365,34 @@ export class Game {
         this.draw();
     }
 
+    getRank() {
+        let rank = 1;
+        // Position on the loop
+        let pLocalZ = this.position;
+
+        this.entities.forEach(e => {
+            if (!(e instanceof Opponent)) return;
+            // Check relative distance in loop
+            let dist = e.z - pLocalZ;
+            if (dist < -this.trackLength / 2) dist += this.trackLength;
+            if (dist > this.trackLength / 2) dist -= this.trackLength;
+
+            // If dist > 0, they are ahead in the loop
+            if (dist > 0) rank++;
+        });
+        return rank;
+    }
+
     updateGameLogic(dt) {
         let playerSegment = this.findSegment(this.position + this.player.z);
         let speedPercent = this.player.speed / this.player.maxSpeed;
 
         this.position = (this.position + this.player.speed * dt);
         this.distance += this.player.speed * dt;
+
+        // Shake Decay
+        if (this.screenShake > 0) this.screenShake -= dt * 30;
+        if (this.screenShake < 0) this.screenShake = 0;
 
         // Finish Line Logic
         if (this.position >= this.trackLength) {
@@ -392,7 +421,7 @@ export class Game {
             // Check for nearby opponents to hit
             [...this.entities, this.police].forEach(e => {
                 if (Math.abs(e.z - (this.position + this.player.z)) < 200) { // Close Z
-                    if (this.overlap(this.player.x, 1.2, e.offset, 0.8)) { // Wide overlap check for reach
+                    if (this.overlap(this.player.x, 1.8, e.offset, 1.0)) { // Widen overlap check for easier hits
                         // HIT!
                         // Push opponent away
                         let pushDir = (e.offset > this.player.x) ? 1 : -1;
@@ -400,6 +429,10 @@ export class Game {
 
                         // Visual/Audio feedback
                         this.ui.onMessage("HIT!");
+                        this.sound.playHit();
+                        this.screenShake = 10;
+                        this.takedowns++;
+                        this.score += 200;
 
                         // Slow them down?
                         if (e.speed) e.speed *= 0.9;
@@ -418,6 +451,8 @@ export class Game {
                 let sprite = playerSegment.sprites[i];
                 let spriteW = 0.5;
                 if (this.overlap(this.player.x, 0.8, sprite.offset, spriteW)) {
+                    this.sound.playCrash();
+                    this.screenShake = 20;
                     this.crash("CRASHED_STATIC"); // Pass reason
                 }
             }
@@ -445,6 +480,8 @@ export class Game {
                         this.onPoliceCatch();
                     } else {
                         // Crash
+                        this.sound.playCrash();
+                        this.screenShake = 20;
                         this.crash("CRASHED_VEHICLE");
                     }
                 }
@@ -455,11 +492,18 @@ export class Game {
         this.player.speed = Math.max(0, Math.min(this.player.speed, this.player.maxSpeed));
 
         // Update HUD
+        // Update HUD (Dynamic Rank)
+        let totalOpponents = this.entities.length;
+        let rank = this.getRank();
+
         this.ui.onUpdateHud({
             speed: Math.floor(this.player.speed / 100),
             distance: Math.floor(this.distance / 1000),
-            score: Math.floor(this.distance / 10),
-            position: this.position,
+            score: this.score,
+            takedowns: this.takedowns,
+            time: this.time,
+            position: `${rank}/${totalOpponents + 1}`,
+            rank: rank,
             health: this.health
         });
     }
@@ -473,7 +517,48 @@ export class Game {
 
     finishRace(reason = 'FINISHED') {
         this.running = false;
-        this.ui.onGameOver({ score: this.score + 5000, distance: this.distance, reason: reason });
+        this.sound.stopEngine();
+
+        let rank = 1;
+        // Count opponents ahead
+        this.entities.forEach(e => {
+            if (!(e instanceof Opponent)) return;
+            // If entity is opponent (has spriteDef.imageId with 'competitor')
+            // And is ahead of player (or finished)
+            // Simple Z check relative to trackLength? 
+            // Opponents loop too right now.
+            // We need to know who is "ahead" in race distance? 
+            // Assuming 1 lap, z position check is enough if we unwrapped?
+            // Actually, opponents loop. 
+            // Let's just check opponents whose distance traveled > player distance?
+            // Entity class updates 'z'. Opponent updates 'z'. They don't track total distance.
+            // Hack: Check `e.z` vs `player.z` in local segment? No.
+
+            // Simpler Rank: Just count how many opponents are in front of player CURRENTLY?
+            // No, that's unfair if they are a lap behind.
+            // Given V1, let's assume if they are visually 'ahead' in Z (wrapped or not) but simpler:
+            // Rank = 1 + Count(Opponents with speed > 0 AND z > player.z)
+            // This is imperfect but works for a linear race.
+            // IMPROVED: On finish, check opponent positions.
+            if (e.z > (this.position + this.player.z)) rank++;
+        });
+
+        let finishBonus = 500;
+        if (rank === 1) finishBonus = 5000;
+        else if (rank === 2) finishBonus = 4000;
+        else if (rank === 3) finishBonus = 3000;
+
+        let healthBonus = Math.floor(this.health) * 10;
+        let totalScore = finishBonus + (this.takedowns * 200) + healthBonus;
+
+        this.ui.onGameOver({
+            score: totalScore,
+            distance: this.distance,
+            reason: reason,
+            rank: rank,
+            takedowns: this.takedowns,
+            healthBonus: healthBonus
+        });
     }
 
     accel(v, a, dt) {
@@ -497,7 +582,15 @@ export class Game {
         if (this.health <= 0) {
             this.health = 0;
             this.running = false;
-            this.ui.onGameOver({ score: this.score, distance: this.distance, reason: reason });
+            this.sound.stopEngine();
+            this.ui.onGameOver({
+                score: this.score + (this.takedowns * 200), // No finish bonus, no health bonus (0)
+                distance: this.distance,
+                reason: reason,
+                rank: null, // DNF
+                takedowns: this.takedowns,
+                healthBonus: 0
+            });
         }
     }
 
@@ -511,6 +604,16 @@ export class Game {
 
     draw() {
         this.ctx.clearRect(0, 0, this.width, this.height);
+
+        let shakeX = 0;
+        let shakeY = 0;
+        if (this.screenShake > 0) {
+            shakeX = (Math.random() - 0.5) * this.screenShake;
+            shakeY = (Math.random() - 0.5) * this.screenShake;
+        }
+
+        this.ctx.save();
+        this.ctx.translate(shakeX, shakeY);
 
         // Background - Parallax
         // Simple: draw image tiled
@@ -595,24 +698,7 @@ export class Game {
                 // e.z is 0..trackLength.
 
                 if (ez >= segmentZStart && ez < segmentZEnd) {
-                    // Render this entity
-                    let scale = segment.p1.screen.scale;
-                    let sx = segment.p1.screen.x + (scale * e.offset * this.roadWidth * this.width / 2);
-                    let sy = segment.p1.screen.y;
-                    // Sprite selection
-                    // Sprite selection
-                    // Generic Sprite Rendering using spriteName
-                    let spriteId = e.spriteName || 'CAR';
-                    let spriteDef = this.sprites[spriteId];
-
-                    if (spriteDef) {
-                        let img = images[spriteDef.imageId];
-                        if (img) {
-                            this.renderSprite(img, { w: e.width, h: e.height, ...spriteDef }, scale, sx, sy, -0.5, -1);
-                        }
-                    }
-
-
+                    e.render(this.ctx, this, segment);
                 }
             });
         }

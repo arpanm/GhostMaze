@@ -4,7 +4,12 @@ export default class Opponent extends Entity {
     constructor(z, offset, speed) {
         super(z, offset, speed);
         // Randomly pick a competitor sprite
-        this.spriteName = Math.random() > 0.5 ? 'COMPETITOR1' : 'COMPETITOR2';
+        const isComp1 = Math.random() > 0.5;
+        this.spriteDef = {
+            imageId: isComp1 ? 'competitor1' : 'competitor2',
+            scale: 7,
+            w: 64, h: 64
+        };
         this.baseSpeed = speed;
         this.changeLaneTimer = 0;
     }
