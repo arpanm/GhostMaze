@@ -1,11 +1,16 @@
 export class Player {
-    constructor(name, color) {
+    constructor(name, color, isBot) {
         this.name = name;
         this.color = color;
+        this.isBot = isBot; // Ensure isBot is saved
         this.currentTile = 1;
         this.renderTile = 1; // For smooth animation
         this.targetTile = 1;
-        this.moveSpeed = 0.1; // Tiles per frame? No, interpolation factor
+        this.moveSpeed = 0.1;
+
+        // Asset
+        this.pawnImg = new Image();
+        this.pawnImg.src = 'assets/pawn.png';
     }
 
     reset() {
@@ -19,12 +24,7 @@ export class Player {
     }
 
     update() {
-        // Simple lerp for now, can improve to hop tile by tile
         if (Math.abs(this.renderTile - this.targetTile) > 0.1) {
-            const di = this.targetTile > this.renderTile ? 1 : -1;
-            // Move 0.2 tiles per frame
-            // this.renderTile += 0.2 * di;
-
             // Lerp approach
             this.renderTile += (this.targetTile - this.renderTile) * 0.1;
 
@@ -39,21 +39,51 @@ export class Player {
     }
 
     draw(board, ctx) {
-        const pos = board.getTileCenter(Math.round(this.renderTile));
+        // Position relative to board grid
+        const localPos = board.getTileCenter(this.renderTile);
+
+        // Apply Global Board Offset
+        const x = localPos.x + board.offsetX;
+        const y = localPos.y + board.offsetY;
+
+        const size = board.tileW * 0.6; // Pawn size relative to tile
+
+        ctx.save();
+        ctx.translate(x, y);
+
+        // Draw Player Color Base (Shadow/Glow)
+        ctx.shadowColor = this.color;
+        ctx.shadowBlur = 15;
+        ctx.fillStyle = this.color;
 
         ctx.beginPath();
-        ctx.fillStyle = this.color;
-        ctx.arc(pos.x, pos.y, 15, 0, Math.PI * 2);
+        ctx.ellipse(0, size / 2 - 5, size / 2, size / 4, 0, 0, Math.PI * 2); // Oval shadow at base
         ctx.fill();
 
-        ctx.strokeStyle = 'white';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        ctx.shadowBlur = 0;
 
-        // Pulse effect
-        ctx.beginPath();
-        ctx.strokeStyle = `rgba(${this.color === '#00ff00' ? '0,255,0' : '255,255,255'}, 0.5)`;
-        ctx.arc(pos.x, pos.y, 20 + Math.sin(performance.now() * 0.01) * 2, 0, Math.PI * 2);
-        ctx.stroke();
+        // Draw Pawn Image
+        if (this.pawnImg.complete) {
+            // Draw image centered horizontally, and sitting on the pivot (bottom aligned to center)
+            // Center of tile is (0,0) here. 
+            // We want the pawn's base to be at (0,0).
+            ctx.drawImage(this.pawnImg, -size / 2, -size + size / 4, size, size); // +size/4 to shift down slightly so base is at handling point
+
+            // Tint
+            ctx.globalCompositeOperation = 'source-atop';
+            ctx.fillStyle = this.color;
+            ctx.globalAlpha = 0.3;
+            // ctx.fillRect(-size/2, -size, size, size); 
+            ctx.globalAlpha = 1.0;
+            ctx.globalCompositeOperation = 'source-over';
+        } else {
+            // Fallback circle
+            ctx.beginPath();
+            ctx.fillStyle = this.color;
+            ctx.arc(0, 0, 15, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        ctx.restore();
     }
 }
