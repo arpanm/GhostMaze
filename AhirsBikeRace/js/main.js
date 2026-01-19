@@ -147,7 +147,8 @@ function loadLeaderboard() {
 function setupTouchControls() {
     // Detect touch device roughly
     if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-        touchControls.classList.add('active');
+        // touchControls.classList.add('active'); // Don't show immediately
+        game.isTouchDevice = true; // Store flag in game object or globally
     }
 
     const bindTouch = (id, key) => {
@@ -170,6 +171,10 @@ function startGame() {
     // Config Difficulty
     // In game.js we just store options for now, but we should parse them
     game.start(gameOptions);
+
+    if (game.isTouchDevice) {
+        touchControls.classList.add('active');
+    }
 }
 
 function togglePause() {
@@ -186,12 +191,14 @@ function togglePause() {
 function showMainMenu() {
     game.running = false;
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    touchControls.classList.remove('active');
     startScreen.classList.add('active');
 }
 
 function handleGameOver(stats) {
     game.running = false;
     hud.classList.remove('active');
+    touchControls.classList.remove('active');
     gameOverScreen.classList.add('active');
 
     const titleIdx = gameOverScreen.querySelector('h2');

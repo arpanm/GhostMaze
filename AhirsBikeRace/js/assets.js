@@ -1,14 +1,14 @@
 export const images = {};
 
 const assetsToLoad = [
-    { name: 'player', src: 'images/player.png' },
-    { name: 'background', src: 'images/background.png' },
-    { name: 'obstacles', src: 'images/obstacles.png' },
-    { name: 'car', src: 'images/car.png' },
-    { name: 'police', src: 'images/police.png' },
-    { name: 'police_car', src: 'images/police.png' },
-    { name: 'competitor1', src: 'images/competitor1.png' },
-    { name: 'competitor2', src: 'images/competitor2.png' }
+    { name: 'player', src: new URL('../images/player.png', import.meta.url).href },
+    { name: 'background', src: new URL('../images/background.png', import.meta.url).href },
+    { name: 'obstacles', src: new URL('../images/obstacles.png', import.meta.url).href },
+    { name: 'car', src: new URL('../images/car.png', import.meta.url).href },
+    { name: 'police', src: new URL('../images/police.png', import.meta.url).href },
+    { name: 'police_car', src: new URL('../images/police.png', import.meta.url).href },
+    { name: 'competitor1', src: new URL('../images/competitor1.png', import.meta.url).href },
+    { name: 'competitor2', src: new URL('../images/competitor2.png', import.meta.url).href }
 ];
 
 export async function loadAssets() {

@@ -62,7 +62,7 @@ canvas {
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(5px);
@@ -70,6 +70,8 @@ canvas {
     pointer-events: none;
     transition: opacity 0.3s ease;
     z-index: 10;
+    overflow-y: auto;
+    padding: 40px 20px 120px 20px;
 }
 
 .screen.active {
@@ -353,10 +355,6 @@ button {
 
     .highlight {
         font-size: 3rem;
-    }
-
-    #touch-controls {
-        display: flex;
     }
 
     /* Show on small screens by default or JS check */

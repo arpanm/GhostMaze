@@ -10,7 +10,7 @@ export class Player {
 
         // Asset
         this.pawnImg = new Image();
-        this.pawnImg.src = 'assets/pawn.png';
+        this.pawnImg.src = new URL('../assets/pawn.png', import.meta.url).href;
     }
 
     reset() {

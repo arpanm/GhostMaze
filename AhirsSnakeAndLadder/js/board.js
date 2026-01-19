@@ -19,9 +19,9 @@ export class Board {
 
         // Assets
         this.snakeImg = new Image();
-        this.snakeImg.src = 'assets/snake.png';
+        this.snakeImg.src = new URL('../assets/snake.png', import.meta.url).href;
         this.ladderImg = new Image();
-        this.ladderImg.src = 'assets/ladder.png';
+        this.ladderImg.src = new URL('../assets/ladder.png', import.meta.url).href;
     }
 
     resize(w, h) {

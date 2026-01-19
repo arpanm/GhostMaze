@@ -54,7 +54,7 @@ body {
     transition: opacity 0.3s ease;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 40px 20px 100px 20px;
+    padding: 40px 20px 150px 20px;
     /* Extra bottom padding for mobile bars */
 }
 
@@ -310,6 +310,8 @@ button {
     margin-top: 20px;
     width: 100%;
     text-align: center;
+    position: relative;
+    z-index: 50;
 }
 
 .game-carousel {
