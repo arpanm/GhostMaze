@@ -6,7 +6,9 @@ export class Player {
         this.currentTile = 1;
         this.renderTile = 1; // For smooth animation
         this.targetTile = 1;
+        this.targetTile = 1;
         this.moveSpeed = 0.1;
+        this.moves = 0;
 
         // Asset
         this.pawnImg = new Image();
@@ -16,7 +18,9 @@ export class Player {
     reset() {
         this.currentTile = 1;
         this.renderTile = 1;
+        this.renderTile = 1;
         this.targetTile = 1;
+        this.moves = 0;
     }
 
     setTarget(tile) {
