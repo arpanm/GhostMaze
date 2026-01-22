@@ -96,7 +96,7 @@
             <!-- How To Play Screen -->
             <div id="how-to-play-screen" class="screen">
                 <h2>HOW TO PLAY</h2>
-                <div class="menu-box" style="max-width: 600px; text-align: left; max-height: 80vh; overflow-y: auto;">
+                <div class="menu-box scrollable-content">
                     <div class="rule-block">
                         <h3>OBJECTIVE</h3>
                         <p>Race through different terrains, dodge traffic, fighting off opponents, and avoid the police
@@ -129,7 +129,7 @@
             <!-- Credits Screen -->
             <div id="credits-screen" class="screen">
                 <h2>CREDITS</h2>
-                <div class="credits-content menu-box" style="max-width: 500px; text-align: center;">
+                <div class="credits-content menu-box scrollable-content">
                     <div class="credit-block">
                         <p class="role">LEAD ARCHITECT</p>
                         <h3 class="name">AHIR MUKHERJEE</h3>
@@ -168,20 +168,22 @@
             <!-- Leaderboard Screen -->
             <div id="leaderboard-screen" class="screen">
                 <h2>HALL OF FAME</h2>
-                <div class="menu-box" style="width: 90%; max-width: 600px;">
-                    <table class="leaderboard-table">
-                        <thead>
-                            <tr>
-                                <th>RANK</th>
-                                <th>NAME</th>
-                                <th>SCORE</th>
-                                <th>DIFF</th>
-                            </tr>
-                        </thead>
-                        <tbody id="leaderboard-list">
-                            <!-- Populated via JS -->
-                        </tbody>
-                    </table>
+                <div class="menu-box scrollable-content">
+                    <div class="table-responsive">
+                        <table class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th>RANK</th>
+                                    <th>NAME</th>
+                                    <th>SCORE</th>
+                                    <th>DIFF</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-list">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
                     <p id="no-records-msg" style="text-align: center; color: #aaa; margin-top: 10px; display: none;">No
                         records yet.</p>
                     <button id="back-leaderboard-btn" class="secondary-btn"
@@ -239,13 +241,14 @@
 
             <!-- Touch Controls (Mobile Only) -->
             <div id="touch-controls">
-                <div class="d-pad">
-                    <button id="btn-left" class="t-btn">◀</button>
-                    <button id="btn-right" class="t-btn">▶</button>
+                <div id="joystick-container">
+                    <div id="joystick-zone">
+                        <div id="joystick-knob"></div>
+                    </div>
                 </div>
+                <!-- Only Brake and Attack remain. Accelerate is on Joystick Up. -->
                 <div class="action-buttons">
                     <button id="btn-brake" class="t-btn sm">B</button>
-                    <button id="btn-accel" class="t-btn big">A</button>
                     <button id="btn-attack" class="t-btn med">👊</button>
                 </div>
             </div>

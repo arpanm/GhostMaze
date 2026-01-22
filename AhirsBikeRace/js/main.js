@@ -153,62 +153,104 @@ function setupTouchControls() {
 
     const bindTouch = (id, key) => {
         const btn = document.getElementById(id);
+        if (!btn) return;
         btn.addEventListener('touchstart', (e) => { e.preventDefault(); game.input[key] = true; });
         btn.addEventListener('touchend', (e) => { e.preventDefault(); game.input[key] = false; });
     };
 
-    bindTouch('btn-left', 'left');
-    bindTouch('btn-right', 'right');
-    bindTouch('btn-accel', 'up');
+    // Remaining buttons
     bindTouch('btn-brake', 'down');
     bindTouch('btn-attack', 'attack');
 
-    // Add Swipe & Tap-Zone Steering (for better usability)
-    const touchZone = document.getElementById('game-container');
-    let touchStartX = 0;
+    // === Virtual Joystick ===
+    const joyContainer = document.getElementById('joystick-container');
+    const joyKnob = document.getElementById('joystick-knob');
+    let joyStartX = 0;
+    let joyStartY = 0;
+    let joyActive = false;
+    const maxDist = 35; // Max radius joystick can move
 
-    touchZone.addEventListener('touchstart', (e) => {
-        // Ignore if touching a button
-        if (e.target.closest('.t-btn')) return;
-
-        const touch = e.changedTouches[0];
-        touchStartX = touch.clientX;
-        handleTouchSteer(touch.clientX);
-    }, { passive: false });
-
-    touchZone.addEventListener('touchmove', (e) => {
-        if (e.target.closest('.t-btn')) return;
-        // Prevent default scrolling
-        e.preventDefault();
+    const handleJoystick = (e) => {
+        if (!joyActive) return;
+        e.preventDefault(); // Prevent scroll
 
         const touch = e.changedTouches[0];
-        handleTouchSteer(touch.clientX);
-    }, { passive: false });
+        const dx = touch.clientX - joyStartX;
+        const dy = touch.clientY - joyStartY;
 
-    touchZone.addEventListener('touchend', (e) => {
-        if (e.target.closest('.t-btn')) return;
+        // Calculate distance and clamp
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        let clampedDx = dx;
+        let clampedDy = dy;
 
-        // Reset steering on release
-        game.input.left = false;
-        game.input.right = false;
-    });
-
-    function handleTouchSteer(x) {
-        const width = window.innerWidth;
-        // Simple Logic: Left half = Left, Right half = Right
-        // Center deadzone?
-        const center = width / 2;
-        const deadzone = 40; // 20px either side
-
-        game.input.left = false;
-        game.input.right = false;
-
-        if (x < center - deadzone) {
-            game.input.left = true;
-        } else if (x > center + deadzone) {
-            game.input.right = true;
+        if (dist > maxDist) {
+            const ratio = maxDist / dist;
+            clampedDx = dx * ratio;
+            clampedDy = dy * ratio;
         }
-    }
+
+        // Move Knob Visual
+        joyKnob.style.transform = `translate(calc(-50% + ${clampedDx}px), calc(-50% + ${clampedDy}px))`;
+
+        // Logic Mapping
+        // X-Axis -> Steering
+        const deadzone = 10;
+
+        game.input.left = false;
+        game.input.right = false;
+        game.input.up = false;
+        game.input.down = false; // Joystick down can brake too?
+
+        if (clampedDx < -deadzone) game.input.left = true;
+        else if (clampedDx > deadzone) game.input.right = true;
+
+        // Y-Axis -> Acceleration (Up is Negative Y in screen space usually, check?)
+        // Touch Y increases downwards. So Up needs Negative relative Y.
+        // Wait, drag UP means smaller Y value.
+        // So dy < 0 is UP.
+        if (clampedDy < -deadzone) {
+            game.input.up = true; // Accelerate
+        } else if (clampedDy > deadzone) {
+            game.input.down = true; // Brake
+        }
+    };
+
+    joyContainer.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        joyActive = true;
+        const touch = e.changedTouches[0];
+        joyStartX = touch.clientX;
+        joyStartY = touch.clientY;
+
+        // Reset Knob (should be center initially, but if touched slightly off center?)
+        // Easier: Just track relative movement from touch start? 
+        // Or joystick should snap to finger? 
+        // Standard virtual joystick: The center is fixed (static joystick). Touch start usually matters relative to center?
+        // Let's implement Static Joystick (container is fixed).
+        // Wait, joyStartX should be center of container?
+        // Correct.
+        const rect = joyContainer.getBoundingClientRect();
+        joyStartX = rect.left + rect.width / 2;
+        joyStartY = rect.top + rect.height / 2;
+
+        // Immediate update
+        handleJoystick(e);
+    }, { passive: false });
+
+    joyContainer.addEventListener('touchmove', handleJoystick, { passive: false });
+
+    const resetJoystick = (e) => {
+        if (!joyActive) return;
+        joyActive = false;
+        joyKnob.style.transform = `translate(-50%, -50%)`; // Reset to center
+        game.input.left = false;
+        game.input.right = false;
+        game.input.up = false;
+        game.input.down = false;
+    };
+
+    joyContainer.addEventListener('touchend', resetJoystick);
+    joyContainer.addEventListener('touchcancel', resetJoystick);
 }
 
 function startGame() {

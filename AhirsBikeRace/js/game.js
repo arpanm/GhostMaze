@@ -519,37 +519,33 @@ export class Game {
         this.running = false;
         this.sound.stopEngine();
 
-        let rank = 1;
-        // Count opponents ahead
-        this.entities.forEach(e => {
-            if (!(e instanceof Opponent)) return;
-            // If entity is opponent (has spriteDef.imageId with 'competitor')
-            // And is ahead of player (or finished)
-            // Simple Z check relative to trackLength? 
-            // Opponents loop too right now.
-            // We need to know who is "ahead" in race distance? 
-            // Assuming 1 lap, z position check is enough if we unwrapped?
-            // Actually, opponents loop. 
-            // Let's just check opponents whose distance traveled > player distance?
-            // Entity class updates 'z'. Opponent updates 'z'. They don't track total distance.
-            // Hack: Check `e.z` vs `player.z` in local segment? No.
+        let rank = null;
+        let finishBonus = 0;
 
-            // Simpler Rank: Just count how many opponents are in front of player CURRENTLY?
-            // No, that's unfair if they are a lap behind.
-            // Given V1, let's assume if they are visually 'ahead' in Z (wrapped or not) but simpler:
-            // Rank = 1 + Count(Opponents with speed > 0 AND z > player.z)
-            // This is imperfect but works for a linear race.
-            // IMPROVED: On finish, check opponent positions.
-            if (e.z > (this.position + this.player.z)) rank++;
-        });
+        // 1. Position/Rank Bonus (ONLY if FINISHED)
+        if (reason === 'FINISHED') {
+            rank = 1;
+            // Count opponents ahead
+            this.entities.forEach(e => {
+                if (!(e instanceof Opponent)) return;
+                // If ahead of player
+                if (e.z > (this.position + this.player.z)) rank++;
+            });
 
-        let finishBonus = 500;
-        if (rank === 1) finishBonus = 5000;
-        else if (rank === 2) finishBonus = 4000;
-        else if (rank === 3) finishBonus = 3000;
+            if (rank === 1) finishBonus = 5000;
+            else if (rank === 2) finishBonus = 4000;
+            else if (rank === 3) finishBonus = 3000;
+            else finishBonus = 500; // Finish but poor rank
+        }
 
+        // 2. Health Bonus (Given for all scenarios, based on remaining health)
         let healthBonus = Math.floor(this.health) * 10;
-        let totalScore = finishBonus + (this.takedowns * 200) + healthBonus;
+
+        // 3. Takedown Bonus
+        // Note: this.score accumulates 200/hit during play, but we reconstruct here to be safe and consistent.
+        let takedownScore = this.takedowns * 200;
+
+        let totalScore = finishBonus + takedownScore + healthBonus;
 
         this.ui.onGameOver({
             score: totalScore,
@@ -581,16 +577,8 @@ export class Game {
         this.ui.onMessage("OUCH! Hit!"); // Feedback
         if (this.health <= 0) {
             this.health = 0;
-            this.running = false;
-            this.sound.stopEngine();
-            this.ui.onGameOver({
-                score: this.score + (this.takedowns * 200), // No finish bonus, no health bonus (0)
-                distance: this.distance,
-                reason: reason,
-                rank: null, // DNF
-                takedowns: this.takedowns,
-                healthBonus: 0
-            });
+            // Delegate to finishRace
+            this.finishRace(reason);
         }
     }
 

@@ -143,13 +143,17 @@ export class Game {
         this.players.push(new Player(this.playerConfig.name, this.playerConfig.color, false));
 
         // Add Bots
-        const botColors = ['#ff0000', '#0000ff', '#ffff00', '#00ffff'];
-        const occupiedColors = [this.playerConfig.color];
+        // Add Bots
+        // Expanded palette matching UI options + extras
+        const botColors = ['#00ff00', '#ff00ff', '#00ffff', '#ffff00', '#ff0000', '#0000ff'];
+        const occupiedColors = [this.playerConfig.color.toLowerCase()];
 
         for (let i = 0; i < this.opponentCount; i++) {
             // Find unique color
-            let color = botColors.find(c => !occupiedColors.includes(c)) || '#ffffff';
-            occupiedColors.push(color);
+            let color = botColors.find(c => !occupiedColors.includes(c.toLowerCase()));
+            if (!color) color = '#ffffff'; // Fallback
+
+            occupiedColors.push(color.toLowerCase());
             this.players.push(new Player(`Bot ${i + 1}`, color, true));
         }
 
@@ -175,11 +179,14 @@ export class Game {
         if (p.isBot) {
             document.getElementById('turn-indicator').textContent = "OPPONENT THINKING...";
             rollBtn.disabled = true;
-            rollBtn.style.opacity = 0.5;
+            // rollBtn.style.opacity = 0.5; // Handled by CSS now
         } else {
             document.getElementById('turn-indicator').textContent = "YOUR TURN";
-            rollBtn.disabled = false;
-            rollBtn.style.opacity = 1;
+            // Only enable if state is ROLL (not during move/animation if updateHUD called oddly)
+            if (this.state === 'ROLL') {
+                rollBtn.disabled = false;
+            }
+            // rollBtn.style.opacity = 1; // Handled by CSS
         }
     }
 
@@ -222,7 +229,7 @@ export class Game {
         // We'll just reset rotation to clean state
         let rot = { x: 0, y: 0 };
         if (val === 1) rot = { x: 0, y: 0 };
-        if (val === 6) rot = { x: 180, y: 0 };
+        if (val === 6) rot = { x: 0, y: 180 };
         if (val === 2) rot = { x: -90, y: 0 };
         if (val === 5) rot = { x: 90, y: 0 };
         if (val === 3) rot = { x: 0, y: -90 };
