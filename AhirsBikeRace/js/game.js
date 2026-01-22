@@ -747,6 +747,8 @@ export class Game {
         // So passing `this.height` puts feet at bottom of screen.
 
         // Let's use `this.height` and let renderPlayer subtract height.
+
+        this.ctx.restore();
     }
 
     project(p, cameraX, cameraY, cameraZ) {

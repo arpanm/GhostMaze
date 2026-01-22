@@ -162,6 +162,53 @@ function setupTouchControls() {
     bindTouch('btn-accel', 'up');
     bindTouch('btn-brake', 'down');
     bindTouch('btn-attack', 'attack');
+
+    // Add Swipe & Tap-Zone Steering (for better usability)
+    const touchZone = document.getElementById('game-container');
+    let touchStartX = 0;
+
+    touchZone.addEventListener('touchstart', (e) => {
+        // Ignore if touching a button
+        if (e.target.closest('.t-btn')) return;
+
+        const touch = e.changedTouches[0];
+        touchStartX = touch.clientX;
+        handleTouchSteer(touch.clientX);
+    }, { passive: false });
+
+    touchZone.addEventListener('touchmove', (e) => {
+        if (e.target.closest('.t-btn')) return;
+        // Prevent default scrolling
+        e.preventDefault();
+
+        const touch = e.changedTouches[0];
+        handleTouchSteer(touch.clientX);
+    }, { passive: false });
+
+    touchZone.addEventListener('touchend', (e) => {
+        if (e.target.closest('.t-btn')) return;
+
+        // Reset steering on release
+        game.input.left = false;
+        game.input.right = false;
+    });
+
+    function handleTouchSteer(x) {
+        const width = window.innerWidth;
+        // Simple Logic: Left half = Left, Right half = Right
+        // Center deadzone?
+        const center = width / 2;
+        const deadzone = 40; // 20px either side
+
+        game.input.left = false;
+        game.input.right = false;
+
+        if (x < center - deadzone) {
+            game.input.left = true;
+        } else if (x > center + deadzone) {
+            game.input.right = true;
+        }
+    }
 }
 
 function startGame() {
