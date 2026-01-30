@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ahir's Academy - Learn & Earn</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header class="glass-panel">
+        <a href="../index.html" class="logo">Ahir's Academy</a>
+
+        <div class="balance-display" id="balance-container">
+            <span>🪙</span>
+            <span id="coin-balance">Loading...</span>
+        </div>
+    </header>
+
+    <main>
+        <div id="breadcrumb" class="breadcrumb"></div>
+
+        <!-- 1. Class Selection -->
+        <section id="class-selection" class="active">
+            <h2>Select Your Class</h2>
+            <p>Choose a class to start learning and earning coins.</p>
+            <div id="class-grid" class="grid-container">
+                <!-- Populated by JS -->
+                <div class="selection-card">Loading Classes...</div>
+            </div>
+
+            <!-- Cross-Game Carousel -->
+            <div class="game-carousel-container">
+                <h4>More Missions</h4>
+                <div class="game-carousel">
+                    <a href="../AhirsGhostMaze/index.html" class="game-card">
+                        <span class="card-icon">👻</span>
+                        <h5>Ghost Maze</h5>
+                    </a>
+                    <a href="../AhirsSnakeInARoom/index.html" class="game-card">
+                        <span class="card-icon">🐍</span>
+                        <h5>Snake Room</h5>
+                    </a>
+                    <a href="../AhirSharkRace/index.html" class="game-card">
+                        <span class="card-icon">🦈</span>
+                        <h5>Shark Race</h5>
+                    </a>
+                    <a href="../AhirsShootingBattle/index.html" class="game-card">
+                        <span class="card-icon">🔫</span>
+                        <h5>Shooting Battle</h5>
+                    </a>
+                    <a href="../AhirsWarZone/index.html" class="game-card">
+                        <span class="card-icon">⚔️</span>
+                        <h5>War Zone</h5>
+                    </a>
+                    <a href="../AhirsChess/index.html" class="game-card">
+                        <span class="card-icon">♟</span>
+                        <h5>Chess</h5>
+                    </a>
+                    <a href="../AhirsSnakeAndLadder/index.html" class="game-card">
+                        <span class="card-icon">🎲</span>
+                        <h5>Snake & Ladder</h5>
+                    </a>
+                    <a href="../AhirsBikeRace/index.html" class="game-card">
+                        <span class="card-icon">🚲</span>
+                        <h5>Bike Race</h5>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Subject Selection -->
+        <section id="subject-selection">
+            <h2>Select Subject</h2>
+            <div id="subject-grid" class="grid-container">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- 3. Quiz Interface -->
+        <section id="quiz-interface">
+            <div class="glass-panel">
+                <div style="display:flex; justify-content:space-between;">
+                    <span id="current-difficulty" class="difficulty-badge diff-EASY">EASY</span>
+                    <span id="streak-display">Streak: 0 🔥</span>
+                </div>
+
+                <div class="question-box">
+                    <h3 id="question-text">Loading Question...</h3>
+                </div>
+
+                <div id="options-container" class="options-grid">
+                    <!-- Options populated by JS -->
+                </div>
+
+                <div id="feedback-area"></div>
+
+                <button id="next-btn" class="btn-primary" style="display:none;">Next Question</button>
+            </div>
+        </section>
+
+        <!-- 4. Results Section -->
+        <section id="results-section">
+            <div class="glass-panel">
+                <div id="results-content">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>

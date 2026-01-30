@@ -3,7 +3,7 @@ import { Terrain } from './terrain.js';
 import { Tank, Plane, Projectile, Structure, Particle } from './entities.js';
 import { AIController } from './ai.js';
 import { UIManager } from './ui.js';
-
+import { economy } from './economy.js';
 export class Game {
     constructor() {
         this.canvas = document.getElementById('game-canvas');
@@ -40,7 +40,13 @@ export class Game {
         this.particles = [];
 
         this.setupEventListeners();
+        this.setupEventListeners();
         window.addEventListener('resize', () => this.resize());
+
+        document.getElementById('close-low-balance').addEventListener('click', () => {
+            document.getElementById('low-balance-modal').classList.add('hidden');
+        });
+        this.updateBalanceDisplay();
 
         // Initial Loop
         requestAnimationFrame((t) => this.loop(t));
@@ -146,11 +152,23 @@ export class Game {
         const errorMsg = document.getElementById('name-error');
         const name = nameInput.value.trim();
 
+        // 1. Name Check (only if they are on the start screen or if it's empty)
         if (!name) {
             errorMsg.style.display = 'block';
             nameInput.style.border = '2px solid #e74c3c';
-            return; // Stop initialization
+            this.ui.showScreen('start-screen'); // Ensure they are on the start screen to see the error
+            return;
         }
+
+        // 2. Economy Check
+        if (!economy.hasEnoughBalance(10)) {
+            document.getElementById('low-balance-modal').classList.remove('hidden');
+            return;
+        }
+
+        // Deduct Coins and start game
+        economy.spendCoins(10, 'War Zone Mission Entry');
+        this.updateBalanceDisplay();
 
         errorMsg.style.display = 'none';
         nameInput.style.border = 'none';
@@ -614,7 +632,24 @@ export class Game {
         }
 
         this.ui.updateGameOverScreen(this.kills, this.score, Math.floor(survivalBonus), economyBonus, totalScore);
+        this.ui.updateGameOverScreen(this.kills, this.score, Math.floor(survivalBonus), economyBonus, totalScore);
+
+        // Reward Logic - Removed per requirement
+        /*
+        const coinsEarned = Math.floor(totalScore / 100);
+        if (coinsEarned > 0) {
+            economy.addCoins(coinsEarned, 'War Zone Reward');
+            this.updateBalanceDisplay();
+            document.querySelector('.final-score-box').insertAdjacentHTML('afterend', `<div style="text-align:center; color:gold; font-size:1.5rem; margin-top:10px; font-weight:bold;">Earned ${coinsEarned} Coins! 🪙</div>`);
+        }
+        */
+
         this.ui.showScreen('game-over-screen');
+    }
+
+    updateBalanceDisplay() {
+        const el = document.getElementById('menu-coin-balance');
+        if (el) el.textContent = economy.getBalance();
     }
 }
 

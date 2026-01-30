@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ahir's War Zone</title>
-    <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 </head>
 
@@ -52,7 +52,12 @@
                         <button class="diff-btn" data-diff="hard">HARD</button>
                     </div>
                 </div>
-                <button id="start-btn" class="primary-btn">DEPLOY TROOPS</button>
+                <button id="start-btn" class="primary-btn">DEPLOY TROOPS (10 🪙)</button>
+                <div id="quick-balance" style="margin-top: 10px; font-weight: bold; color: gold; text-align: center;">
+                    Coins: <span id="menu-coin-balance">...</span></div>
+                <a href="../AhirsAcademy/index.html"
+                    style="display:block; margin-top:15px; color:#58a6ff; font-weight:bold; text-decoration:none; text-align: center;">🎓
+                    Go to Academy (Earn Coins)</a>
                 <div class="menu-actions-row"
                     style="margin-top:10px; display:flex; gap:10px; width:100%; justify-content:center;">
                     <button id="how-to-play-btn" class="secondary-btn" style="flex:1;">HOW TO PLAY</button>
@@ -65,7 +70,7 @@
                         style="color: #bdc3c7; border-bottom: 1px solid #555; padding-bottom: 5px; margin-bottom: 10px; text-align: center;">
                         Play Other Missions</h4>
                     <div class="game-carousel">
-                        <a href="../index.html" class="game-card">
+                        <a href="../AhirsGhostMaze/index.html" class="game-card">
                             <span class="card-icon">👻</span>
                             <h5>Ghost Maze</h5>
                         </a>
@@ -266,6 +271,22 @@
             </div>
         </div>
     </div>
+    <!-- Low Balance Modal -->
+    <div id="low-balance-modal" class="hidden"
+        style="position: fixed; z-index: 2000; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; opacity: 1; pointer-events: auto; width: 100%; height: 100%; top: 0; left: 0;">
+        <div
+            style="background: #161b22; padding: 30px; border-radius: 12px; border: 1px solid #da3633; text-align: center; max-width: 400px; color: white;">
+            <h2 style="color: #da3633; margin-top: 0;">Not Enough Coins! 🪙</h2>
+            <p>You need 10 Coins to start the mission.</p>
+            <p>Go to the Academy to solve questions and earn more!</p>
+            <a href="../AhirsAcademy/index.html" class="primary-btn"
+                style="display: inline-block; background: #238636; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; margin-top: 15px;">Go
+                to Academy</a>
+            <button id="close-low-balance"
+                style="margin-top: 10px; background: transparent; border: 1px solid #8b949e; color: #8b949e; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Close</button>
+        </div>
+    </div>
+
     <script type="module" src="js/main.js"></script>
 </body>
 

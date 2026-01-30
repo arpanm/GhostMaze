@@ -3,6 +3,7 @@ import { Player } from './player.js';
 import { Enemy } from './enemy.js';
 import { WeaponSystem } from './weapon.js';
 import { state, input, CONFIG, DIFFICULTY_SETTINGS } from './shared.js';
+import { economy } from './economy.js';
 
 // --- Initialization ---
 window.onload = () => {
@@ -23,9 +24,27 @@ function resizeCanvas() {
 function setupUIListeners() {
     // Start Battle
     document.getElementById('start-btn').addEventListener('click', () => {
+        // Economy Check
+        if (!economy.hasEnoughBalance(10)) {
+            document.getElementById('low-balance-modal').classList.remove('hidden');
+            return;
+        }
+
         initAudio(); // Initialize audio context on user interaction
+        economy.spendCoins(10, 'Shooting Battle Entry');
+        updateBalanceDisplay();
         initBattle();
     });
+
+    document.getElementById('close-low-balance').addEventListener('click', () => {
+        document.getElementById('low-balance-modal').classList.add('hidden');
+    });
+
+    function updateBalanceDisplay() {
+        const el = document.getElementById('menu-coin-balance');
+        if (el) el.textContent = economy.getBalance();
+    }
+    updateBalanceDisplay();
 
     // Avatar Selection
     document.querySelectorAll('.avatar-option').forEach(el => {
@@ -67,7 +86,15 @@ function setupUIListeners() {
     document.getElementById('back-to-start-btn').addEventListener('click', () => showScreen('start-screen'));
     document.getElementById('show-credits-btn').addEventListener('click', () => showScreen('credits-screen'));
     document.getElementById('back-from-credits-btn').addEventListener('click', () => showScreen('start-screen'));
-    document.getElementById('restart-btn').addEventListener('click', initBattle);
+    document.getElementById('restart-btn').addEventListener('click', () => {
+        if (!economy.hasEnoughBalance(10)) {
+            document.getElementById('low-balance-modal').classList.remove('hidden');
+            return;
+        }
+        economy.spendCoins(10, 'Shooting Battle Restart');
+        updateBalanceDisplay();
+        initBattle();
+    });
     document.getElementById('menu-btn').addEventListener('click', () => showScreen('start-screen'));
     document.getElementById('clear-leaderboard-btn').addEventListener('click', clearLeaderboard);
 }
@@ -205,6 +232,16 @@ function endGame(result) {
     document.getElementById('breakdown-money').innerText = moneyCollected;
     document.getElementById('breakdown-weapon').innerText = weaponValue;
     document.getElementById('total-score').innerText = total;
+
+    // Reward Logic - Removed per requirement
+    /*
+    const coinsEarned = Math.floor(total / 500);
+    if (coinsEarned > 0) {
+        economy.addCoins(coinsEarned, 'Shooting Battle Reward');
+        updateBalanceDisplay();
+    }
+    document.getElementById('game-over-reason').insertAdjacentHTML('beforeend', `<br><span style="color:gold; font-size:1.2rem;">Earned ${coinsEarned} Coins! 🪙</span>`);
+    */
 
     saveScore(total, {
         hpBonus, winBonus, moneyCollected, weaponValue,

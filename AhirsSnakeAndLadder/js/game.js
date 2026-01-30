@@ -1,5 +1,6 @@
 import { Board } from './board.js';
 import { Player } from './entities.js';
+import { economy } from './economy.js';
 
 export class Game {
     constructor() {
@@ -33,6 +34,11 @@ export class Game {
 
     setupInputs() {
         window.addEventListener('resize', () => this.resize());
+
+        document.getElementById('close-low-balance').addEventListener('click', () => {
+            document.getElementById('low-balance-modal').classList.add('hidden');
+        });
+        this.updateBalanceDisplay();
 
         // Start Screen
         document.getElementById('start-btn').addEventListener('click', () => this.startGame());
@@ -136,6 +142,15 @@ export class Game {
     }
 
     startGame() {
+        // Economy Check
+        if (!economy.hasEnoughBalance(10)) {
+            document.getElementById('low-balance-modal').classList.remove('hidden');
+            return;
+        }
+
+        economy.spendCoins(10, 'Snake & Ladder Entry');
+        this.updateBalanceDisplay();
+
         this.board.generate();
 
         // Init Players
@@ -319,6 +334,9 @@ export class Game {
         // Save Score only if human
         if (!winner.isBot) {
             this.saveScore(winner.name, winner.moves);
+            // economy.addCoins(100, 'Snake & Ladder Win');
+            // this.updateBalanceDisplay();
+            // document.querySelector('.winner-card').insertAdjacentHTML('beforeend', `<p style="color:gold; font-size:1.2rem; margin-top:10px;">Earned 100 Coins! 🪙</p>`);
         }
     }
 
@@ -327,5 +345,10 @@ export class Game {
         scores.push({ name, moves, date: new Date().toLocaleDateString() });
         scores.sort((a, b) => a.moves - b.moves); // Sort by fewer moves
         localStorage.setItem('ahirs-snake-ladder-scores', JSON.stringify(scores.slice(0, 5)));
+    }
+
+    updateBalanceDisplay() {
+        const el = document.getElementById('menu-coin-balance');
+        if (el) el.textContent = economy.getBalance();
     }
 }

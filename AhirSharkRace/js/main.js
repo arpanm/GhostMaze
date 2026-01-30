@@ -1,4 +1,5 @@
 import { state, CONFIG, input } from './shared.js';
+import { economy } from './economy.js';
 import { Shark } from './shark.js';
 import { Sea } from './sea.js';
 import { playSound } from './audio.js';
@@ -49,6 +50,12 @@ function setupUI() {
     });
 
     startBtn.onclick = () => {
+        // Economy Check
+        if (!economy.hasEnoughBalance(10)) {
+            document.getElementById('low-balance-modal').classList.remove('hidden');
+            return;
+        }
+
         if (!nameInput.value.trim()) {
             nameError.classList.remove('hidden');
             return;
@@ -57,8 +64,20 @@ function setupUI() {
         const color = document.querySelector('.color-opt.active').dataset.color;
         const logo = document.querySelector('.logo-opt.active').dataset.logo;
 
+        economy.spendCoins(10, 'Shark Race Entry');
+        updateBalanceDisplay();
         startGame(nameInput.value, color, logo);
     };
+
+    document.getElementById('close-low-balance').addEventListener('click', () => {
+        document.getElementById('low-balance-modal').classList.add('hidden');
+    });
+
+    function updateBalanceDisplay() {
+        const el = document.getElementById('menu-coin-balance');
+        if (el) el.textContent = economy.getBalance();
+    }
+    updateBalanceDisplay();
 
     document.getElementById('leaderboard-btn').onclick = () => showLeaderboard();
 
@@ -93,6 +112,12 @@ function setupUI() {
 
     // Game Over / Restart Listeners
     document.getElementById('restart-btn').onclick = () => {
+        if (!economy.hasEnoughBalance(10)) {
+            document.getElementById('low-balance-modal').classList.remove('hidden');
+            return;
+        }
+        economy.spendCoins(10, 'Shark Race Restart');
+        updateBalanceDisplay();
         state.active = false;
         startGame(state.player.name, state.player.color, state.player.logo);
     };
@@ -104,6 +129,12 @@ function setupUI() {
     document.getElementById('pause-btn').onclick = () => togglePause(true);
     document.getElementById('resume-btn').onclick = () => togglePause(false);
     document.getElementById('restart-pause-btn').onclick = () => {
+        if (!economy.hasEnoughBalance(10)) {
+            document.getElementById('low-balance-modal').classList.remove('hidden');
+            return;
+        }
+        economy.spendCoins(10, 'Shark Race Restart');
+        updateBalanceDisplay();
         togglePause(false);
         state.active = false;
         startGame(state.player.name, state.player.color, state.player.logo);
@@ -408,7 +439,19 @@ function endGame(title, reason) {
     document.getElementById('breakdown-finish').innerText = state.totalFinishBonus;
     document.getElementById('total-score').innerText = (state.player.health * 10) + state.score;
 
+    const totalScore = (state.player.health * 10) + state.score;
     document.getElementById('game-over-reason').innerText = `You reached TIER ${state.level}, SECTOR ${state.sector}!`;
+
+    // Reward Logic - Removed per requirement
+    /*
+    const coinsEarned = Math.floor(totalScore / 50);
+    if (coinsEarned > 0) {
+        economy.addCoins(coinsEarned, 'Shark Race Reward');
+        updateBalanceDisplay();
+    }
+    document.getElementById('game-over-reason').insertAdjacentHTML('beforeend', `<br><span style="color:gold; font-size:1.2rem;">Earned ${coinsEarned} Coins! 🪙</span>`);
+    */
+
     saveScore();
 }
 

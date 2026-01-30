@@ -1,4 +1,5 @@
 import { Game } from './game.js';
+import { economy } from './economy.js';
 
 const screens = {
     start: document.getElementById('start-screen'),
@@ -15,8 +16,6 @@ const game = new Game('game-canvas');
 
 // Game Config
 const state = {
-    playerName: '',
-    color: '#00ff00',
     playerName: '',
     color: '#00ff00',
     logo: '🐍',
@@ -54,6 +53,12 @@ document.querySelectorAll('.diff-btn').forEach(btn => {
 
 // Start Button
 document.getElementById('start-btn').addEventListener('click', () => {
+    // Economy Check
+    if (!economy.hasEnoughBalance(10)) {
+        document.getElementById('low-balance-modal').classList.remove('hidden');
+        return;
+    }
+
     const nameInput = document.getElementById('player-name');
     const nameError = document.getElementById('name-error');
 
@@ -64,8 +69,22 @@ document.getElementById('start-btn').addEventListener('click', () => {
     nameError.classList.add('hidden');
     state.playerName = nameInput.value.trim();
 
+    economy.spendCoins(10, 'Maze Entry');
+    updateBalanceDisplay();
     startGame();
 });
+
+document.getElementById('close-low-balance').addEventListener('click', () => {
+    document.getElementById('low-balance-modal').classList.add('hidden');
+});
+
+function updateBalanceDisplay() {
+    const el = document.getElementById('menu-coin-balance');
+    if (el) el.textContent = economy.getBalance();
+}
+
+// Initial Balance Update
+updateBalanceDisplay();
 
 // Navigation
 document.getElementById('how-to-play-btn').addEventListener('click', () => showScreen(screens.howToPlay));
@@ -95,6 +114,12 @@ document.getElementById('resume-btn').addEventListener('click', () => {
     game.resume();
 });
 document.getElementById('restart-pause-btn').addEventListener('click', () => {
+    if (!economy.hasEnoughBalance(10)) {
+        document.getElementById('low-balance-modal').classList.remove('hidden');
+        return;
+    }
+    economy.spendCoins(10, 'Snake Room Restart');
+    updateBalanceDisplay();
     screens.pause.classList.add('hidden');
     startGame();
 });
@@ -107,7 +132,15 @@ document.getElementById('abandon-btn').addEventListener('click', () => {
 });
 
 // Game Over Actions
-document.getElementById('restart-btn').addEventListener('click', startGame);
+document.getElementById('restart-btn').addEventListener('click', () => {
+    if (!economy.hasEnoughBalance(10)) {
+        document.getElementById('low-balance-modal').classList.remove('hidden');
+        return;
+    }
+    economy.spendCoins(10, 'Snake Room Restart');
+    updateBalanceDisplay();
+    startGame();
+});
 document.getElementById('menu-btn').addEventListener('click', () => showScreen(screens.start));
 
 
@@ -155,6 +188,18 @@ game.bindUI({
         document.getElementById('breakdown-kills').textContent = result.kills * 100;
         document.getElementById('breakdown-circle').textContent = result.score - (result.insects * 10 + result.kills * 100);
         document.getElementById('total-score').textContent = result.score;
+
+        /*
+        const coinsEarned = Math.floor(result.score / 50);
+        if (coinsEarned > 0) {
+            economy.addCoins(coinsEarned, 'Snake Room Reward');
+            updateBalanceDisplay(); // Although hidden, good practice
+        }
+        */
+
+        // Show result in Game Over - Removed Coin mention
+        const gameOverReason = document.getElementById('game-over-reason');
+        gameOverReason.innerHTML = `${result.reason}`;
 
         saveScore(result.score, result.kills);
     }

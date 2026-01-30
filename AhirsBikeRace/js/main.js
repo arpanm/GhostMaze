@@ -1,5 +1,7 @@
 import { Game } from './game.js';
+
 import { loadAssets } from './assets.js';
+import { economy } from './economy.js';
 
 // Elements
 const canvas = document.getElementById('gameCanvas');
@@ -41,13 +43,31 @@ let gameOptions = {
 function setupEventListeners() {
     // Start Button
     document.getElementById('start-btn').addEventListener('click', () => {
+        // Economy Check
+        if (!economy.hasEnoughBalance(10)) {
+            document.getElementById('low-balance-modal').classList.remove('hidden');
+            return;
+        }
+
         const name = document.getElementById('player-name').value || 'Racer';
         const diff = document.getElementById('difficulty').value;
         const terrain = document.getElementById('terrain').value;
 
         gameOptions = { name, difficulty: diff, terrain };
+        economy.spendCoins(10, 'Bike Race Entry');
+        updateBalanceDisplay();
         startGame();
     });
+
+    document.getElementById('close-low-balance').addEventListener('click', () => {
+        document.getElementById('low-balance-modal').classList.add('hidden');
+    });
+
+    function updateBalanceDisplay() {
+        const el = document.getElementById('menu-coin-balance');
+        if (el) el.textContent = economy.getBalance();
+    }
+    updateBalanceDisplay();
 
     // Pause / Resume
     document.addEventListener('keydown', (e) => {
@@ -57,10 +77,26 @@ function setupEventListeners() {
     });
 
     document.getElementById('resume-btn').addEventListener('click', togglePause);
-    document.getElementById('restart-btn').addEventListener('click', startGame);
+    document.getElementById('restart-btn').addEventListener('click', () => {
+        if (!economy.hasEnoughBalance(10)) {
+            document.getElementById('low-balance-modal').classList.remove('hidden');
+            return;
+        }
+        economy.spendCoins(10, 'Bike Race Restart');
+        updateBalanceDisplay();
+        startGame();
+    });
     document.getElementById('exit-btn').addEventListener('click', showMainMenu);
 
-    document.getElementById('go-restart-btn').addEventListener('click', startGame);
+    document.getElementById('go-restart-btn').addEventListener('click', () => {
+        if (!economy.hasEnoughBalance(10)) {
+            document.getElementById('low-balance-modal').classList.remove('hidden');
+            return;
+        }
+        economy.spendCoins(10, 'Bike Race Restart');
+        updateBalanceDisplay();
+        startGame();
+    });
     document.getElementById('go-home-btn').addEventListener('click', showMainMenu);
 
     // Navigation Buttons
@@ -352,6 +388,16 @@ function handleGameOver(stats) {
 
     goScore.innerText = stats.score;
     goDistance.innerText = Math.floor(stats.distance / 1000);
+
+    // Reward Logic - Removed per requirement
+    /*
+    const coinsEarned = Math.floor(stats.score / 500);
+    if (coinsEarned > 0) {
+        economy.addCoins(coinsEarned, 'Bike Race Reward');
+        updateBalanceDisplay();
+    }
+    document.querySelector('.final-score').insertAdjacentHTML('beforeend', `<br><span style="color:gold; font-size:1.2rem;">Earned ${coinsEarned} Coins! 🪙</span>`);
+    */
 
     // Detailed Stats
     const goRank = document.getElementById('go-rank');

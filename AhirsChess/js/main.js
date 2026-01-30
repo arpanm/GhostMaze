@@ -1,7 +1,7 @@
 import { ChessGame } from './chess.js';
 import { UIManager } from './ui.js';
 import { ChessAI } from './ai.js';
-
+import { economy } from './economy.js';
 class Main {
     constructor() {
         this.game = new ChessGame();
@@ -91,6 +91,16 @@ class Main {
 
         // Load Leaderboard initially
         this.updateLeaderboard();
+
+        document.getElementById('close-low-balance').addEventListener('click', () => {
+            document.getElementById('low-balance-modal').classList.add('hidden');
+        });
+        this.updateBalanceDisplay();
+    }
+
+    updateBalanceDisplay() {
+        const el = document.getElementById('menu-coin-balance');
+        if (el) el.textContent = economy.getBalance();
     }
 
     showScreen(id) {
@@ -111,11 +121,21 @@ class Main {
     }
 
     startGame() {
+        // Economy Check
+        if (!economy.hasEnoughBalance(10)) {
+            document.getElementById('low-balance-modal').classList.remove('hidden');
+            return;
+        }
+
         const name = document.getElementById('player-name').value.trim();
         if (!name) {
             document.getElementById('name-error').classList.remove('hidden');
             return;
         }
+
+        economy.spendCoins(10, 'Chess Match Entry');
+        this.updateBalanceDisplay();
+
         document.getElementById('name-error').classList.add('hidden');
         document.getElementById('player-name-display').textContent = name;
 
@@ -266,6 +286,22 @@ class Main {
             // Save Score
             this.saveScore(this.game.winner === 'white' ? 'w' : 'b'); // Winner color
 
+            /*
+            // Reward Logic
+            const result = (this.game.winner === 'white' ? 'w' : 'b') === (this.options.side === 'white' ? 'w' : 'b') ? 'win' : (this.game.winner === 'draw' ? 'draw' : 'loss');
+            let coinsEarned = 0;
+            if (result === 'win') coinsEarned = 40;
+            else if (result === 'draw') coinsEarned = 5;
+
+            if (coinsEarned > 0) {
+                economy.addCoins(coinsEarned, 'Chess ' + result + ' Reward');
+                this.updateBalanceDisplay();
+            }
+            if (coinsEarned > 0) {
+                document.getElementById('game-result-msg').insertAdjacentHTML('beforeend', `<br><span style="color:gold; font-size:1.2rem;">Earned ${coinsEarned} Coins! 🪙</span>`);
+            }
+            */
+
             this.showScreen('game-over-screen');
         }
     }
@@ -363,4 +399,4 @@ class Main {
     }
 }
 
-window.onload = () => new Main();
+new Main();
