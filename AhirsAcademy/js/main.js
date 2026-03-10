@@ -297,6 +297,10 @@ class AcademyApp {
                         <span class="card-icon">🚲</span>
                         <h5>Bike Race</h5>
                     </a>
+                    <a href="../AhirsSpy/index.html" class="game-card">
+                        <span class="card-icon">🕵️</span>
+                        <h5>Spy Mission</h5>
+                    </a>
                 </div>
             </div>
 

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ahir's Spy Mission</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕵️</text></svg>">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+</head>
+
+<body>
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="screen">
+        <h1>🕵️ Ahir's Spy Mission</h1>
+        <p class="subtitle">Find the Killer. Save the Owner. Don't get caught!</p>
+
+        <div class="form-group">
+            <label for="player-name">Spy Name:</label>
+            <input type="text" id="player-name" placeholder="Enter your alias" maxlength="12">
+            <span id="name-error" class="error-message hidden">Identify yourself, Agent!</span>
+        </div>
+
+        <div class="form-group">
+            <label>Select Avatar:</label>
+            <div class="avatar-selection">
+                <div class="avatar-option selected" data-avatar="😎">😎</div>
+                <div class="avatar-option" data-avatar="🤠">🤠</div>
+                <div class="avatar-option" data-avatar="🕵️‍♂️">🕵️‍♂️</div>
+                <div class="avatar-option" data-avatar="👮‍♂️">👮‍♂️</div>
+                <div class="avatar-option" data-avatar="🦸‍♂️">🦸‍♂️</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Difficulty:</label>
+            <div class="difficulty-selection">
+                <div class="difficulty-option selected" data-difficulty="easy">
+                    <span class="difficulty-icon">🟢</span>
+                    <span class="difficulty-name">Rookie</span>
+                </div>
+                <div class="difficulty-option" data-difficulty="medium">
+                    <span class="difficulty-icon">🟡</span>
+                    <span class="difficulty-name">Agent</span>
+                </div>
+                <div class="difficulty-option" data-difficulty="hard">
+                    <span class="difficulty-icon">🔴</span>
+                    <span class="difficulty-name">007</span>
+                </div>
+            </div>
+        </div>
+
+        <button id="start-btn" class="btn-primary">START MISSION (10 🪙)</button>
+        <div class="coin-balance-display">Coins: <span id="menu-coin-balance">...</span></div>
+
+        <div class="menu-buttons">
+            <button id="how-to-play-btn" class="btn-secondary">HOW TO PLAY</button>
+            <button id="legends-btn" class="btn-secondary">LEGENDS</button>
+            <button id="credits-btn" class="btn-secondary">CREDITS</button>
+        </div>
+
+        <a href="../AhirsAcademy/index.html" class="academy-link">🎓 Earn Coins at Ahir's Academy</a>
+
+        <!-- Carousel Container (To be populated) -->
+        <div class="game-carousel-container">
+            <h4>More Missions</h4>
+            <div class="game-carousel" id="other-games-carousel">
+                <!-- Content injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- How to Play Screen -->
+    <div id="how-to-play-screen" class="screen hidden">
+        <h2>Mission Briefing</h2>
+        <div class="scroll-content">
+            <div class="instruction-block">
+                <h3>🎯 Objective</h3>
+                <p>Identify and eliminate the <strong>Killer</strong> before they kill the House Owner or steal the
+                    Necklace!</p>
+            </div>
+
+            <div class="instruction-block">
+                <h3>🕵️ Your Role</h3>
+                <p>You are the Spy. Everyone looks innocent, but one person is hiding a deadly secret.</p>
+            </div>
+
+            <div class="instruction-block">
+                <h3>🎮 Controls</h3>
+                <ul>
+                    <li><strong>Move:</strong> Arrow Keys or Joystick</li>
+                    <li><strong>Interact:</strong> Walk up to people and press <strong>SPACE</strong> or click
+                        <strong>TALK</strong>
+                    </li>
+                    <li><strong>Shoot:</strong> Press <strong>SHOOT</strong> button (or Space if alone)</li>
+                </ul>
+            </div>
+
+            <div class="instruction-block">
+                <h3>💡 Tips</h3>
+                <ul>
+                    <li>🗣️ <strong>ASK</strong> questions to gather potential clues.</li>
+                    <li>🤥 The Killer might <strong>LIE</strong>. Civilians tell the truth.</li>
+                    <li>🔫 Be sure before you shoot! Shooting an innocent person calls the Police (Game Over).</li>
+                    <li>💎 Protect the Owner at all costs.</li>
+                </ul>
+            </div>
+        </div>
+        <button class="back-btn btn-secondary">BACK</button>
+    </div>
+
+    <!-- Legends Screen -->
+    <div id="legends-screen" class="screen hidden">
+        <h2>Hall of Legends</h2>
+        <div class="scroll-content">
+            <table id="legends-table" style="width:100%; text-align:left; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #555;">
+                        <th>Rank</th>
+                        <th>Agent</th>
+                        <th>Score</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="legends-body">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+            <p id="no-legends-msg" style="text-align:center; padding: 20px;">No successful missions yet.</p>
+        </div>
+        <button class="back-btn btn-secondary">BACK</button>
+    </div>
+
+    <!-- Credits Screen -->
+    <div id="credits-screen" class="screen hidden">
+        <h2>CREDITS</h2>
+        <div class="scroll-content">
+            <div class="credits-section fa-credit">
+                <h3>Concept & Design</h3>
+                <p><strong>Ahir Mukherjee</strong></p>
+                <p>Visionary Creator</p>
+            </div>
+            <div class="credits-section">
+                <h3>Game Development</h3>
+                <p>Developed with <strong>AI Assistance</strong></p>
+                <p>Powered by Modern Web Technologies</p>
+            </div>
+            <div class="credits-section">
+                <h3>Art & Assets</h3>
+                <p>Emoji 15.0 Standards 🎨</p>
+                <p>Google Fonts (Roboto Mono)</p>
+            </div>
+            <div class="credits-section fa-credit">
+                <h3>Special Thanks</h3>
+                <p>To our players for saving the city!</p>
+                <p>Ahir's Academy for mission funding.</p>
+            </div>
+            <div class="credits-footer">
+                <p>© 2025 Ahir's Games</p>
+            </div>
+        </div>
+        <button class="back-btn btn-secondary">BACK</button>
+    </div>
+
+    <!-- HUD -->
+    <div id="game-hud" class="hidden">
+        <div class="hud-top">
+            <div class="hud-item error-shake" id="timer-display">⏳ <span>100</span>s</div>
+            <div class="hud-item">🏆 <span id="score-display">1000</span></div>
+            <div class="hud-item">🪙 <span id="coin-display">0</span></div>
+        </div>
+        <div class="hud-bottom">
+            <button id="pause-btn">⏸️</button>
+            <div id="action-hint">Walk up to someone to interact</div>
+            <button id="talk-btn" class="action-btn hidden" style="background-color: #2ea043;">🗣️ TALK</button>
+            <button id="shoot-btn" class="action-btn">🔫 SHOOT</button>
+        </div>
+    </div>
+
+    <!-- Canvas -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Dialog Modal -->
+    <div id="dialog-modal" class="modal hidden">
+        <div class="dialog-content">
+            <div class="dialog-header">
+                <span id="dialog-avatar">👤</span>
+                <span id="dialog-name">Person</span>
+            </div>
+            <div class="dialog-body">
+                <p id="dialog-text">Hello! Can I help you?</p>
+            </div>
+            <div class="dialog-options" id="dialog-options">
+                <!-- Buttons injected by JS -->
+            </div>
+            <button id="close-dialog-btn" class="btn-close">Leave</button>
+        </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over-screen" class="screen hidden">
+        <div class="result-icon iso-anim" id="result-icon">💀</div>
+        <h2 id="result-title">MISSION FAILED</h2>
+        <p id="result-message">The killer escaped.</p>
+
+        <div id="killer-reveal-section" class="hidden"
+            style="margin: 20px 0; padding: 15px; background: rgba(0,0,0,0.5); border-radius: 8px; border: 1px solid #da3633;">
+            <h3 style="color: #da3633; margin-top: 0;">THE KILLER WAS:</h3>
+            <div style="font-size: 3em; margin: 10px 0;">
+                <span id="killer-reveal-avatar">🕵️‍♂️</span>
+            </div>
+            <p id="killer-reveal-identity" style="font-weight: bold; color: #eebb00;">Unknown Person</p>
+            <p id="killer-reveal-clue" style="font-style: italic; color: #aaa; font-size: 0.9em;">"They had a hat..."
+            </p>
+            <p style="font-size: 0.8em; color: #888; margin-top: 5px;">(Better luck next time, Agent!)</p>
+        </div>
+
+        <div class="score-summary">
+            <p>Final Score: <span id="final-score">0</span></p>
+            <p>Time Bonus: <span id="time-bonus">0</span></p>
+        </div>
+
+        <button id="restart-btn" class="btn-primary">TRY AGAIN (10 🪙)</button>
+        <button id="menu-btn" class="btn-secondary">MAIN MENU</button>
+    </div>
+
+    <!-- Pause Screen -->
+    <div id="pause-screen" class="screen hidden" style="background: rgba(0,0,0,0.8);">
+        <h2>PAUSED</h2>
+        <button id="resume-btn" class="btn-primary">RESUME</button>
+        <button id="quit-btn" class="btn-danger">QUIT MISSION</button>
+    </div>
+
+    <!-- Mobile Controls -->
+    <div id="mobile-controls" class="hidden">
+        <div id="joystick-zone">
+            <div id="joystick-knob"></div>
+        </div>
+        <!-- Shoot button is in HUD bottom for mobile? or separate? HUD bottom is fine -->
+    </div>
+
+    <!-- Low Balance Modal -->
+    <div id="low-balance-modal" class="hidden"
+        style="position: fixed; z-index: 2000; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; opacity: 1; pointer-events: auto; width: 100%; height: 100%; top: 0; left: 0;">
+        <div
+            style="background: #161b22; padding: 30px; border-radius: 12px; border: 1px solid #da3633; text-align: center; max-width: 400px; color: white;">
+            <h2 style="color: #da3633; margin-top: 0;">Not Enough Coins! 🪙</h2>
+            <p>You need 10 Coins to start a mission.</p>
+            <p>Go to the Academy to solve questions and earn more!</p>
+            <a href="../AhirsAcademy/index.html" class="primary-btn"
+                style="display: inline-block; background: #238636; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; margin-top: 15px;">Go
+                to Academy</a>
+            <button id="close-low-balance"
+                style="margin-top: 10px; background: transparent; border: 1px solid #8b949e; color: #8b949e; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Close</button>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>

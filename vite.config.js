@@ -15,7 +15,8 @@ export default defineConfig({
                 chess: resolve(__dirname, 'AhirsChess/index.html'),
                 snakeAndLadder: resolve(__dirname, 'AhirsSnakeAndLadder/index.html'),
                 bikeRace: resolve(__dirname, 'AhirsBikeRace/index.html'),
-                academy: resolve(__dirname, 'AhirsAcademy/index.html')
+                academy: resolve(__dirname, 'AhirsAcademy/index.html'),
+                ahirsSpy: resolve(__dirname, 'AhirsSpy/index.html')
             }
         }
     }
