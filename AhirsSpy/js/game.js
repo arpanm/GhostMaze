@@ -150,12 +150,12 @@ export class Game {
             dy = this.ui.joystick.y * speed;
         }
         // Keyboard Input
-        else {
-            if (this.keys.ArrowUp) dy -= speed;
-            if (this.keys.ArrowDown) dy += speed;
-            if (this.keys.ArrowLeft) dx -= speed;
-            if (this.keys.ArrowRight) dx += speed;
-        }
+        
+        if (this.keys.ArrowUp) dy -= speed;
+        if (this.keys.ArrowDown) dy += speed;
+        if (this.keys.ArrowLeft) dx -= speed;
+        if (this.keys.ArrowRight) dx += speed;
+        
 
         if (dx !== 0 || dy !== 0) {
             this.player.move(dx, dy, this.walls);
@@ -206,27 +206,23 @@ export class Game {
                 // Kill Owner
                 this.owner.isDead = true;
                 this.killer.hasNecklace = true;
-                // Visual effect?
                 this.score = Math.max(0, this.score - 500); // Penalize
-                // Start fleeing
             } else {
-                // Move towards owner (slowly to not be obvious?)
+                // Move towards owner
                 const angle = Math.atan2(this.owner.y - this.killer.y, this.owner.x - this.killer.x);
-                // Only move sometimes to look natural?
-                if (Math.random() > 0.02) { // 98% chance to move
+                if (Math.random() > 0.05) { 
                     this.killer.move(Math.cos(angle) * this.killer.speed * dt * 0.8, Math.sin(angle) * this.killer.speed * dt * 0.8, this.walls);
                 }
             }
-            return; // Killer is busy with owner
+            return;
         }
 
-        // 3. If Spy is close?
+        // 3. Killer tries to avoid Spy if too close, but no instant random kill
         const spyDist = Math.hypot(this.player.x - this.killer.x, this.player.y - this.killer.y);
-        if (spyDist < 30) { // Spy is close
-            // Chance to kill Spy
-            if (Math.random() > 0.99) { // 1% chance to kill spy if close
-                this.endGame(false, "The Killer stabbed you!");
-            }
+        if (spyDist < 100) { 
+            // Move away from Spy slowly
+            const angle = Math.atan2(this.killer.y - this.player.y, this.killer.x - this.player.x);
+            this.killer.move(Math.cos(angle) * this.killer.speed * dt * 0.5, Math.sin(angle) * this.killer.speed * dt * 0.5, this.walls);
         }
     }
 
@@ -408,9 +404,14 @@ export class Game {
         const w = this.canvas.width;
         const h = this.canvas.height;
 
-        // Spawn Player
-        this.player = new Person(w / 2, h / 2, 'SPY', this.gameConfig.avatar || '😎');
-
+        // Spawn Player at a safe location (not in the center pillar)
+        let px = w / 2;
+        let py = h * 0.8;
+        this.player = new Person(px, py, 'SPY', this.gameConfig.avatar || '😎');
+        // Ensure not in wall
+        while(this.checkCollision(this.player, this.walls)) {
+            this.player.x += 10;
+        }
         // Setup Characters based on difficulty
         let numCivilians = 4;
         if (this.gameConfig.difficulty === 'medium') numCivilians = 6;
@@ -455,43 +456,45 @@ export class Game {
     }
 
     distributeKnowledge() {
-        // Give everyone some clues
-        // e.g. "I saw the Killer near the kitchen" if they were close?
-        // Or "The killer has a hat" (if avatar has hat/glasses logic, but avatars are emojis)
-        // Let's use simple avatar traits logic if possible, or just direct "I saw A/B/C"
-
-        // Trait mapping (Simple manual map for emojis)
         const traits = {
-            '👨': ['Man', 'Mustache'], '👩': ['Woman', 'Long Hair'], '👱': ['Light Hair'],
-            '👴': ['Old', 'Glasses'], '👵': ['Old', 'Glasses'], '🧔': ['Beard'],
-            '👮': ['Hat', 'Uniform'], '👷': ['Hat', 'Helmet'], '👸': ['Crown', 'Woman'],
-            '🤴': ['Crown', 'Man'], '🧙': ['Hat', 'Beard'], '🧛': ['Cape']
+            '👨': ['is a man', 'has a mustache'], '👩': ['is a woman', 'has long hair'], '👱': ['has light hair'],
+            '👴': ['is an old man', 'wears glasses'], '👵': ['is an old woman', 'wears glasses'], '🧔': ['has a beard'],
+            '👮': ['wears a police hat', 'is in uniform'], '👷': ['wears a hard hat', 'is a worker'], '👸': ['wears a crown', 'is a woman'],
+            '🤴': ['wears a crown', 'is a man'], '🧙': ['wears a wizard hat', 'has a beard'], '🧛': ['wears a cape', 'looks pale']
         };
 
-        const killerTraits = traits[this.killer.avatar] || ['Unknown'];
+        const killerTraits = traits[this.killer.avatar] || ['looks like an ordinary person'];
 
-        this.persons.forEach(p => {
-            if (p.type === 'KILLER') return;
+        // Shuffle civilians to distribute clues evenly
+        let civilians = this.persons.filter(p => p.type !== 'KILLER');
+        civilians.sort(() => Math.random() - 0.5);
 
-            // 50% chance to know a trait
-            if (Math.random() > 0.5) {
+        civilians.forEach((p, index) => {
+            // First civilian gives a direct visual clue
+            if (index === 0) {
                 const trait = killerTraits[Math.floor(Math.random() * killerTraits.length)];
-                p.knowledge.push(`The Killer has ${trait}.`);
+                p.knowledge.push(`I saw someone suspicious. The killer ${trait}.`);
+            } 
+            // Second civilian gives another visual clue
+            else if (index === 1 && killerTraits.length > 1) {
+                const trait = killerTraits.find(t => !civilians[0].knowledge[0].includes(t)) || killerTraits[0];
+                p.knowledge.push(`Watch out! I noticed the killer ${trait}.`);
             }
-
-            // 30% chance to know who is NOT the killer
-            if (Math.random() > 0.7) {
-                // Pick a random innocent
-                const innocent = this.persons.filter(p2 => p2.type !== 'KILLER' && p2 !== p)[0];
-                if (innocent) {
-                    p.knowledge.push(`${innocent.avatar} is innocent.`);
+            // Others vouch for innocent people or just give generic info
+            else {
+                // Pick a random other civilian to vouch for
+                const innocent = civilians.filter(p2 => p2 !== p)[0];
+                if (innocent && Math.random() > 0.3) {
+                    p.knowledge.push(`I was chatting with ${innocent.avatar} earlier. They are innocent!`);
+                } else {
+                    p.knowledge.push(`I heard a noise, but didn't see anyone clearly.`);
                 }
             }
         });
     }
 
     handleAskQuestion(person, qId) {
-        this.score -= 1; // Cost to ask
+        this.score -= 10; // Cost to ask
 
         if (person.type === 'KILLER') {
             // LIE!
@@ -499,21 +502,28 @@ export class Game {
             if (qId === 'killer') {
                 // Blame random innocent
                 const innocent = this.persons.find(p => p.type !== 'KILLER');
-                return `It's definitely ${innocent.avatar}!`;
+                return `It's definitely ${innocent.avatar}! I saw them!`;
             }
             if (qId === 'location') return "I was just checking the locks.";
+            if (qId === 'hat' || qId === 'glasses') return "I don't look at people's faces.";
             return "I don't know anything.";
         }
 
         // Truth (Civilians/Owner)
-        if (qId === 'suspect' || qId === 'hat' || qId === 'glasses') {
+        if (qId === 'suspect' || qId === 'killer') {
             if (person.knowledge.length > 0) {
-                return person.knowledge[Math.floor(Math.random() * person.knowledge.length)];
+                return person.knowledge[0];
             }
             return "I haven't noticed anything unusual.";
         }
+        
+        if (qId === 'hat' || qId === 'glasses') {
+             if (person.knowledge.length > 0 && (person.knowledge[0].includes('hat') || person.knowledge[0].includes('glasses'))) {
+                 return "Yes! " + person.knowledge[0];
+             }
+             return "I didn't notice any accessories.";
+        }
 
-        if (qId === 'killer') return "Be careful, they are dangerous!";
         if (qId === 'location') return "I live here / I am a guest.";
 
         return "I'm just trying to stay safe.";
@@ -536,8 +546,23 @@ export class Game {
         this.onGameOver = cb;
     }
 
+    handleTargetAction(person, action) {
+        if (action === 'catch' || action === 'shoot') {
+            if (person.type === 'KILLER') {
+                const actionText = action === 'catch' ? 'caught' : 'eliminated';
+                this.endGame(true, `You ${actionText} the Killer! Mission Accomplished.`);
+            } else {
+                person.isDead = true; 
+                const actionText = action === 'catch' ? 'arrested' : 'shot';
+                this.endGame(false, `You ${actionText} an innocent person! Police arrested you.`);
+            }
+        }
+    }
+
     // Additional logic for binding UI question handler
     bindUI(ui) {
         ui.bindAskQuestion((p, q) => this.handleAskQuestion(p, q));
+        ui.bindCatch((p) => this.handleTargetAction(p, 'catch'));
+        ui.bindShootTarget((p) => this.handleTargetAction(p, 'shoot'));
     }
 }

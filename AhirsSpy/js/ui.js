@@ -65,20 +65,41 @@ export class UIManager {
             };
             optionsContainer.appendChild(btn);
         });
+
+        // Add Catch / Shoot options
+        const catchBtn = document.createElement('button');
+        catchBtn.className = 'dialog-option-btn danger';
+        catchBtn.style.backgroundColor = '#d35400';
+        catchBtn.style.color = 'white';
+        catchBtn.style.marginTop = '10px';
+        catchBtn.innerText = '🚨 Arrest / Catch';
+        catchBtn.onclick = () => {
+            if (this.onCatch) this.onCatch(person);
+            this.closeDialog();
+        };
+        optionsContainer.appendChild(catchBtn);
+        
+        const shootBtn = document.createElement('button');
+        shootBtn.className = 'dialog-option-btn danger';
+        shootBtn.style.backgroundColor = '#c0392b';
+        shootBtn.style.color = 'white';
+        shootBtn.style.marginTop = '5px';
+        shootBtn.innerText = '🔫 Shoot';
+        shootBtn.onclick = () => {
+            if (this.onShootTarget) this.onShootTarget(person);
+            this.closeDialog();
+        };
+        optionsContainer.appendChild(shootBtn);
     }
 
     handleQuestion(person, question) {
         if (person.questionsAnswered >= person.maxQuestions) return;
 
         person.questionsAnswered++;
-        // Deduct score/coin if needed via callback, or just logic
-        // TODO: Callback for score penalty
 
         const answer = this.generateAnswer(person, question);
         document.getElementById('dialog-text').innerText = `"${answer}"`;
 
-        // Remove options after asking one (to prevent spamming same interaction?)
-        // Or refresh list. For now, let's keep it open but update count.
         const remaining = person.maxQuestions - person.questionsAnswered;
         if (remaining <= 0) {
             document.getElementById('dialog-options').innerHTML = ''; // Clear options
@@ -99,6 +120,8 @@ export class UIManager {
     }
 
     bindAskQuestion(cb) { this.onAskQuestion = cb; }
+    bindCatch(cb) { this.onCatch = cb; }
+    bindShootTarget(cb) { this.onShootTarget = cb; }
 
     bindInteract(cb) {
         const hint = document.getElementById('action-hint');
