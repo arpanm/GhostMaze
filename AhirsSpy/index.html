@@ -75,41 +75,33 @@
 
     <!-- How to Play Screen -->
     <div id="how-to-play-screen" class="screen hidden">
-        <h2>Mission Briefing</h2>
-        <div class="scroll-content">
+        <h2>MISSION BRIEFING</h2>
+        <div class="scroll-content" style="max-width: 600px; padding: 20px; background: rgba(0,0,0,0.5); border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); text-align: left;">
             <div class="instruction-block">
-                <h3>🎯 Objective</h3>
-                <p>Identify and eliminate the <strong>Killer</strong> before they kill the House Owner or steal the
-                    Necklace!</p>
+                <h3 style="color: #00ff88;">🎯 The Objective</h3>
+                <p>There's a party going on, but someone is planning an assassination! Identify and capture the <strong>Killer</strong> before they terminate the House Owner and steal the priceless necklace.</p>
             </div>
 
             <div class="instruction-block">
-                <h3>🕵️ Your Role</h3>
-                <p>You are the Spy. Everyone looks innocent, but one person is hiding a deadly secret.</p>
-            </div>
-
-            <div class="instruction-block">
-                <h3>🎮 Controls</h3>
+                <h3 style="color: #00ff88;">🕵️ The Investigation</h3>
+                <p>Walk around and mingle. Press <strong>SPACE</strong> (or tap <strong>TALK</strong> on mobile) when near someone to interrogate them.</p>
                 <ul>
-                    <li><strong>Move:</strong> Arrow Keys or Joystick</li>
-                    <li><strong>Interact:</strong> Walk up to people and press <strong>SPACE</strong> or click
-                        <strong>TALK</strong>
-                    </li>
-                    <li><strong>Shoot:</strong> Press <strong>SHOOT</strong> button (or Space if alone)</li>
+                    <li><strong>Civilians</strong> tell the truth. They'll give you visual clues about the Killer or vouch for the innocent.</li>
+                    <li><strong>The Killer</strong> will lie and may directly blame innocent guests to throw you off!</li>
                 </ul>
             </div>
 
             <div class="instruction-block">
-                <h3>💡 Tips</h3>
+                <h3 style="color: #00ff88;">🚨 The Takedown</h3>
+                <p>When you're sure you've found the culprit, initiate dialogue and use the direct action options:</p>
                 <ul>
-                    <li>🗣️ <strong>ASK</strong> questions to gather potential clues.</li>
-                    <li>🤥 The Killer might <strong>LIE</strong>. Civilians tell the truth.</li>
-                    <li>🔫 Be sure before you shoot! Shooting an innocent person calls the Police (Game Over).</li>
-                    <li>💎 Protect the Owner at all costs.</li>
+                    <li><strong style="color: #d35400;">Arrest:</strong> Take them into custody. A flawless victory.</li>
+                    <li><strong style="color: #c0392b;">Shoot:</strong> Terminate the threat immediately during conversation!</li>
+                    <li><strong>Warning:</strong> Arresting or shooting the wrong person will alert the authorities and instantly fail the mission.</li>
                 </ul>
             </div>
         </div>
-        <button class="back-btn btn-secondary">BACK</button>
+        <button class="back-btn btn-secondary">BACK TO HQ</button>
     </div>
 
     <!-- Legends Screen -->
@@ -136,33 +128,21 @@
 
     <!-- Credits Screen -->
     <div id="credits-screen" class="screen hidden">
-        <h2>CREDITS</h2>
-        <div class="scroll-content">
-            <div class="credits-section fa-credit">
-                <h3>Concept & Design</h3>
-                <p><strong>Ahir Mukherjee</strong></p>
-                <p>Visionary Creator</p>
-            </div>
-            <div class="credits-section">
-                <h3>Game Development</h3>
-                <p>Developed with <strong>AI Assistance</strong></p>
-                <p>Powered by Modern Web Technologies</p>
-            </div>
-            <div class="credits-section">
-                <h3>Art & Assets</h3>
-                <p>Emoji 15.0 Standards 🎨</p>
-                <p>Google Fonts (Roboto Mono)</p>
-            </div>
-            <div class="credits-section fa-credit">
-                <h3>Special Thanks</h3>
-                <p>To our players for saving the city!</p>
-                <p>Ahir's Academy for mission funding.</p>
-            </div>
-            <div class="credits-footer">
-                <p>© 2025 Ahir's Games</p>
+        <h2>OUR STORY</h2>
+        <div class="scroll-content" style="max-width: 600px; padding: 20px; background: rgba(0,0,0,0.5); border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); text-align: left; line-height: 1.6;">
+            <p>After escaping the Ghost Maze and racing Sharks, Ahir wanted a different kind of challenge.
+                <br /><br /><i>"What if we make a game where you have to think and solve a mystery instead of just running?"</i> he asked.
+                <br /><br />And so, <b>Spy Mission</b> was born.
+                <br /><br />Ahir helped design the core deduction mechanics. He brainstormed the idea that civilians should give visual clues about the killer's traits, like a mustache or glasses, and that the killer would actively try to lie and cast suspicion on innocent bystanders. 
+                <br /><br />He even suggested the ultimate penalty: if you make the wrong deduction and arrest a civilian, your spy gets arrested instead! We worked through the logic of traits, NPC movement, and the interactive questioning system together.
+                <br /><br />It’s fascinating to see an 8-year-old switch gears from fast-paced action games to a methodical logic puzzle, proving that gameplay design is all about asking the right questions.
+            </p>
+            <div style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 1rem;">
+                <strong>Ahir Mukherjee</strong>: Lead Detective & Game Designer<br>
+                <strong>Father</strong>: Chief Intelligence Officer (Tech)
             </div>
         </div>
-        <button class="back-btn btn-secondary">BACK</button>
+        <button class="back-btn btn-secondary">BACK TO HQ</button>
     </div>
 
     <!-- HUD -->
