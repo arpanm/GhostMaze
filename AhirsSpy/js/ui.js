@@ -458,7 +458,10 @@ export class UIManager {
     populateCarousel() {
         // List of other games
         const games = [
+            { name: "Chinese Checkers", icon: "⭐", link: "../AhirsChineseCheckers/index.html" },
+            { name: "Spy Mission", icon: "🕵️", link: "../AhirsSpy/index.html" },
             { name: "Ghost Maze", icon: "👻", link: "../AhirsGhostMaze/index.html" },
+            { name: "Academy", icon: "🎓", link: "../AhirsAcademy/index.html" },
             { name: "Snake Room", icon: "🐍", link: "../AhirsSnakeInARoom/index.html" },
             { name: "Shark Race", icon: "🦈", link: "../AhirSharkRace/index.html" },
             { name: "Shooting", icon: "🔫", link: "../AhirsShootingBattle/index.html" },

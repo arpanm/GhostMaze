@@ -309,6 +309,10 @@ class AcademyApp {
                         <span class="card-icon">🕵️</span>
                         <h5>Spy Mission</h5>
                     </a>
+                    <a href="../AhirsChineseCheckers/index.html" class="game-card">
+                        <span class="card-icon">⭐</span>
+                        <h5>Chinese Checkers</h5>
+                    </a>
                 </div>
             </div>
 
