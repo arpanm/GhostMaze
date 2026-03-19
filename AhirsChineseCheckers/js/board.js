@@ -23,39 +23,37 @@ export class Board {
     }
 
     isInStar(q, r, s) {
-        const lim = 4;
-        // Inner hexagon
-        if (Math.abs(q) <= lim && Math.abs(r) <= lim && Math.abs(s) <= lim) return true;
-
-        // Triangles (Must be strictly one coord out of bounds and other two limited)
-        if (r < -lim && q > 0 && s > 0 && q <= lim && s <= lim) return true; // Top
-        if (r > lim && q < 0 && s < 0 && q >= -lim && s >= -lim) return true; // Bottom
-        if (q < -lim && r > 0 && s > 0 && r <= lim && s <= lim) return true; // Bottom-Left
-        if (q > lim && r < 0 && s < 0 && r >= -lim && s >= -lim) return true; // Top-Right
-        if (s < -lim && q > 0 && r > 0 && q <= lim && r <= lim) return true; // Top-Left
-        if (s > lim && q < 0 && r < 0 && q >= -lim && r >= -lim) return true; // Bottom-Right
-        
-        return false;
+        // The 121-hole star is the union of two triangles of side 13
+        // Triangle 1: q <= 4, r <= 4, s <= 4
+        const inT1 = (q <= 4 && r <= 4 && s <= 4);
+        // Triangle 2: q >= -4, r >= -4, s >= -4
+        const inT2 = (q >= -4 && r >= -4 && s >= -4);
+        return inT1 || inT2;
     }
 
     getZone(q, r, s) {
-        if (r > 4) return 'PLAYER_1'; // Bottom
-        if (r < -4) return 'AI';       // Top
-        if (q < -4) return 'ZONE_BL';
-        if (q > 4) return 'ZONE_TR';
-        if (s < -4) return 'ZONE_TL';
-        if (s > 4) return 'ZONE_BR';
+        // Return ZONE_1 to ZONE_6 for the 6 points of the star
+        // Core is |q|<=4, |r|<=4, |s|<=4
+        if (Math.abs(q) <= 4 && Math.abs(r) <= 4 && Math.abs(s) <= 4) return 'NEUTRAL';
+        
+        if (r < -4) return 'ZONE_1'; // Top
+        if (q > 4)  return 'ZONE_2'; // Top-Right
+        if (s > 4)  return 'ZONE_3'; // Bottom-Right
+        if (r > 4)  return 'ZONE_4'; // Bottom
+        if (q < -4) return 'ZONE_5'; // Bottom-Left
+        if (s < -4) return 'ZONE_6'; // Top-Left
+        
         return 'NEUTRAL';
     }
 
     getZoneColor(zone) {
         switch (zone) {
-            case 'PLAYER_1': return 'rgba(0, 255, 136, 0.3)'; // Primary green
-            case 'AI': return 'rgba(0, 204, 255, 0.3)';       // Primary blue
-            case 'ZONE_BL': return 'rgba(255, 68, 68, 0.2)';   // Red
-            case 'ZONE_TR': return 'rgba(255, 170, 0, 0.2)';   // Orange
-            case 'ZONE_TL': return 'rgba(187, 102, 255, 0.2)'; // Purple
-            case 'ZONE_BR': return 'rgba(255, 255, 0, 0.2)';   // Yellow
+            case 'ZONE_4': return 'rgba(0, 255, 136, 0.3)'; // Bottom (P1)
+            case 'ZONE_1': return 'rgba(0, 204, 255, 0.3)'; // Top
+            case 'ZONE_2': return 'rgba(255, 170, 0, 0.2)';  // TR
+            case 'ZONE_5': return 'rgba(255, 68, 68, 0.2)';  // BL
+            case 'ZONE_6': return 'rgba(187, 102, 255, 0.2)';// TL
+            case 'ZONE_3': return 'rgba(255, 255, 0, 0.2)';  // BR
             default: return 'rgba(255, 255, 255, 0.05)';
         }
     }

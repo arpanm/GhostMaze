@@ -6,300 +6,325 @@ export class Game {
         this.ui = ui;
         this.economy = economy;
         this.board = new Board();
+        this.playerCount = 2;
         this.pieces = [];
         this.selectedPiece = null;
         this.validMoves = [];
-        this.turn = 'PLAYER_1'; // Player starts
+        this.turn = 'PLAYER_1'; // PLAYER_1, AI_1, AI_2
         this.isRunning = false;
         this.timer = 0;
         this.lastTime = 0;
+        this.aiDifficulty = 'medium';
+        this.isAiThinking = false;
 
         this.canvas = document.getElementById('game-canvas');
         this.ctx = this.canvas.getContext('2d');
-        this.setupBoard();
         this.resize();
         window.addEventListener('resize', () => this.resize());
     }
 
-    setupBoard() {
-        const p1Names = ["Speedy McHop", "Jumpin' Joe", "Lily Pad", "Bouncy Bob", "Skippy", "Hopper", "Springy", "Leapy Larry", "Frogger", "Rocket"];
-        const aiNames = ["Dull Dino", "Slow Sam", "Stuck Steve", "Heavy Herb", "Lazy Larry", "Procrastinator", "Wait-a-Bit", "Turtle Tom", "Snail Sally", "Glacial Greg"];
+    start(config = { playerCount: 2, difficulty: 'medium' }) {
+        console.log("Starting game session...");
+        this.playerCount = config.playerCount || 2;
+        this.aiDifficulty = config.difficulty || 'medium';
+        this.board = new Board();
+        this.pieces = [];
+        this.setupBoard();
+        this.turn = 'PLAYER_1';
+        this.isRunning = true;
+        this.timer = 0;
+        this.lastTime = performance.now();
+        this.selectedPiece = null;
+        this.validMoves = [];
+        this.isAiThinking = false;
+        
+        // Ensure no multiple loops
+        if (this.animationId) cancelAnimationFrame(this.animationId);
+        this.animate(performance.now());
+    }
 
-        // Setup Player 1 and AI
-        let p1Count = 0;
-        let aiCount = 0;
-        this.board.getAllHoles().forEach(h => {
-             if (h.zone === 'PLAYER_1') {
-                 const p = new Piece(`p1_${p1Count}`, h.q, h.r, 'PLAYER_1', '#00ff88', p1Names[p1Count]);
-                 this.pieces.push(p);
-                 this.board.setOccupant(h.q, h.r, p);
-                 p1Count++;
-             }
-             if (h.zone === 'AI') {
-                 const p = new Piece(`ai_${aiCount}`, h.q, h.r, 'AI', '#00ccff', aiNames[aiCount]);
-                 this.pieces.push(p);
-                 this.board.setOccupant(h.q, h.r, p);
-                 aiCount++;
-             }
+    setupBoard() {
+        if (this.playerCount === 2) {
+            // Standard 2-Player: Opposite zones
+            this.addPiecesToZone('ZONE_4', 'PLAYER_1', '#00ff88'); // Bottom
+            this.addPiecesToZone('ZONE_1', 'AI_1', '#00ccff');     // Top
+        } else {
+            // Symmetrical 3-Player: Every second triangle
+            this.addPiecesToZone('ZONE_4', 'PLAYER_1', '#00ff88'); // Bottom
+            this.addPiecesToZone('ZONE_2', 'AI_1', '#ffaa00');     // Top-Right
+            this.addPiecesToZone('ZONE_6', 'AI_2', '#bb66ff');     // Top-Left
+        }
+        console.log(`Setup complete: ${this.pieces.length} pieces on board.`);
+    }
+
+    addPiecesToZone(zoneName, owner, color) {
+        const holes = this.board.getAllHoles().filter(h => h.zone === zoneName);
+        holes.forEach(h => {
+            const piece = new Piece(h.q, h.r, owner, color);
+            this.pieces.push(piece);
+            this.board.setOccupant(h.q, h.r, piece);
         });
     }
 
     resize() {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
-        this.draw();
     }
 
-    start() {
-        this.isRunning = true;
-        this.lastTime = performance.now();
-        requestAnimationFrame((t) => this.loop(t));
-    }
-
-    loop(timestamp) {
+    animate(time) {
         if (!this.isRunning) return;
-        const dt = timestamp - this.lastTime;
-        this.lastTime = timestamp;
+        const dt = time - (this.lastTime || time);
+        this.lastTime = time;
         this.timer += dt;
-        
-        this.update(dt);
+
+        this.update();
         this.draw();
-        requestAnimationFrame((t) => this.loop(t));
-    }
-
-    update(dt) {
-        this.pieces.forEach(p => p.update(dt));
+        
+        const score = this.getScore('PLAYER_1');
         this.ui.updateHUD({
-            turn: this.turn,
-            timer: Math.floor(this.timer / 1000),
-            score: this.calculateProgress('PLAYER_1')
+            turn: (this.turn === 'PLAYER_1') ? 'Your Turn' : `${this.turn}'s Turn`,
+            score: `${score}/10`,
+            timer: Math.floor(this.timer / 1000)
         });
+
+        this.animationId = requestAnimationFrame((t) => this.animate(t));
     }
 
-    handleInput(clientX, clientY) {
-        if (this.turn !== 'PLAYER_1' || !this.isRunning) return;
-        
-        const pos = this.screenToHex(clientX, clientY);
-        const hole = this.board.getHole(pos.q, pos.r);
-        
-        if (!hole) return;
-
-        if (hole.occupant && hole.occupant.owner === 'PLAYER_1') {
-            this.selectedPiece = hole.occupant;
-            this.validMoves = this.calculateValidMoves(hole.q, hole.r);
-        } else if (this.selectedPiece && this.validMoves.some(m => m.q === pos.q && m.r === pos.r)) {
-            this.movePiece(this.selectedPiece, pos.q, pos.r);
-            this.endTurn();
-        } else {
-            this.selectedPiece = null;
-            this.validMoves = [];
+    update() {
+        if (this.turn.startsWith('AI') && this.isRunning && !this.isAiThinking) {
+            this.aiTurn();
         }
-    }
-
-    calculateValidMoves(q, r) {
-        const moves = [];
-        // 1. Single steps
-        const neighbors = this.board.getNeighbors(q, r);
-        neighbors.forEach(n => {
-            if (!n.occupant) moves.push({q: n.q, r: n.r, type: 'step'});
-        });
-
-        // 2. Jumps (Recursive)
-        const jumpMoves = [];
-        this.findJumpMoves(q, r, [], jumpMoves);
-        return moves.concat(jumpMoves);
-    }
-
-    findJumpMoves(q, r, visited, results) {
-        const dirs = [
-            {q: +1, r:  0}, {q: +1, r: -1}, {q:  0, r: -1},
-            {q: -1, r:  0}, {q: -1, r: +1}, {q:  0, r: +1}
-        ];
-
-        dirs.forEach(d => {
-            const adjacent = this.board.getHole(q + d.q, r + d.r);
-            if (adjacent && adjacent.occupant) {
-                const target = this.board.getHole(q + 2*d.q, r + 2*d.r);
-                if (target && !target.occupant) {
-                    const key = `${target.q},${target.r}`;
-                    if (!visited.includes(key)) {
-                        visited.push(key);
-                        results.push({q: target.q, r: target.r, type: 'jump'});
-                        this.findJumpMoves(target.q, target.r, visited, results);
-                    }
-                }
-            }
-        });
-    }
-
-    movePiece(piece, targetQ, targetR) {
-        this.board.setOccupant(piece.q, piece.r, null);
-        this.board.setOccupant(targetQ, targetR, piece);
-        this.selectedPiece = null;
-        this.validMoves = [];
-        
-        // Funny element: Randomly make piece dizzy
-        if (Math.random() < 0.1) piece.isDizzy = true;
-        setTimeout(() => piece.isDizzy = false, 2000);
-    }
-
-    endTurn() {
-        if (this.checkVictory('PLAYER_1')) {
-            this.isRunning = false;
-            this.saveScore('PLAYER_1');
-            this.ui.showGameOver(true);
-            return;
-        }
-
-        this.turn = 'AI';
-        this.ui.showAITalk("AI: 'Thinking... and you won't like it!'");
-        setTimeout(() => this.aiTurn(), 1000);
     }
 
     aiTurn() {
-        const aiPieces = this.pieces.filter(p => p.owner === 'AI');
-        let bestMove = null;
-        let bestPiece = null;
+        this.isAiThinking = true;
+        const delay = this.aiDifficulty === 'easy' ? 1500 : 800;
+
+        setTimeout(() => {
+            if (!this.isRunning) return;
+            const move = this.getBestMove(this.turn);
+            if (move) {
+                this.executeMove(move.piece, move.target);
+            } else {
+                this.endTurn();
+            }
+            this.isAiThinking = false;
+        }, delay);
+    }
+
+    getBestMove(owner) {
+        const myPieces = this.pieces.filter(p => p.owner === owner);
+        let best = null;
         let maxScore = -Infinity;
 
-        aiPieces.forEach(p => {
-            const moves = this.calculateValidMoves(p.q, p.r);
+        const targetZoneName = this.getTargetZoneName(owner);
+
+        myPieces.forEach(p => {
+            const moves = this.getValidMoves(p);
             moves.forEach(m => {
-                const score = this.scoreMove('AI', p, m);
+                const score = this.scoreMove(p, m, targetZoneName);
                 if (score > maxScore) {
                     maxScore = score;
-                    bestMove = m;
-                    bestPiece = p;
+                    best = { piece: p, target: m };
                 }
             });
         });
+        return best;
+    }
 
-        if (bestPiece && bestMove) {
-            this.movePiece(bestPiece, bestMove.q, bestMove.r);
-            if (this.checkVictory('AI')) {
-                this.isRunning = false;
-                this.saveScore('AI');
-                this.ui.showGameOver(false);
-            } else {
-                this.turn = 'PLAYER_1';
-                this.ui.showAITalk("AI: 'Your turn, if you dare!'");
-            }
+    getTargetZoneName(owner) {
+        if (owner === 'PLAYER_1') return 'ZONE_1';
+        if (this.playerCount === 2) {
+            return 'ZONE_4'; // AI target is Bottom
+        } else {
+            // 3p layout: 4->1, 2->5, 6->3
+            if (owner === 'AI_1') return 'ZONE_5';
+            if (owner === 'AI_2') return 'ZONE_3';
         }
+        return 'ZONE_1';
     }
 
-    scoreMove(owner, piece, move) {
-        // Target for AI is bottom triangle center: r=7, q=-3
-        const targetQ = owner === 'AI' ? -3 : 3;
-        const targetR = owner === 'AI' ? 7 : -7;
+    scoreMove(piece, target, targetZoneName) {
+        const targetHoles = this.board.getAllHoles().filter(h => h.zone === targetZoneName);
+        if (targetHoles.length === 0) return 0;
 
-        const oldDist = this.axialDist(piece.q, piece.r, targetQ, targetR);
-        const newDist = this.axialDist(move.q, move.r, targetQ, targetR);
+        let tQ = 0, tR = 0;
+        targetHoles.forEach(h => { tQ += h.q; tR += h.r; });
+        tQ /= targetHoles.length;
+        tR /= targetHoles.length;
+
+        const oldDist = this.axialDist(piece.q, piece.r, tQ, tR);
+        const newDist = this.axialDist(target.q, target.r, tQ, tR);
         
+        // Progress toward target centroid
         let score = (oldDist - newDist);
-        if (move.type === 'jump') score += 0.5; // Bonus for jumps
-        return score;
-    }
-
-    saveScore(winner) {
-        if (winner === 'AI') return; 
-        const timeStr = Math.floor(this.timer / 1000);
-        const scores = JSON.parse(localStorage.getItem('ahirs_cc_scores') || '[]');
-        scores.push({ 
-            player: "Ahir", 
-            time: timeStr, 
-            result: 'Victory ⭐',
-            date: new Date().toISOString() 
-        });
-        scores.sort((a, b) => a.time - b.time); 
-        localStorage.setItem('ahirs_cc_scores', JSON.stringify(scores.slice(0, 10)));
+        
+        // Bonus for actually reaching the target zone
+        const destZone = this.board.getHole(target.q, target.r).zone;
+        if (destZone === targetZoneName) score += 10;
+        
+        // Tiny randomness
+        return score + Math.random() * 0.1;
     }
 
     axialDist(q1, r1, q2, r2) {
         return (Math.abs(q1 - q2) + Math.abs(q1 + r1 - q2 - r2) + Math.abs(r1 - r2)) / 2;
     }
 
-    checkVictory(owner) {
-        const targetZone = owner === 'PLAYER_1' ? 'AI' : 'PLAYER_1';
-        const piecesInTarget = this.pieces.filter(p => p.owner === owner && this.board.getHole(p.q, p.r).zone === targetZone);
-        return piecesInTarget.length === 10;
+    getValidMoves(piece) {
+        const moves = [];
+        this.board.getNeighbors(piece.q, piece.r).forEach(h => {
+            if (!h.occupant) moves.push({ q: h.q, r: h.r });
+        });
+        this.getJumpMoves(piece.q, piece.r, [], moves);
+        return moves;
     }
 
-    calculateProgress(owner) {
-        const targetZone = owner === 'PLAYER_1' ? 'AI' : 'PLAYER_1';
-        return this.pieces.filter(p => p.owner === owner && this.board.getHole(p.q, p.r).zone === targetZone).length;
+    getJumpMoves(q, r, visited, outcomes) {
+        const directions = [{q:1,r:0},{q:1,r:-1},{q:0,r:-1},{q:-1,r:0},{q:-1,r:1},{q:0,r:1}];
+        directions.forEach(d => {
+            const over = this.board.getHole(q + d.q, r + d.r);
+            const land = this.board.getHole(q + d.q*2, r + d.r*2);
+            if (over?.occupant && land && !land.occupant) {
+                const key = `${land.q},${land.r}`;
+                if (!visited.includes(key)) {
+                    outcomes.push({ q: land.q, r: land.r, isJump: true });
+                    visited.push(key);
+                    this.getJumpMoves(land.q, land.r, visited, outcomes);
+                }
+            }
+        });
     }
 
-    screenToHex(x, y) {
-        const centerX = this.canvas.width / 2;
-        const centerY = this.canvas.height / 2;
-        const size = 30; 
+    handleClick(x, y) {
+        if (this.turn !== 'PLAYER_1' || !this.isRunning) return;
+        const hex = this.pixelToHex(x, y);
+        const hole = this.board.getHole(hex.q, hex.r);
         
-        const relX = x - centerX;
-        const relY = y - centerY;
-        
-        const q = (Math.sqrt(3)/3 * relX - 1/3 * relY) / size;
-        const r = (2/3 * relY) / size;
-        
-        return this.hexRound(q, r);
+        if (hole?.occupant && hole.occupant.owner === 'PLAYER_1') {
+            this.selectedPiece = hole.occupant;
+            this.validMoves = this.getValidMoves(this.selectedPiece);
+        } else if (this.selectedPiece) {
+            const move = this.validMoves.find(m => m.q === hex.q && m.r === hex.r);
+            if (move) {
+                this.executeMove(this.selectedPiece, move);
+            } else {
+                this.selectedPiece = null;
+                this.validMoves = [];
+            }
+        }
     }
 
-    hexToScreen(q, r) {
-        const size = 30;
-        const x = size * (Math.sqrt(3) * q + Math.sqrt(3)/2 * r);
-        const y = size * (3/2 * r);
-        return { x: x + this.canvas.width/2, y: y + this.canvas.height/2 };
+    executeMove(piece, target) {
+        this.board.setOccupant(piece.q, piece.r, null);
+        this.board.setOccupant(target.q, target.r, piece);
+        piece.q = target.q;
+        piece.r = target.r;
+        this.selectedPiece = null;
+        this.validMoves = [];
+        this.endTurn();
     }
 
-    hexRound(q, r) {
+    endTurn() {
+        const winner = this.checkWin();
+        if (winner) {
+            this.isRunning = false;
+            this.saveScore(winner);
+            this.ui.showGameOver(winner === 'PLAYER_1');
+            return;
+        }
+
+        if (this.playerCount === 2) {
+            this.turn = (this.turn === 'PLAYER_1') ? 'AI_1' : 'PLAYER_1';
+        } else {
+            if (this.turn === 'PLAYER_1') this.turn = 'AI_1';
+            else if (this.turn === 'AI_1') this.turn = 'AI_2';
+            else this.turn = 'PLAYER_1';
+        }
+    }
+
+    checkWin() {
+        const players = ['PLAYER_1', 'AI_1', 'AI_2'];
+        for (const p of players) {
+            const targetZone = this.getTargetZoneName(p);
+            const holes = this.board.getAllHoles().filter(h => h.zone === targetZone);
+            if (holes.length > 0 && holes.every(h => h.occupant && h.occupant.owner === p)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    getScore(owner) {
+        const targetZone = this.getTargetZoneName(owner);
+        const holes = this.board.getAllHoles().filter(h => h.zone === targetZone);
+        return holes.filter(h => h.occupant && h.occupant.owner === owner).length;
+    }
+
+    saveScore(winner) {
+        if (winner !== 'PLAYER_1') return;
+        const time = Math.floor(this.timer / 1000);
+        const scores = JSON.parse(localStorage.getItem('ahirs_cc_scores') || '[]');
+        scores.push({ player: "Ahir", time, result: 'Victory ⭐', date: new Date().toISOString() });
+        scores.sort((a,b) => a.time - b.time);
+        localStorage.setItem('ahirs_cc_scores', JSON.stringify(scores.slice(0, 10)));
+    }
+
+    pixelToHex(x, y) {
+        const size = this.getHexSize();
+        const cx = this.canvas.width / 2, cy = this.canvas.height / 2;
+        let q = (2/3 * (x - cx)) / size;
+        let r = (-1/3 * (x - cx) + Math.sqrt(3)/3 * (y - cy)) / size;
+        return this.axialRound(q, r);
+    }
+
+    axialRound(q, r) {
         let s = -q - r;
-        let rq = Math.round(q);
-        let rr = Math.round(r);
-        let rs = Math.round(s);
-        const dq = Math.abs(rq - q);
-        const dr = Math.abs(rr - r);
-        const ds = Math.abs(rs - s);
-        if (dq > dr && dq > ds) rq = -rr - rs;
-        else if (dr > ds) rr = -rq - rs;
+        let rq = Math.round(q), rr = Math.round(r), rs = Math.round(s);
+        const qd = Math.abs(rq-q), rd = Math.abs(rr-r), sd = Math.abs(rs-s);
+        if (qd > rd && qd > sd) rq = -rr-rs;
+        else if (rd > sd) rr = -rq-rs;
         return { q: rq, r: rr };
+    }
+
+    getHexSize() {
+        return Math.min(this.canvas.width, this.canvas.height) / 25;
     }
 
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // Draw Board
+        const size = this.getHexSize();
+        const cx = this.canvas.width / 2, cy = this.canvas.height / 2;
+
         this.board.getAllHoles().forEach(h => {
-            const pos = this.hexToScreen(h.q, h.r);
+            const px = cx + size * (3/2 * h.q);
+            const py = cy + size * (Math.sqrt(3)/2 * h.q + Math.sqrt(3) * h.r);
             this.ctx.beginPath();
-            this.ctx.arc(pos.x, pos.y, 12, 0, Math.PI * 2);
+            this.ctx.arc(px, py, size * 0.42, 0, Math.PI * 2);
             this.ctx.fillStyle = h.color;
             this.ctx.fill();
-            
             if (this.validMoves.some(m => m.q === h.q && m.r === h.r)) {
+                this.ctx.fillStyle = 'rgba(255, 255, 0, 0.6)';
                 this.ctx.beginPath();
-                this.ctx.arc(pos.x, pos.y, 6, 0, Math.PI * 2);
-                this.ctx.fillStyle = 'rgba(255, 255, 0, 0.5)';
+                this.ctx.arc(px, py, size * 0.2, 0, Math.PI * 2);
                 this.ctx.fill();
             }
         });
 
-        // Draw Pieces
         this.pieces.forEach(p => {
-            const pos = this.hexToScreen(p.q, p.r);
+            const px = cx + size * (3/2 * p.q);
+            const py = cy + size * (Math.sqrt(3)/2 * p.q + Math.sqrt(3) * p.r);
             this.ctx.save();
-            this.ctx.translate(pos.x, pos.y);
-            if (p.isDizzy) this.ctx.rotate(p.spinAngle);
-            
+            this.ctx.translate(px, py);
             this.ctx.beginPath();
-            this.ctx.arc(0, 0, 10, 0, Math.PI * 2);
+            this.ctx.arc(0, 0, size * 0.38, 0, Math.PI * 2);
             this.ctx.fillStyle = p.color;
+            this.ctx.shadowBlur = 15;
+            this.ctx.shadowColor = p.color;
             this.ctx.fill();
-            
-            // Highlight selected
-            if (this.selectedPiece === p) {
-                this.ctx.beginPath();
-                this.ctx.arc(0, 0, 14, 0, Math.PI * 2);
-                this.ctx.strokeStyle = '#ffffff';
-                this.ctx.lineWidth = 2;
+            if (p === this.selectedPiece) {
+                this.ctx.strokeStyle = '#fff';
+                this.ctx.lineWidth = 3;
                 this.ctx.stroke();
             }
             this.ctx.restore();

@@ -25,7 +25,16 @@ export class UIManager {
             }
             const avatar = document.querySelector('.avatar-option.selected').dataset.avatar;
             const difficulty = document.querySelector('.difficulty-option.selected').dataset.difficulty;
-            this.onStartGame({ name, avatar, difficulty });
+            const playerCount = parseInt(document.querySelector('.player-count-option.selected').dataset.count);
+            this.onStartGame({ name, avatar, difficulty, playerCount });
+        });
+
+        // Player Count Selection
+        document.querySelectorAll('.player-count-option').forEach(el => {
+            el.addEventListener('click', (e) => {
+                document.querySelectorAll('.player-count-option').forEach(opt => opt.classList.remove('selected'));
+                e.currentTarget.classList.add('selected');
+            });
         });
 
         // Avatar Selection

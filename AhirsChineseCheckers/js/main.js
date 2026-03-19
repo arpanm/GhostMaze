@@ -10,7 +10,7 @@ window.addEventListener('load', () => {
     ui.bindStartGame((config) => {
         if (economy.spendCoins(10, 'Chinese Checkers Mission')) {
             ui.showScreen('hud');
-            game.start();
+            game.start(config);
             ui.updateMenuBalance(economy.getBalance());
         } else {
             ui.showLowBalance();
@@ -23,7 +23,7 @@ window.addEventListener('load', () => {
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        game.handleInput(x, y);
+        game.handleClick(x, y);
     });
 
     // Initial Balance

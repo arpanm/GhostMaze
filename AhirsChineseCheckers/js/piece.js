@@ -3,20 +3,11 @@
  */
 
 export class Piece {
-    constructor(id, q, r, owner, color, name) {
-        this.id = id;
+    constructor(q, r, owner, color) {
         this.q = q;
         this.r = r;
-        this.owner = owner; // 'PLAYER_1' or 'AI'
+        this.owner = owner; // 'PLAYER_1', 'AI_1', 'AI_2'
         this.color = color;
-        this.name = name; // Funny name like "Speedy McHop"
         this.isDizzy = false;
-        this.spinAngle = 0;
-    }
-
-    update(dt) {
-        if (this.isDizzy) {
-            this.spinAngle += 0.01 * dt;
-        }
     }
 }
