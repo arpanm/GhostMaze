@@ -1,5 +1,6 @@
 import { Person } from './person.js';
 import { Assets } from './assets.js';
+import { localLLMService } from '../../shared/js/local_llm_service.js';
 
 export class Game {
     constructor(ui, economy) {
@@ -15,6 +16,8 @@ export class Game {
         this.score = 1000;
         this.timeElapsed = 0;
         this.lastTime = 0;
+        this.lastHintTime = 0;
+        this.hintInterval = 30000; // 30 seconds
 
         this.gameConfig = null;
         this.walls = []; // Defines the map
@@ -88,6 +91,9 @@ export class Game {
         this.score = 1000;
         this.timeElapsed = 0;
         this.lastTime = performance.now();
+
+        // Start loading LLM in background so hints are ready later
+        localLLMService.init().catch(() => {});
 
         this.generateMap();
         this.spawnCharacters();
@@ -178,6 +184,12 @@ export class Game {
 
         // Check Proximity for Interact Hint
         this.checkProximity();
+
+        // LLM Hints Timer
+        if (this.timeElapsed - this.lastHintTime > this.hintInterval) {
+            this.lastHintTime = this.timeElapsed;
+            this.triggerLLMHint();
+        }
     }
 
     updateKillerAI(dt) {
@@ -224,6 +236,49 @@ export class Game {
             const angle = Math.atan2(this.killer.y - this.player.y, this.killer.x - this.player.x);
             this.killer.move(Math.cos(angle) * this.killer.speed * dt * 0.5, Math.sin(angle) * this.killer.speed * dt * 0.5, this.walls);
         }
+    }
+
+    async triggerLLMHint() {
+        if (!this.killer || this.killer.isDead) return;
+
+        // If not loaded yet, provide a static fallback hint based on killer traits
+        if (!localLLMService.isLoaded) {
+            console.log('[Game] 🤖 AI not ready for hint yet, using static fallback.');
+            const traits = this.getKillerTraits();
+            const trait = traits[Math.floor(Math.random() * traits.length)];
+            const fallbacks = [
+                `Look for someone who ${trait}...`,
+                `A witness says they noticed someone who ${trait}.`,
+                `Suspicious activity caught: Person ${trait}.`,
+                `Handler Note: Target ${trait}.`
+            ];
+            const hint = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+            this.ui.showHint(hint + " (AI Loading...)");
+            
+            // Try to init silently in case it failed or hasn't started
+            localLLMService.init().catch(() => {});
+            return; 
+        }
+
+        console.log('[Game] 🤖 Generating AI LLM Hint...');
+        try {
+            const traits = this.getKillerTraits();
+            const hint = await localLLMService.generateSpyHint(traits);
+            this.ui.showHint(hint);
+        } catch (error) {
+            console.error('[Game] ✗ LLM Hint failed:', error);
+        }
+    }
+
+    getKillerTraits() {
+        // Collect traits of the killer to passed to LLM
+        const traits = {
+            '👨': ['Man', 'Mustache'], '👩': ['Woman', 'Long Hair'], '👱': ['Light Hair'],
+            '👴': ['Old', 'Glasses'], '👵': ['Old', 'Glasses'], '🧔': ['Beard'],
+            '👮': ['Hat', 'Uniform'], '👷': ['Hat', 'Helmet'], '👸': ['Crown', 'Woman'],
+            '🤴': ['Crown', 'Man'], '🧙': ['Hat', 'Beard'], '🧛': ['Cape']
+        };
+        return traits[this.killer.avatar] || ['Mysterious'];
     }
 
     draw() {

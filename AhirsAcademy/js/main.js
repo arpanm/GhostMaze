@@ -2,6 +2,7 @@ import { dataLoader } from './data_loader.js';
 import { economy } from './economy.js';
 import { questionGenerator } from './question_generator.js';
 import { adaptiveDifficulty } from './adaptive_difficulty.js';
+import { persistenceService } from './persistence_service.js';
 
 class AcademyApp {
     constructor() {
@@ -136,6 +137,12 @@ class AcademyApp {
         }
     }
 
+    updateLoadingStatus(status) {
+        if (this.questionText) {
+            this.questionText.textContent = status;
+        }
+    }
+
     renderQuestion() {
         this.questionText.textContent = this.currentQuestion.text;
         this.optionsContainer.innerHTML = '';
@@ -172,6 +179,7 @@ class AcademyApp {
 
         // Logic
         adaptiveDifficulty.recordResult(isCorrect);
+        persistenceService.markAsAnswered(this.currentClass.id, this.currentSubject.id, this.currentQuestion.text);
 
         const reward = isCorrect ? 10 : 0;
         if (isCorrect) {

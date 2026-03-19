@@ -159,9 +159,33 @@ export class UIManager {
         }
     }
 
+    showHint(msg) {
+        const hintEl = document.createElement('div');
+        hintEl.className = 'llm-hint';
+        hintEl.style.position = 'absolute';
+        hintEl.style.top = '10%';
+        hintEl.style.left = '50%';
+        hintEl.style.transform = 'translateX(-50%)';
+        hintEl.style.background = 'rgba(0, 255, 136, 0.9)';
+        hintEl.style.color = '#000';
+        hintEl.style.padding = '10px 20px';
+        hintEl.style.borderRadius = '5px';
+        hintEl.style.zIndex = '1100';
+        hintEl.style.fontWeight = 'bold';
+        hintEl.style.boxShadow = '0 0 15px rgba(0, 255, 136, 0.5)';
+        hintEl.style.borderLeft = '5px solid #000';
+        hintEl.innerHTML = `<span style="font-size: 1.2em; margin-right: 10px;">🛡️</span> ${msg}`;
+        
+        document.body.appendChild(hintEl);
+
+        setTimeout(() => {
+            hintEl.style.opacity = '0';
+            hintEl.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => hintEl.remove(), 500);
+        }, 4000);
+    }
+
     showNotification(msg) {
-        // Simple toast or reuse hint?
-        // Let's create a toast element dynamically or reuse hint
         const toast = document.createElement('div');
         toast.style.position = 'absolute';
         toast.style.top = '20%';
@@ -176,7 +200,6 @@ export class UIManager {
         toast.innerText = msg;
         document.body.appendChild(toast);
 
-        // Remove after 2s
         setTimeout(() => {
             toast.remove();
         }, 2000);

@@ -2,6 +2,8 @@ import { adaptiveDifficulty } from './adaptive_difficulty.js';
 import { dataLoader } from './data_loader.js';
 import { aiService } from './ai_service.js';
 import { questionValidator } from './question_validator.js';
+import { persistenceService } from './persistence_service.js';
+import { localLLMService } from '../../shared/js/local_llm_service.js';
 
 export class QuestionGenerator {
     constructor() {
@@ -33,16 +35,19 @@ export class QuestionGenerator {
             await this.generateBatch(classId, subjectId, difficulty, cacheKey);
         }
 
-        // Get next question from cache
-        if (this.questionCache[cacheKey] && this.questionCache[cacheKey].length > 0) {
-            const question = this.questionCache[cacheKey].shift(); // Take first question
-            this.addToHistory(question);
-            console.log(`[QuestionGenerator] ✓ Serving cached question (${this.questionCache[cacheKey].length} remaining)`);
-            return question;
+        // Get next question from cache, but double-check persistence
+        while (this.questionCache[cacheKey] && this.questionCache[cacheKey].length > 0) {
+            const question = this.questionCache[cacheKey].shift();
+            if (!persistenceService.isAnswered(classId, subjectId, question.text)) {
+                this.addToHistory(question);
+                console.log(`[QuestionGenerator] ✓ Serving cached question (${this.questionCache[cacheKey].length} remaining)`);
+                return question;
+            }
+            console.log(`[QuestionGenerator] ⏭️ Skipping answered question from cache: ${question.text.substring(0, 30)}...`);
         }
 
-        // Cache is empty and generation failed, fallback to question bank
-        console.log('[QuestionGenerator] ⚠️ Cache empty, using question bank');
+        // Cache is empty and generation failed, try question bank
+        console.log('[QuestionGenerator] ⚠️ Cache empty, trying question bank');
         const bankQuestion = this.getFromBank(classId, subjectId, difficulty);
 
         if (bankQuestion) {
@@ -50,8 +55,22 @@ export class QuestionGenerator {
             return bankQuestion;
         }
 
-        // Ultimate fallback
-        return this.createFallbackQuestion("Unable to generate question. Please try again.");
+        // Question bank exhausted, trigger Local LLM Agent
+        console.log('[QuestionGenerator] 🚀 Static bank exhausted! Activating Local LLM Agent...');
+        try {
+            const localQuestion = await localLLMService.generateQuestion(classId, subjectId, difficulty);
+            this.addToHistory(localQuestion);
+            return {
+                ...localQuestion,
+                difficulty: difficulty,
+                type: 'multiple-choice',
+                isLocalGenerated: true
+            };
+        } catch (error) {
+            console.error('[QuestionGenerator] ✗ Local LLM failed:', error);
+            // Ultimate fallback
+            return this.createFallbackQuestion("All questions exhausted. Please try again later.");
+        }
     }
 
     async generateBatch(classId, subjectId, difficulty, cacheKey) {
@@ -434,16 +453,15 @@ OUTPUT FORMAT - IMPORTANT:
             return null;
         }
 
-        // Filter out already asked questions
+        // Filter out already asked questions (both in-session history AND long-term persistence)
         const availableQuestions = difficultyBank.filter(q =>
-            !questionValidator.isDuplicate(q, this.questionHistory)
+            !questionValidator.isDuplicate(q, this.questionHistory) &&
+            !persistenceService.isAnswered(classId, subjectId, q.text)
         );
 
         if (availableQuestions.length === 0) {
-            console.warn('[QuestionGenerator] All bank questions already used');
-            // Reset history and try again
-            this.questionHistory = [];
-            return difficultyBank[Math.floor(Math.random() * difficultyBank.length)];
+            console.warn(`[QuestionGenerator] All ${difficulty} bank questions already used for ${classId}/${subjectId}`);
+            return null; // Signal exhaustion for this difficulty
         }
 
         // Pick random question

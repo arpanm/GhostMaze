@@ -31,6 +31,14 @@ window.addEventListener('load', () => {
 
     game.setGameOverCallback((result) => ui.showGameOver(result));
 
+    // Expose for LLM Service status updates
+    window.app = {
+        updateLoadingStatus: (status) => {
+            console.log(`[AhirsSpy] AI Status: ${status}`);
+            // Don't show notifications for background loading to avoid noise
+        }
+    };
+
     // Update Menu Balance on Load
     ui.updateMenuBalance();
 
