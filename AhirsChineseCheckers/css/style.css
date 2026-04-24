@@ -26,10 +26,13 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     background: radial-gradient(circle at center, #2c3e50 0%, #1a1a1a 100%);
     z-index: 100;
-    padding: 20px;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .hidden { display: none !important; }

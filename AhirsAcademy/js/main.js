@@ -273,6 +273,10 @@ class AcademyApp {
             <div class="game-carousel-container">
                 <h4>More Missions</h4>
                 <div class="game-carousel">
+                    <a href="../AhirsLudo/index.html" class="game-card">
+                        <span class="card-icon">🎲</span>
+                        <h5>Ludo</h5>
+                    </a>
                     <a href="../AhirsGhostMaze/index.html" class="game-card">
                         <span class="card-icon">👻</span>
                         <h5>Ghost Maze</h5>
@@ -312,6 +316,10 @@ class AcademyApp {
                     <a href="../AhirsChineseCheckers/index.html" class="game-card">
                         <span class="card-icon">⭐</span>
                         <h5>Chinese Checkers</h5>
+                    </a>
+                    <a href="../AhirsAcademy/index.html" class="game-card">
+                        <span class="card-icon">🎓</span>
+                        <h5>Academy</h5>
                     </a>
                 </div>
             </div>

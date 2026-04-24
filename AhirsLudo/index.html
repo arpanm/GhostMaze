@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ahir's Chinese Checkers</title>
+    <title>Ahir's Ludo</title>
     <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⭐</text></svg>">
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="../css/common.css">
 </head>
@@ -14,23 +14,31 @@
 <body>
     <!-- Start Screen -->
     <div id="start-screen" class="screen">
-        <h1>⭐ Ahir's Chinese Checkers</h1>
-        <p class="subtitle">Hop, jump, and skip your way to victory!</p>
+        <h1>🎲 Ahir's Ludo</h1>
+        <p class="subtitle">Roll the dice and race to the finish!</p>
 
         <div class="form-group">
-            <label for="player-name">Strategist Name:</label>
+            <label for="player-name">Captain's Name:</label>
             <input type="text" id="player-name" placeholder="Enter your alias" maxlength="12">
             <span id="name-error" class="error-message hidden">Identify yourself, Agent!</span>
         </div>
 
         <div class="form-group">
-            <label>Select Your Marble Style:</label>
+            <label>Select Your Team Color:</label>
             <div class="avatar-selection">
-                <div class="avatar-option selected" data-avatar="🟢">🟢</div>
-                <div class="avatar-option" data-avatar="🔴">🔴</div>
-                <div class="avatar-option" data-avatar="🟡">🟡</div>
-                <div class="avatar-option" data-avatar="🟣">🟣</div>
-                <div class="avatar-option" data-avatar="🟠">🟠</div>
+                <div class="avatar-option selected" data-color="green">🟢 Green</div>
+                <div class="avatar-option" data-color="blue">🔵 Blue</div>
+                <div class="avatar-option" data-color="yellow">🟡 Yellow</div>
+                <div class="avatar-option" data-color="red">🔴 Red</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Select Players:</label>
+            <div class="player-count-selection">
+                <div class="player-count-option selected" data-count="2">2 Players</div>
+                <div class="player-count-option" data-count="3">3 Players</div>
+                <div class="player-count-option" data-count="4">4 Players</div>
             </div>
         </div>
 
@@ -49,14 +57,6 @@
                     <span class="difficulty-icon">🔴</span>
                     <span class="difficulty-name">Grandmaster</span>
                 </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>Players:</label>
-            <div class="player-count-selection">
-                <div class="player-count-option selected" data-count="2">2 Players</div>
-                <div class="player-count-option" data-count="3">3 Players</div>
             </div>
         </div>
 
@@ -110,9 +110,6 @@
                 <a href="../AhirsBikeRace/index.html" class="game-card"><span class="card-icon">🚲</span>
                     <h5>Bike Race</h5>
                 </a>
-                <a href="../AhirsTreasureHunt/index.html" class="game-card"><span class="card-icon">💎</span>
-                    <h5>Treasure Hunt</h5>
-                </a>
             </div>
         </div>
     </div>
@@ -122,18 +119,20 @@
         <h2>HOW TO PLAY</h2>
         <div class="scroll-content">
             <div class="instruction-block">
-                <h3 style="color: #00ff88;">🎯 The Objective</h3>
-                <p>Move all 10 of your marbles from your starting triangle to the triangle directly opposite.</p>
+                <h3 style="color: #00ff88;">🎯 Objective</h3>
+                <p>Move all 4 of your pieces from your Yard to the Home triangle in the center.</p>
             </div>
             <div class="instruction-block">
-                <h3 style="color: #00ff88;">🏃 Movement</h3>
-                <p>Standard Move: Slide a marble to any adjacent empty hole.</p>
-                <p>Jump Move: Hop over an adjacent marble (yours or opponent's) into an empty hole beyond. You can chain
-                    as many jumps as you like in a single turn!</p>
+                <h3 style="color: #00ff88;">🎲 Dice Rolls</h3>
+                <p>Roll a 6 to bring a piece into the hunt. Rolling a 6 also gives you an extra turn!</p>
             </div>
             <div class="instruction-block">
-                <h3 style="color: #00ff88;">💡 Strategy</h3>
-                <p>Create paths of marbles to leap across the entire board in one massive turn.</p>
+                <h3 style="color: #00ff88;">⚔️ Capturing</h3>
+                <p>Land on an opponent's piece to send it back to their Yard. This also gives you an extra roll!</p>
+            </div>
+            <div class="instruction-block">
+                <h3 style="color: #00ff88;">🏠 Safe Zones</h3>
+                <p>Squares with a star icon (and start squares) are safe! Pieces here cannot be captured.</p>
             </div>
         </div>
         <button class="back-btn btn-secondary">BACK TO MENU</button>
@@ -163,16 +162,16 @@
     <div id="credits-screen" class="screen hidden">
         <h2>OUR STORY</h2>
         <div class="scroll-content credits-content">
-            <p>After building several action-packed games, Ahir decided he wanted to include a timeless classic in the
-                GhostMaze universe.
-                <br /><br />"Let's add Chinese Checkers," he suggested. He was drawn to the 121-pointed star board and
-                the deep strategy involved in planning multi-jump moves.
-                <br /><br />Ahir helped curate the game's personality, suggesting we give the AI a cheeky attitude
-                through "trash talk" and giving the marbles fun, quirky names.
-                <br /><br />Watching him appreciate the balance of a thousand-year-old game design while adding his own
-                modern, playful touches has been a highlight of our journey.
-                <br /><br /><b>Ahir Mukherjee</b>: Visionary Curator & Game Designer<br />
-                <b>Father</b>: Technical Lead
+            <p>One evening, while we were cleaning up the GhostMaze project, Ahir found an old board game in the back of
+                the closet.
+                <br /><br />"Ludo!" he shouted. "We need this in our game world. But it should have a dark theme and
+                funny pieces!"
+                <br /><br />Ahir helped design the team colors and came up with the idea of pieces getting "dizzy" after
+                being captured. He also personally curated the AI's trash-talk, wanting it to be cheeky but fair.
+                <br /><br />Building this together has been a lesson in patience and probability. Ahir loves the tension
+                of needing that "perfect 6."
+                <br /><br /><b>Ahir Mukherjee</b>: Visionary Creative Lead<br />
+                <b>Father</b>: Technical Craftsman
             </p>
         </div>
         <button class="back-btn btn-secondary">BACK TO MENU</button>
@@ -182,34 +181,30 @@
     <div id="game-hud" class="hidden">
         <div class="hud-top">
             <div class="hud-item" id="turn-display">Your Turn</div>
-            <div class="hud-item" id="score-display">0/10</div>
+            <div class="hud-item" id="score-display">0/4</div>
             <div class="hud-item" id="timer-display">⏳ <span>0</span>s</div>
         </div>
-        <div class="ai-trash-talk" id="ai-talk">AI: "Good luck, you'll need it!"</div>
+        <div class="dice-section">
+            <div id="dice-container">
+                <div id="dice" class="dice-off">?</div>
+            </div>
+            <p id="dice-instruction">Tap to Roll!</p>
+        </div>
+        <div class="ai-trash-talk" id="ai-talk">AI: "Don't get too close!"</div>
         <button id="pause-btn">⏸️</button>
-    </div>
-
-    <!-- Canvas -->
-    <div id="game-container">
-        <canvas id="game-canvas"></canvas>
     </div>
 
     <!-- Game Over Screen -->
     <div id="game-over-screen" class="screen hidden">
         <h2 id="result-title">VICTORY</h2>
-        <p id="result-message">Your strategy was superior!</p>
+        <p id="result-message">You are the Ludo Master!</p>
         <button id="restart-btn" class="btn-primary">REMATCH (10 🪙)</button>
         <button id="menu-btn" class="btn-secondary">MAIN MENU</button>
     </div>
 
-    <!-- Low Balance -->
-    <div id="low-balance-modal" class="modal hidden">
-        <div class="modal-content">
-            <h2 style="color: #ff4444;">Not Enough Coins! 🪙</h2>
-            <p>You need 10 Coins to enter the arena.</p>
-            <a href="../AhirsAcademy/index.html" class="btn-primary">Earn at Academy</a>
-            <button id="close-low-balance" class="btn-secondary">Close</button>
-        </div>
+    <!-- Canvas -->
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
     </div>
 
     <script type="module" src="js/main.js"></script>

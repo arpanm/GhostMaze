@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ahir's Spy Mission</title>
+    <title>Ahir's Treasure Hunt</title>
     <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕵️</text></svg>">
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💎</text></svg>">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="../css/common.css">
 </head>
@@ -15,24 +15,36 @@
 
     <!-- Start Screen -->
     <div id="start-screen" class="screen">
-        <h1>🕵️ Ahir's Spy Mission</h1>
-        <p class="subtitle">Find the Killer. Save the Owner. Don't get caught!</p>
+        <h1>💎 Ahir's Treasure Hunt</h1>
+        <p class="subtitle">Race through hazardous terrain, avoid creatures, and find the main treasure first!</p>
 
         <div class="form-group">
-            <label for="player-name">Spy Name:</label>
-            <input type="text" id="player-name" placeholder="Enter your alias" maxlength="12">
-            <span id="name-error" class="error-message hidden">Identify yourself, Agent!</span>
+            <label for="player-name">Explorer Name:</label>
+            <input type="text" id="player-name" placeholder="Enter your name" maxlength="12">
+            <span id="name-error" class="error-message hidden">Identify yourself, Explorer!</span>
         </div>
 
         <div class="form-group">
-            <label>Select Avatar:</label>
-            <div class="avatar-selection">
-                <div class="avatar-option selected" data-avatar="😎">😎</div>
-                <div class="avatar-option" data-avatar="🤠">🤠</div>
-                <div class="avatar-option" data-avatar="🕵️‍♂️">🕵️‍♂️</div>
-                <div class="avatar-option" data-avatar="👮‍♂️">👮‍♂️</div>
-                <div class="avatar-option" data-avatar="🦸‍♂️">🦸‍♂️</div>
+            <label>Select Player Shape:</label>
+            <div class="shape-selection">
+                <div class="shape-option selected" data-shape="circle">
+                    <div style="width: 20px; height: 20px; background: #00ff88; border-radius: 50%;"></div>
+                </div>
+                <div class="shape-option" data-shape="square">
+                    <div style="width: 20px; height: 20px; background: #00ff88;"></div>
+                </div>
+                <div class="shape-option" data-shape="triangle">
+                    <div
+                        style="width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 20px solid #00ff88;">
+                    </div>
+                </div>
+                <div class="shape-option" data-shape="star">⭐</div>
             </div>
+        </div>
+
+        <div class="form-group">
+            <label for="opponent-count">Opponents (1-5):</label>
+            <input type="number" id="opponent-count" value="3" min="1" max="5">
         </div>
 
         <div class="form-group">
@@ -40,20 +52,20 @@
             <div class="difficulty-selection">
                 <div class="difficulty-option selected" data-difficulty="easy">
                     <span class="difficulty-icon">🟢</span>
-                    <span class="difficulty-name">Rookie</span>
+                    <span class="difficulty-name">Scout</span>
                 </div>
                 <div class="difficulty-option" data-difficulty="medium">
                     <span class="difficulty-icon">🟡</span>
-                    <span class="difficulty-name">Agent</span>
+                    <span class="difficulty-name">Explorer</span>
                 </div>
                 <div class="difficulty-option" data-difficulty="hard">
                     <span class="difficulty-icon">🔴</span>
-                    <span class="difficulty-name">007</span>
+                    <span class="difficulty-name">Survivor</span>
                 </div>
             </div>
         </div>
 
-        <button id="start-btn" class="btn-primary">START MISSION (10 🪙)</button>
+        <button id="start-btn" class="btn-primary">START HUNT (10 🪙)</button>
         <div class="coin-balance-display">Coins: <span id="menu-coin-balance">...</span></div>
 
         <div class="menu-buttons">
@@ -118,33 +130,19 @@
             style="max-width: 600px; padding: 20px; background: rgba(0,0,0,0.5); border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); text-align: left;">
             <div class="instruction-block">
                 <h3 style="color: #00ff88;">🎯 The Objective</h3>
-                <p>There's a party going on, but someone is planning an assassination! Identify and capture the
-                    <strong>Killer</strong> before they terminate the House Owner and steal the priceless necklace.
-                </p>
+                <p>Navigate the randomly generated terrain to find the main treasure (💎) before your AI opponents do!
+                    The faster you find it, the higher your score.</p>
             </div>
 
             <div class="instruction-block">
-                <h3 style="color: #00ff88;">🕵️ The Investigation</h3>
-                <p>Walk around and mingle. Press <strong>SPACE</strong> (or tap <strong>TALK</strong> on mobile) when
-                    near someone to interrogate them.</p>
+                <h3 style="color: #00ff88;">🏃‍♂️ Gameplay & Health</h3>
+                <p>Use Keyboard arrows to move on Desktop, or tap the joystick area on Mobile.</p>
                 <ul>
-                    <li><strong>Civilians</strong> tell the truth. They'll give you visual clues about the Killer or
-                        vouch for the innocent.</li>
-                    <li><strong>The Killer</strong> will lie and may directly blame innocent guests to throw you off!
-                    </li>
-                </ul>
-            </div>
-
-            <div class="instruction-block">
-                <h3 style="color: #00ff88;">🚨 The Takedown</h3>
-                <p>When you're sure you've found the culprit, initiate dialogue and use the direct action options:</p>
-                <ul>
-                    <li><strong style="color: #d35400;">Arrest:</strong> Take them into custody. A flawless victory.
-                    </li>
-                    <li><strong style="color: #c0392b;">Shoot:</strong> Terminate the threat immediately during
-                        conversation!</li>
-                    <li><strong>Warning:</strong> Arresting or shooting the wrong person will alert the authorities and
-                        instantly fail the mission.</li>
+                    <li><strong>Hazards:</strong> Beware of wandering ghosts (👻) and stationary traps (🔥). Touching
+                        them will drain your health rapidly!</li>
+                    <li><strong>Health Potions:</strong> Collect green potions (🧪) to restore health.</li>
+                    <li><strong>Bonus Loot:</strong> Pick up gold coins (💰) for extra points.</li>
+                    <li><strong>Death:</strong> If your health reaches 0, you lose.</li>
                 </ul>
             </div>
         </div>
@@ -159,7 +157,7 @@
                 <thead>
                     <tr style="border-bottom: 2px solid #555;">
                         <th>Rank</th>
-                        <th>Agent</th>
+                        <th>Explorer</th>
                         <th>Score</th>
                         <th>Status</th>
                     </tr>
@@ -178,22 +176,16 @@
         <h2>OUR STORY</h2>
         <div class="scroll-content"
             style="max-width: 600px; padding: 20px; background: rgba(0,0,0,0.5); border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); text-align: left; line-height: 1.6;">
-            <p>After escaping the Ghost Maze and racing Sharks, Ahir wanted a different kind of challenge.
-                <br /><br /><i>"What if we make a game where you have to think and solve a mystery instead of just
-                    running?"</i> he asked.
-                <br /><br />And so, <b>Spy Mission</b> was born.
-                <br /><br />Ahir helped design the core deduction mechanics. He brainstormed the idea that civilians
-                should give visual clues about the killer's traits, like a mustache or glasses, and that the killer
-                would actively try to lie and cast suspicion on innocent bystanders.
-                <br /><br />He even suggested the ultimate penalty: if you make the wrong deduction and arrest a
-                civilian, your spy gets arrested instead! We worked through the logic of traits, NPC movement, and the
-                interactive questioning system together.
-                <br /><br />It’s fascinating to see an 8-year-old switch gears from fast-paced action games to a
-                methodical logic puzzle, proving that gameplay design is all about asking the right questions.
+            <p>Ahir wanted a game of exploration, danger, and rewards.
+                <br /><br /><i>"I want to find treasure in a forest! But there should be ghosts chasing me, and other
+                    explorers trying to steal the treasure,"</i> he suggested.
+                <br /><br />We worked together to design the health mechanics and the procedural map generation.
+                Designing the AI bots to wander the map searching for the same goal was a fun challenge. Ahir even made
+                sure there were smaller treasures along the way.
             </p>
             <div style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 1rem;">
-                <strong>Ahir Mukherjee</strong>: Lead Detective & Game Designer<br>
-                <strong>Father</strong>: Chief Intelligence Officer (Tech)
+                <strong>Ahir Mukherjee</strong>: Lead Explorer<br>
+                <strong>Father</strong>: Chief Cartographer
             </div>
         </div>
         <button class="back-btn btn-secondary">BACK TO HQ</button>
@@ -202,59 +194,29 @@
     <!-- HUD -->
     <div id="game-hud" class="hidden">
         <div class="hud-top">
-            <div class="hud-item error-shake" id="timer-display">⏳ <span>100</span>s</div>
-            <div class="hud-item">🏆 <span id="score-display">1000</span></div>
-            <div class="hud-item">🪙 <span id="coin-display">0</span></div>
+            <div class="hud-item error-shake" id="timer-display">⏳ <span>0</span>s</div>
+            <div class="hud-item">🏆 <span id="score-display">0</span></div>
+            <div class="hud-item">❤️ <span id="health-display">100</span></div>
         </div>
         <div class="hud-bottom">
             <button id="pause-btn">⏸️</button>
-            <div id="action-hint">Walk up to someone to interact</div>
-            <button id="talk-btn" class="action-btn hidden" style="background-color: #2ea043;">🗣️ TALK</button>
-            <button id="shoot-btn" class="action-btn">🔫 SHOOT</button>
         </div>
     </div>
 
     <!-- Canvas -->
-    <canvas id="game-canvas"></canvas>
-
-    <!-- Dialog Modal -->
-    <div id="dialog-modal" class="modal hidden">
-        <div class="dialog-content">
-            <div class="dialog-header">
-                <span id="dialog-avatar">👤</span>
-                <span id="dialog-name">Person</span>
-            </div>
-            <div class="dialog-body">
-                <p id="dialog-text">Hello! Can I help you?</p>
-            </div>
-            <div class="dialog-options" id="dialog-options">
-                <!-- Buttons injected by JS -->
-            </div>
-            <button id="close-dialog-btn" class="btn-close">Leave</button>
-        </div>
+    <div id="game-container" class="hidden">
+        <canvas id="game-canvas"></canvas>
     </div>
 
     <!-- Game Over Screen -->
     <div id="game-over-screen" class="screen hidden">
         <div class="result-icon iso-anim" id="result-icon">💀</div>
         <h2 id="result-title">MISSION FAILED</h2>
-        <p id="result-message">The killer escaped.</p>
-
-        <div id="killer-reveal-section" class="hidden"
-            style="margin: 20px 0; padding: 15px; background: rgba(0,0,0,0.5); border-radius: 8px; border: 1px solid #da3633;">
-            <h3 style="color: #da3633; margin-top: 0;">THE KILLER WAS:</h3>
-            <div style="font-size: 3em; margin: 10px 0;">
-                <span id="killer-reveal-avatar">🕵️‍♂️</span>
-            </div>
-            <p id="killer-reveal-identity" style="font-weight: bold; color: #eebb00;">Unknown Person</p>
-            <p id="killer-reveal-clue" style="font-style: italic; color: #aaa; font-size: 0.9em;">"They had a hat..."
-            </p>
-            <p style="font-size: 0.8em; color: #888; margin-top: 5px;">(Better luck next time, Agent!)</p>
-        </div>
+        <p id="result-message">You died before reaching the treasure.</p>
 
         <div class="score-summary">
             <p>Final Score: <span id="final-score">0</span></p>
-            <p>Time Bonus: <span id="time-bonus">0</span></p>
+            <p>Time Taken: <span id="time-taken">0</span>s</p>
         </div>
 
         <button id="restart-btn" class="btn-primary">TRY AGAIN (10 🪙)</button>

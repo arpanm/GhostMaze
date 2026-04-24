@@ -727,7 +727,7 @@ th {
 
 @media (min-width: 768px) {
     .game-carousel {
-        justify-content: center;
+        justify-content: flex-start; /* Fixed scroll cut-off */
     }
 }
 

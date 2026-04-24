@@ -161,6 +161,7 @@ export class UIManager {
 
     populateCarousel() {
         const games = [
+            { name: "Ludo", icon: "🎲", link: "../AhirsLudo/index.html" },
             { name: "Chinese Checkers", icon: "⭐", link: "../AhirsChineseCheckers/index.html" },
             { name: "Spy Mission", icon: "🕵️", link: "../AhirsSpy/index.html" },
             { name: "Ghost Maze", icon: "👻", link: "../AhirsGhostMaze/index.html" },

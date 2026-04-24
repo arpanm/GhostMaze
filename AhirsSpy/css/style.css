@@ -28,7 +28,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* Fixes header cut-off on small screens/tall content */
+    justify-content: flex-start;
+    /* Fixes header cut-off on small screens/tall content */
     background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
     z-index: 100;
     padding: 40px 20px;
@@ -341,10 +342,11 @@ input[type="text"] {
 }
 
 /* Carousel */
+
+/* Carousel */
 .game-carousel-container {
-    margin-top: 2rem;
+    margin-top: 20px;
     width: 100%;
-    max-width: 800px;
     text-align: center;
 }
 
@@ -353,36 +355,41 @@ input[type="text"] {
     gap: 15px;
     overflow-x: auto;
     padding: 10px;
-    scrollbar-width: thin;
     justify-content: flex-start;
+    /* Fix scroll cut-off */
 }
 
 @media (min-width: 768px) {
     .game-carousel {
-        justify-content: center;
+        justify-content: flex-start; /* Fixed scroll cut-off */
     }
 }
 
 .game-card {
-    min-width: 100px;
     background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
     border-radius: 10px;
-    padding: 10px;
-    text-align: center;
     text-decoration: none;
     color: white;
-    transition: transform 0.2s;
+    min-width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: background 0.2s;
 }
 
 .game-card:hover {
-    transform: translateY(-5px);
     background: rgba(255, 255, 255, 0.2);
 }
 
 .card-icon {
     font-size: 2rem;
-    display: block;
     margin-bottom: 5px;
+}
+
+.game-card h5 {
+    margin: 0;
+    font-size: 0.9rem;
 }
 
 /* Low Balance Modal specific styling override if needed, but reusing .modal class */

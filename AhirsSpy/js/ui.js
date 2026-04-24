@@ -13,7 +13,6 @@ export class UIManager {
             howToPlay: document.getElementById('how-to-play-screen'),
             legends: document.getElementById('legends-screen'),
             credits: document.getElementById('credits-screen'),
-            lowBalance: document.getElementById('low-balance-modal'),
             killerReveal: document.getElementById('killer-reveal-section'),
             killerAvatar: document.getElementById('killer-reveal-avatar'),
             killerIdentity: document.getElementById('killer-reveal-identity'),
@@ -217,7 +216,9 @@ export class UIManager {
             const avatar = document.querySelector('.avatar-option.selected').dataset.avatar;
             const difficulty = document.querySelector('.difficulty-option.selected').dataset.difficulty;
 
-            this.onStartGame({ name, avatar, difficulty });
+            if (this.onStartGame) {
+                this.onStartGame({ name, avatar, difficulty });
+            }
 
             // showHUD is called by Game.start usually, but we can prevent double call or just rely on Game.js
             // Game.js calls this.ui.showHUD() which we need to implement.
@@ -458,6 +459,7 @@ export class UIManager {
     populateCarousel() {
         // List of other games
         const games = [
+            { name: "Ludo", icon: "🎲", link: "../AhirsLudo/index.html" },
             { name: "Chinese Checkers", icon: "⭐", link: "../AhirsChineseCheckers/index.html" },
             { name: "Spy Mission", icon: "🕵️", link: "../AhirsSpy/index.html" },
             { name: "Ghost Maze", icon: "👻", link: "../AhirsGhostMaze/index.html" },

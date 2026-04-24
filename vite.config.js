@@ -17,7 +17,8 @@ export default defineConfig({
                 bikeRace: resolve(__dirname, 'AhirsBikeRace/index.html'),
                 academy: resolve(__dirname, 'AhirsAcademy/index.html'),
                 ahirsSpy: resolve(__dirname, 'AhirsSpy/index.html'),
-                chineseCheckers: resolve(__dirname, 'AhirsChineseCheckers/index.html')
+                chineseCheckers: resolve(__dirname, 'AhirsChineseCheckers/index.html'),
+                treasureHunt: resolve(__dirname, 'AhirsTreasureHunt/index.html')
             }
         }
     }
