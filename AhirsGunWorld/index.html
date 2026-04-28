@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ahir's Gun World</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+
+        <!-- ===== START SCREEN ===== -->
+        <div id="start-screen" class="screen">
+            <h1 class="glow-title">AHIR'S GUN WORLD</h1>
+            <p class="subtitle">🔫 Team Combat • 30 Levels • Epic Story 🔫</p>
+
+            <div class="setup-grid">
+                <div class="setup-section">
+                    <h3>COMMANDER SETUP</h3>
+                    <div class="input-group">
+                        <div class="label-row">
+                            <label for="player-name">NAME</label>
+                            <p id="name-error" class="error-msg hidden">REQUIRED</p>
+                        </div>
+                        <input type="text" id="player-name" placeholder="Enter Commander Name" maxlength="15">
+                    </div>
+                    <div class="input-group">
+                        <label>AVATAR</label>
+                        <div class="avatar-selection">
+                            <div class="avatar-option selected" data-avatar="🪖">🪖</div>
+                            <div class="avatar-option" data-avatar="👨‍🎤">👨‍🎤</div>
+                            <div class="avatar-option" data-avatar="🤖">🤖</div>
+                            <div class="avatar-option" data-avatar="👩‍🚀">👩‍🚀</div>
+                            <div class="avatar-option" data-avatar="🥷">🥷</div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>PET COUNT</label>
+                        <select id="pet-count">
+                            <option value="1">1 Pet (🐕)</option>
+                            <option value="2">2 Pets (🐕🐕)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="setup-section">
+                    <h3>DIFFICULTY</h3>
+                    <div class="difficulty-selection">
+                        <div class="difficulty-option" data-difficulty="easy">
+                            <span>🟢</span>
+                            <div class="diff-info"><strong>EASY</strong><span>Weak enemies • More loot</span></div>
+                        </div>
+                        <div class="difficulty-option selected" data-difficulty="medium">
+                            <span>🟡</span>
+                            <div class="diff-info"><strong>MEDIUM</strong><span>Balanced combat</span></div>
+                        </div>
+                        <div class="difficulty-option" data-difficulty="hard">
+                            <span>🔴</span>
+                            <div class="diff-info"><strong>HARD</strong><span>Deadly AI • Less loot</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-actions">
+                <button id="start-btn" class="primary-btn">START MISSION (10 🪙)</button>
+                <div id="quick-balance" class="balance-info">Coins: <span id="menu-coin-balance">...</span></div>
+                <a href="../AhirsAcademy/index.html" class="academy-link">🎓 Go to Academy (Earn Coins)</a>
+                <div class="secondary-btns">
+                    <button id="how-to-play-btn">HOW TO PLAY</button>
+                    <button id="legends-btn">LEGENDS</button>
+                    <button id="credits-btn">CREDITS</button>
+                </div>
+            </div>
+
+            <!-- Other Games Carousel -->
+            <div class="game-carousel-container">
+                <h4>More Missions</h4>
+                <div class="game-carousel">
+                    <a href="../AhirsLudo/index.html" class="game-card"><span class="card-icon">🎲</span><h5>Ludo</h5></a>
+                    <a href="../AhirsChineseCheckers/index.html" class="game-card"><span class="card-icon">⭐</span><h5>Chinese Checkers</h5></a>
+                    <a href="../AhirsSpy/index.html" class="game-card"><span class="card-icon">🕵️</span><h5>Spy Mission</h5></a>
+                    <a href="../AhirsGhostMaze/index.html" class="game-card"><span class="card-icon">👻</span><h5>Ghost Maze</h5></a>
+                    <a href="../AhirsAcademy/index.html" class="game-card"><span class="card-icon">🎓</span><h5>Academy</h5></a>
+                    <a href="../AhirsSnakeInARoom/index.html" class="game-card"><span class="card-icon">🐍</span><h5>Snake Room</h5></a>
+                    <a href="../AhirSharkRace/index.html" class="game-card"><span class="card-icon">🦈</span><h5>Shark Race</h5></a>
+                    <a href="../AhirsShootingBattle/index.html" class="game-card"><span class="card-icon">🔫</span><h5>Shooting</h5></a>
+                    <a href="../AhirsWarZone/index.html" class="game-card"><span class="card-icon">⚔️</span><h5>War Zone</h5></a>
+                    <a href="../AhirsChess/index.html" class="game-card"><span class="card-icon">♟</span><h5>Chess</h5></a>
+                    <a href="../AhirsSnakeAndLadder/index.html" class="game-card"><span class="card-icon">🎲</span><h5>Snake &amp; Ladder</h5></a>
+                    <a href="../AhirsBikeRace/index.html" class="game-card"><span class="card-icon">🚲</span><h5>Bike Race</h5></a>
+                    <a href="../AhirsTreasureHunt/index.html" class="game-card"><span class="card-icon">💎</span><h5>Treasure Hunt</h5></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== STORY SCREEN ===== -->
+        <div id="story-screen" class="screen hidden">
+            <h2 id="story-title" class="glow-title">INTEL</h2>
+            <div class="story-box">
+                <p id="story-text"></p>
+            </div>
+            <button id="story-continue-btn" class="primary-btn">CONTINUE →</button>
+        </div>
+
+        <!-- ===== GAME HUD ===== -->
+        <div id="game-hud" class="screen hidden">
+            <div class="hud-bar">
+                <div class="hud-left">
+                    <div class="hud-stat"><span class="stat-label">❤️ HP</span><div class="bar-container"><div class="bar health-bar" id="health-bar"></div></div><span id="health-val">100</span></div>
+                    <div class="hud-stat"><span class="stat-label">🛡️ Shield</span><div class="bar-container"><div class="bar shield-bar" id="shield-bar"></div></div><span id="shield-val">50</span></div>
+                    <div class="hud-stat-text"><span>💰</span><span id="coins-val">0</span></div>
+                    <div class="hud-stat-text"><span>💀</span><span id="kills-val">0</span></div>
+                </div>
+                <div class="hud-center">
+                    <div id="level-display" class="level-label">Lv.1</div>
+                    <div id="chapter-display" class="chapter-label">Chapter 1</div>
+                    <div id="timer-val" class="timer-label">00:00</div>
+                </div>
+                <div class="hud-right">
+                    <div class="hud-stat-text"><span>🔫</span><span id="weapon-val">Pistol</span></div>
+                    <div class="hud-stat-text"><span>🚗</span><span id="vehicle-val">NONE</span></div>
+                    <div class="hud-stat-text"><span>👥</span><span id="team-val">8/8</span></div>
+                    <div class="hud-stat-text"><span>👹</span><span id="enemies-val">8</span></div>
+                    <div class="hud-stat-text"><span>🐕</span><span id="pet-status">🐕80</span></div>
+                </div>
+            </div>
+
+            <div class="hud-bottom-buttons">
+                <button id="pause-btn" class="icon-btn">⏸️</button>
+                <button id="store-btn" class="icon-btn">🏪</button>
+            </div>
+
+            <!-- Vehicle Watch -->
+            <div class="vehicle-watch">
+                <button id="vehicle-car" class="watch-btn" title="Car Mode (Q)">🚗</button>
+                <button id="vehicle-plane" class="watch-btn" title="Plane Mode (E)">✈️</button>
+                <button id="vehicle-sub" class="watch-btn" title="Sub Mode (R)">🚢</button>
+                <button id="shield-btn" class="watch-btn" title="Shield (F)">🛡️</button>
+            </div>
+        </div>
+
+        <!-- ===== GAME CANVAS ===== -->
+        <div id="game-canvas-wrap" class="hidden">
+            <canvas id="game-canvas"></canvas>
+        </div>
+
+        <!-- ===== MOBILE CONTROLS ===== -->
+        <div id="mobile-controls" class="hidden">
+            <div id="joystick-zone"><div id="joystick-knob"></div></div>
+            <div id="action-buttons">
+                <button id="fire-btn" class="action-btn fire">🔥</button>
+            </div>
+        </div>
+
+        <!-- ===== PAUSE SCREEN ===== -->
+        <div id="pause-screen" class="screen hidden">
+            <h2 class="glow-title">PAUSED</h2>
+            <div class="pause-menu">
+                <button id="resume-btn" class="primary-btn">RESUME</button>
+                <button id="quit-btn" class="secondary-btn">QUIT TO MENU</button>
+            </div>
+        </div>
+
+        <!-- ===== STORE SCREEN ===== -->
+        <div id="store-screen" class="screen hidden">
+            <div class="store-panel">
+                <div class="store-header">
+                    <h2>ARMORY</h2>
+                    <div class="store-balance">💰 <span id="store-coins">0</span></div>
+                    <button id="close-store-btn" class="secondary-btn">BACK</button>
+                </div>
+                <div id="store-grid" class="store-grid"></div>
+            </div>
+        </div>
+
+        <!-- ===== GAME OVER ===== -->
+        <div id="game-over-screen" class="screen hidden">
+            <div id="result-icon" class="result-icon">🏆</div>
+            <h1 id="result-title" class="glow-title">MISSION COMPLETE</h1>
+            <p id="result-message">You won!</p>
+
+            <div class="score-breakdown">
+                <div class="score-row"><span>Total Score</span><span id="final-score">0</span></div>
+                <div class="score-row"><span>Total Kills</span><span id="final-kills">0</span></div>
+                <div class="score-row"><span>Level Reached</span><span id="final-level">1/30</span></div>
+                <div class="score-row"><span>Coins Earned</span><span id="final-coins">0</span></div>
+            </div>
+
+            <div class="menu-actions">
+                <button id="restart-btn" class="primary-btn">PLAY AGAIN (10 🪙)</button>
+                <button id="menu-btn" class="secondary-btn">MAIN MENU</button>
+            </div>
+        </div>
+
+        <!-- ===== HOW TO PLAY ===== -->
+        <div id="how-to-play-screen" class="screen hidden">
+            <h2 class="glow-title">HOW TO PLAY</h2>
+            <div class="scroll-content">
+                <div class="instruction-block">
+                    <h3>🎮 Controls</h3>
+                    <p><strong>Move:</strong> WASD / Arrow Keys / Joystick</p>
+                    <p><strong>Aim & Fire:</strong> Click / Tap on screen</p>
+                    <p><strong>Shield:</strong> F key / 🛡️ button</p>
+                    <p><strong>Vehicles:</strong> Q (Car) / E (Plane) / R (Sub)</p>
+                    <p><strong>Pause:</strong> ESC key / ⏸️ button</p>
+                </div>
+                <div class="instruction-block">
+                    <h3>🎯 Objective</h3>
+                    <p>Lead your 8-member Green Force squad through 30 levels to recover the stolen Emerald Core from the Scarred Red Legion.</p>
+                    <p>Eliminate all enemies in each level to progress. Defeat chapter bosses every 5 levels.</p>
+                </div>
+                <div class="instruction-block">
+                    <h3>🔫 Weapons</h3>
+                    <p>Start with a Pistol. Buy upgrades at the Store with coins earned from kills and loot.</p>
+                    <p>Available: Rifle, Sniper, SMG, Knife, Laser Glasses, Rocket Launcher</p>
+                    <p>Modify weapons with Silencer, Scope, Extended Mag, and Rapid Fire.</p>
+                </div>
+                <div class="instruction-block">
+                    <h3>🐕 Pets</h3>
+                    <p>Your loyal dog auto-attacks nearby enemies and follows you around.</p>
+                </div>
+                <div class="instruction-block">
+                    <h3>🚗 Vehicles</h3>
+                    <p><strong>Car:</strong> 2x speed, run over enemies</p>
+                    <p><strong>Plane:</strong> Fly over walls</p>
+                    <p><strong>Submarine:</strong> Stealth mode (enemies can't see you)</p>
+                </div>
+                <div class="instruction-block">
+                    <h3>🛡️ Shield</h3>
+                    <p>Absorbs damage. Recharges when not in use. Press F to activate.</p>
+                </div>
+            </div>
+            <button class="secondary-btn back-btn">BACK</button>
+        </div>
+
+        <!-- ===== LEGENDS ===== -->
+        <div id="legends-screen" class="screen hidden">
+            <h2 class="glow-title">HALL OF LEGENDS</h2>
+            <div class="scroll-content">
+                <table class="legends-table">
+                    <thead><tr><th>RANK</th><th>COMMANDER</th><th>SCORE</th><th>LEVEL</th><th>RESULT</th></tr></thead>
+                    <tbody id="legends-body"></tbody>
+                </table>
+            </div>
+            <button class="secondary-btn back-btn">BACK</button>
+        </div>
+
+        <!-- ===== CREDITS ===== -->
+        <div id="credits-screen" class="screen hidden">
+            <h2 class="glow-title">OUR STORY</h2>
+            <div class="scroll-content credits-body">
+                <p>From Ghost Maze to Shooting Battle, from Treasure Hunts to War Zones — every game has been a new adventure.</p>
+                <p>But nothing prepared us for <strong>Gun World</strong>.</p>
+                <p><em>"I want teams, weapons, pets, vehicles, shields, and a real story!"</em> Ahir declared.</p>
+                <p>His vision was boundless: 30 levels, 6 unique worlds, an army of enemies, and a storyline that would make your heart race.</p>
+                <p>We built it all — jungle firefights, underwater chases, arctic blizzards, volcanic showdowns. Every level crafted with the imagination of an 8-year-old genius and the determination of a father-son coding team.</p>
+                <p>This isn't just a game. It's Ahir's world. And you're welcome to explore every corner of it.</p>
+                <br>
+                <div class="credits-signature">
+                    <strong>Ahir Mukherjee</strong>: Architect of Worlds<br>
+                    <strong>Father</strong>: Code Enabler
+                </div>
+                <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid rgba(255,255,255,0.1);">
+                <p style="font-size: 0.8rem; color: #666;">Built with Google Antigravity • 2025</p>
+            </div>
+            <button class="secondary-btn back-btn">BACK</button>
+        </div>
+    </div>
+
+    <!-- Low Balance Modal -->
+    <div id="low-balance-modal" class="hidden" style="position:fixed;z-index:2000;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;width:100%;height:100%;top:0;left:0;">
+        <div style="background:#161b22;padding:30px;border-radius:12px;border:1px solid #da3633;text-align:center;max-width:400px;color:white;">
+            <h2 style="color:#da3633;margin-top:0;">Not Enough Coins! 🪙</h2>
+            <p>You need 10 Coins to enter Gun World.</p>
+            <p>Go to the Academy to solve questions and earn more!</p>
+            <a href="../AhirsAcademy/index.html" class="primary-btn" style="display:inline-block;background:#238636;color:white;padding:10px 20px;text-decoration:none;border-radius:6px;margin-top:15px;">Go to Academy</a>
+            <button id="close-low-balance" style="margin-top:10px;background:transparent;border:1px solid #8b949e;color:#8b949e;padding:5px 10px;border-radius:4px;cursor:pointer;">Close</button>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

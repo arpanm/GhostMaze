@@ -18,7 +18,8 @@ export default defineConfig({
                 academy: resolve(__dirname, 'AhirsAcademy/index.html'),
                 ahirsSpy: resolve(__dirname, 'AhirsSpy/index.html'),
                 chineseCheckers: resolve(__dirname, 'AhirsChineseCheckers/index.html'),
-                treasureHunt: resolve(__dirname, 'AhirsTreasureHunt/index.html')
+                treasureHunt: resolve(__dirname, 'AhirsTreasureHunt/index.html'),
+                gunWorld: resolve(__dirname, 'AhirsGunWorld/index.html')
             }
         }
     }
