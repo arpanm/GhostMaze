@@ -449,7 +449,9 @@ export class UIManager {
     hidePauseMenu() { this.dom.pause.classList.add('hidden'); }
 
     updateMenuBalance() {
-        this.dom.coinBalance.innerText = this.economy.getBalance();
+        if (this.dom.coinBalance) {
+            this.dom.coinBalance.innerText = this.economy.getBalance();
+        }
     }
 
     showLowBalance() {
@@ -474,6 +476,7 @@ export class UIManager {
         ];
 
         const container = this.dom.carousel;
+        if (!container) return;
         container.innerHTML = '';
         games.forEach(g => {
             const a = document.createElement('a');
